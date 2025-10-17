@@ -1,0 +1,404 @@
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Plus, Minus, BarChart3, CreditCard, Download } from "lucide-react";
+import { useState } from "react";
+import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
+import { CalculatorAnimation } from "@/components/CalculatorAnimation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { exportToExcel, exportToPDF, exportToJSON, exportToCSV } from "@/utils/exportUtils";
+
+interface LoanCalculation {
+  emi: number;
+  totalInterest: number;
+  totalAmount: number;
+  schedule: {
+    month: number;
+    year: number;
+    emiAmount: number;
+    principalAmount: number;
+    interestAmount: number;
+    remainingBalance: number;
+    partPayment: number;
+  }[];
+  chartData: {
+    year: number;
+    remainingBalance: number;
+    principalPaid: number;
+  }[];
+}
+
+interface LoanSummaryProps {
+  calculation: LoanCalculation | null;
+  partPayments: PartPayment[];
+  setPartPayments: (payments: PartPayment[]) => void;
+  startMonth: number;
+  startYear: number;
+  loanTenure: number;
+  showSchedule: boolean;
+  setShowSchedule: (show: boolean) => void;
+}
+
+export const LoanSummary = ({ 
+  calculation, 
+  partPayments, 
+  setPartPayments, 
+  startMonth, 
+  startYear, 
+  loanTenure,
+  showSchedule,
+  setShowSchedule
+}: LoanSummaryProps) => {
+  const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
+  const [showPrepayments, setShowPrepayments] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
+
+  const toggleYear = (year: number) => {
+    const newExpanded = new Set(expandedYears);
+    if (newExpanded.has(year)) {
+      newExpanded.delete(year);
+    } else {
+      newExpanded.add(year);
+    }
+    setExpandedYears(newExpanded);
+  };
+
+  if (!calculation) {
+    return null;
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatAmount = (amount: number) => {
+    if (amount >= 10000000) {
+      return `₹${(amount / 10000000).toFixed(1)} Cr`;
+    } else if (amount >= 100000) {
+      return `₹${(amount / 100000).toFixed(1)} L`;
+    } else {
+      return `₹${(amount / 1000).toFixed(0)}K`;
+    }
+  };
+
+  const getFullMonthName = (month: number) => {
+    const months = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1];
+  };
+
+  // Group schedule data by year
+  const getYearlyData = () => {
+    const originalPrincipal = calculation.totalAmount - calculation.totalInterest;
+    const yearlyData: { [key: number]: {
+      year: number;
+      months: typeof calculation.schedule;
+      totalEmi: number;
+      totalPrincipal: number;
+      totalInterest: number;
+      totalPartPayment: number;
+      endBalance: number;
+      loanPaidPercentage: number;
+    } } = {};
+
+    calculation.schedule.forEach((row) => {
+      if (!yearlyData[row.year]) {
+        yearlyData[row.year] = {
+          year: row.year,
+          months: [],
+          totalEmi: 0,
+          totalPrincipal: 0,
+          totalInterest: 0,
+          totalPartPayment: 0,
+          endBalance: row.remainingBalance,
+          loanPaidPercentage: 0,
+        };
+      }
+      
+      yearlyData[row.year].months.push(row);
+      yearlyData[row.year].totalEmi += row.emiAmount;
+      yearlyData[row.year].totalPrincipal += row.principalAmount;
+      yearlyData[row.year].totalInterest += row.interestAmount;
+      yearlyData[row.year].totalPartPayment += row.partPayment;
+      yearlyData[row.year].endBalance = row.remainingBalance; // Keep updating to get end balance
+      yearlyData[row.year].loanPaidPercentage = ((originalPrincipal - row.remainingBalance) / originalPrincipal) * 100;
+    });
+
+    return Object.values(yearlyData).sort((a, b) => a.year - b.year);
+  };
+
+  const yearlyData = getYearlyData();
+  const totalPrincipal = calculation.totalAmount - calculation.totalInterest;
+
+  return (
+    <div className="space-y-6">
+      {/* Add Part Payments Button */}
+      <div className="flex justify-center">
+        <Button
+          onClick={() => setShowPrepayments(!showPrepayments)}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <CreditCard className="w-4 h-4" />
+          {showPrepayments ? 'Hide Part Payments' : 'Add Part Payments'}
+        </Button>
+      </div>
+
+      {showPrepayments && (
+        <PartPaymentSection
+          partPayments={partPayments}
+          setPartPayments={setPartPayments}
+          startMonth={startMonth}
+          startYear={startYear}
+          loanTenure={loanTenure}
+          loanSchedule={calculation.schedule}
+        />
+      )}
+
+      {/* Show EMI Schedule Button */}
+      <div className="flex justify-center">
+        <Button
+          onClick={() => {
+            if (showSchedule) {
+              setShowSchedule(false);
+            } else {
+              setShowAnimation(true);
+            }
+          }}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <BarChart3 className="w-4 h-4" />
+          {showSchedule ? 'Hide EMI Schedule' : 'Show EMI Schedule'}
+        </Button>
+      </div>
+
+      <CalculatorAnimation 
+        isVisible={showAnimation} 
+        onComplete={() => {
+          setShowAnimation(false);
+          setShowSchedule(true);
+        }} 
+      />
+
+      {showSchedule && (
+        <>
+          {/* Yearly Payments Chart */}
+          <Card className="shadow-[var(--shadow-card)] mb-6">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">Yearly Payments & Remaining Balance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={yearlyData.map(year => ({
+                    year: year.year,
+                    principal: year.totalPrincipal,
+                    interest: year.totalInterest,
+                    partPayment: year.totalPartPayment,
+                    balance: year.endBalance
+                  }))} barCategoryGap="10%">
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="year" 
+                      stroke="hsl(var(--foreground))"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      yAxisId="left"
+                      stroke="hsl(var(--foreground))"
+                      fontSize={12}
+                      tickFormatter={(value) => `${Math.round(value / 1000)}K`}
+                      tickMargin={10}
+                      width={80}
+                      label={{ value: 'Loan Payment / year', angle: -90, position: 'outside', offset: -60 }}
+                    />
+                    <YAxis 
+                      yAxisId="right" 
+                      orientation="right"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      tickFormatter={(value) => `${Math.round(value / 100000)}L`}
+                      tickMargin={10}
+                      width={80}
+                      label={{ value: 'Balance Amount', angle: 90, position: 'outside', offset: 60 }}
+                    />
+                    <Tooltip 
+                      formatter={(value: number, name: string) => {
+                        let label = name;
+                        if (name === 'Principal') label = 'Principal';
+                        else if (name === 'Interest') label = 'Interest';
+                        else if (name === 'Part Payment') label = 'Part Payment';
+                        else if (name === 'Remaining Balance') label = 'Remaining Balance';
+                        return [formatCurrency(value), label];
+                      }}
+                      labelFormatter={(year) => `Year ${year}`}
+                    />
+                    <Legend />
+                    <Bar 
+                      yAxisId="left"
+                      dataKey="principal" 
+                      fill="hsl(var(--financial-success))" 
+                      name="Principal"
+                      radius={[2, 2, 0, 0]}
+                    />
+                    <Bar 
+                      yAxisId="left"
+                      dataKey="interest" 
+                      fill="hsl(var(--financial-warning))" 
+                      name="Interest"
+                      radius={[2, 2, 0, 0]}
+                    />
+                    <Bar 
+                      yAxisId="left"
+                      dataKey="partPayment" 
+                      fill="hsl(var(--financial-primary))" 
+                      name="Part Payment"
+                      radius={[2, 2, 0, 0]}
+                    />
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="balance"
+                      stroke="hsl(var(--destructive))"
+                      strokeWidth={3}
+                      name="Remaining Balance"
+                      dot={{ fill: 'hsl(var(--destructive))', strokeWidth: 2, r: 4 }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* EMI Schedule Table */}
+          <Card className="shadow-[var(--shadow-card)]">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg font-semibold">EMI Schedule</CardTitle>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Download className="h-4 w-4" />
+                Download
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                Excel (.xlsx)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                PDF (.pdf)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                JSON (.json)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                CSV (.csv)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </CardHeader>
+        <CardContent>
+          <div className="max-h-96 overflow-y-auto border rounded-md">
+            <Table>
+              <TableHeader className="sticky top-0 z-20 bg-card shadow-sm">
+                <TableRow className="border-b">
+                  <TableHead className="w-12 bg-card font-bold uppercase">×</TableHead>
+                  <TableHead className="w-20 bg-card font-bold uppercase">Year</TableHead>
+                  <TableHead className="text-right bg-card font-bold uppercase">Principal</TableHead>
+                  <TableHead className="text-right bg-card font-bold uppercase">Part Payment</TableHead>
+                  <TableHead className="text-right bg-card font-bold uppercase">Interest</TableHead>
+                  <TableHead className="text-right bg-card font-bold uppercase">EMI</TableHead>
+                  <TableHead className="text-right bg-card font-bold uppercase">Balance</TableHead>
+                  <TableHead className="text-right bg-card font-bold uppercase">Paid %</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {yearlyData.map((yearData) => (
+                  <>
+                    {/* Year Summary Row */}
+                    <TableRow 
+                      key={`year-${yearData.year}`}
+                      className="bg-muted/50 hover:bg-muted/70 cursor-pointer border-b-2"
+                      onClick={() => toggleYear(yearData.year)}
+                    >
+                      <TableCell className="text-center">
+                        {expandedYears.has(yearData.year) ? (
+                          <Minus className="w-4 h-4 text-muted-foreground" />
+                        ) : (
+                          <Plus className="w-4 h-4 text-muted-foreground" />
+                        )}
+                      </TableCell>
+                      <TableCell className="font-bold">{yearData.year}</TableCell>
+                      <TableCell className="text-right font-bold text-financial-success">
+                        {formatCurrency(yearData.totalPrincipal)}
+                      </TableCell>
+                      <TableCell className="text-right font-bold text-financial-primary">
+                        {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
+                      </TableCell>
+                      <TableCell className="text-right font-bold text-financial-warning">
+                        {formatCurrency(yearData.totalInterest)}
+                      </TableCell>
+                      <TableCell className="text-right font-bold">
+                        {formatCurrency(yearData.totalEmi)}
+                      </TableCell>
+                      <TableCell className="text-right font-bold">
+                        {formatCurrency(yearData.endBalance)}
+                      </TableCell>
+                      <TableCell className="text-right font-bold">
+                        {yearData.loanPaidPercentage.toFixed(1)}%
+                      </TableCell>
+                    </TableRow>
+                    
+                    {/* Monthly Detail Rows */}
+                    {expandedYears.has(yearData.year) && yearData.months.map((row, monthIndex) => (
+                      <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background">
+                        <TableCell></TableCell>
+                        <TableCell className="text-muted-foreground pl-4">
+                          {getFullMonthName(row.month)}
+                        </TableCell>
+                        <TableCell className="text-right text-financial-success">
+                          {formatCurrency(row.principalAmount)}
+                        </TableCell>
+                        <TableCell className="text-right text-financial-primary">
+                          {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
+                        </TableCell>
+                        <TableCell className="text-right text-financial-warning">
+                          {formatCurrency(row.interestAmount)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(row.emiAmount)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatCurrency(row.remainingBalance)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {(((totalPrincipal - row.remainingBalance) / totalPrincipal) * 100).toFixed(1)}%
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+        </>
+      )}
+    </div>
+  );
+};
