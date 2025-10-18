@@ -214,25 +214,47 @@ export const PartPaymentSection = ({
                     step={1000}
                   />
                 </div>
+
+                {partPayments.length === 0 && (
+                  <div className="w-4/5">
+                    <Label className="text-sm text-muted-foreground">Frequency</Label>
+                    <Select 
+                      value={newPayment.frequency} 
+                      onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
+                    >
+                      <SelectTrigger className="h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="one-time">One-time</SelectItem>
+                        <SelectItem value="monthly">Monthly</SelectItem>
+                        <SelectItem value="quarterly">Quarterly</SelectItem>
+                        <SelectItem value="yearly">Yearly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
 
-              <div>
-                <Label className="text-sm text-muted-foreground">Frequency</Label>
-                <Select 
-                  value={newPayment.frequency} 
-                  onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="one-time">One-time</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="quarterly">Quarterly</SelectItem>
-                    <SelectItem value="yearly">Yearly</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {partPayments.length > 0 && (
+                <div>
+                  <Label className="text-sm text-muted-foreground">Frequency</Label>
+                  <Select 
+                    value={newPayment.frequency} 
+                    onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="one-time">One-time</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="quarterly">Quarterly</SelectItem>
+                      <SelectItem value="yearly">Yearly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
             
             <Button 
