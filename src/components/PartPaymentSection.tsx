@@ -165,7 +165,7 @@ export const PartPaymentSection = ({
             
             <div className="space-y-3">
               <div className="flex gap-3 items-end">
-                <div className="w-4/5">
+                <div className="flex-1">
                   <Label className="text-sm text-muted-foreground">Month</Label>
                   <Select 
                     value={newPayment.month.toString()} 
@@ -184,7 +184,7 @@ export const PartPaymentSection = ({
                   </Select>
                 </div>
                 
-                <div className="w-4/5">
+                <div className="flex-1">
                   <Label className="text-sm text-muted-foreground">Year</Label>
                   <Select 
                     value={newPayment.year.toString()} 
@@ -203,7 +203,7 @@ export const PartPaymentSection = ({
                   </Select>
                 </div>
 
-                <div className="w-4/5 ml-6">
+                <div className="flex-1">
                   <Label className="text-sm text-muted-foreground">Amount (₹)</Label>
                   <Input
                     type="number"
@@ -214,47 +214,25 @@ export const PartPaymentSection = ({
                     step={1000}
                   />
                 </div>
-
-                {partPayments.length === 0 && (
-                  <div className="w-4/5">
-                    <Label className="text-sm text-muted-foreground">Frequency</Label>
-                    <Select 
-                      value={newPayment.frequency} 
-                      onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
-                    >
-                      <SelectTrigger className="h-9">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="one-time">One-time</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                        <SelectItem value="quarterly">Quarterly</SelectItem>
-                        <SelectItem value="yearly">Yearly</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
               </div>
 
-              {partPayments.length > 0 && (
-                <div>
-                  <Label className="text-sm text-muted-foreground">Frequency</Label>
-                  <Select 
-                    value={newPayment.frequency} 
-                    onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="one-time">One-time</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="quarterly">Quarterly</SelectItem>
-                      <SelectItem value="yearly">Yearly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              <div>
+                <Label className="text-sm text-muted-foreground">Frequency</Label>
+                <Select 
+                  value={newPayment.frequency} 
+                  onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="one-time">One-time</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="quarterly">Quarterly</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             <Button 
