@@ -67,12 +67,12 @@ export const LoanInputSection = ({
         {/* Loan Start Date */}
         <div className="space-y-2.5">
           <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 w-20">
-              <Label className="text-sm font-medium text-foreground leading-tight text-center">
+            <div className="flex-shrink-0 w-32">
+              <Label className="text-sm font-medium text-foreground leading-tight">
                 Start Month-Year
               </Label>
             </div>
-            <div className="flex-1">
+            <div className="w-4/5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label className="text-xs text-muted-foreground">Month</Label>
@@ -119,12 +119,12 @@ export const LoanInputSection = ({
         {/* Loan Amount */}
         <div className="space-y-2.5">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 pt-2">
+            <div className="flex-shrink-0 pt-2 w-32">
               <Label htmlFor="loanAmount" className="text-sm font-medium text-foreground">
                 Loan Amount
               </Label>
             </div>
-            <div className="flex-1 space-y-2.5">
+            <div className="w-4/5 space-y-2.5">
               <Input
                 id="loanAmount"
                 type="number"
@@ -154,12 +154,12 @@ export const LoanInputSection = ({
         {/* Interest Rate */}
         <div className="space-y-2.5">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 pt-2">
+            <div className="flex-shrink-0 pt-2 w-32">
               <Label htmlFor="interestRate" className="text-sm font-medium text-foreground">
                 Rate of Interest
               </Label>
             </div>
-            <div className="flex-1 space-y-2.5">
+            <div className="w-4/5 space-y-2.5">
               <Input
                 id="interestRate"
                 type="number"
@@ -189,12 +189,12 @@ export const LoanInputSection = ({
         {/* Loan Tenure */}
         <div className="space-y-2.5">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 pt-2">
+            <div className="flex-shrink-0 pt-2 w-32">
               <Label htmlFor="loanTenure" className="text-sm font-medium text-foreground">
                 Loan Tenure
               </Label>
             </div>
-            <div className="flex-1 space-y-2.5">
+            <div className="w-4/5 space-y-2.5">
               <Input
                 id="loanTenure"
                 type="number"
