@@ -158,7 +158,7 @@ export const PartPaymentSection = ({
         <CardTitle className="text-xl font-semibold">Part Payment Adjustments</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <div className={`grid gap-6 ${partPayments.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+        <div className="grid grid-cols-2 gap-6">
           {/* Add New Part Payment */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
             <h4 className="font-medium text-foreground">Add Part Payment</h4>
@@ -268,9 +268,9 @@ export const PartPaymentSection = ({
           </div>
 
           {/* Existing Part Payments */}
-          {partPayments.length > 0 && (
-            <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-              <h4 className="font-medium text-foreground">Scheduled Part Payments</h4>
+          <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+            <h4 className="font-medium text-foreground">Scheduled Part Payments</h4>
+            {partPayments.length > 0 ? (
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {partPayments.map((payment) => (
                   <div 
@@ -296,8 +296,12 @@ export const PartPaymentSection = ({
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center justify-center py-8 text-muted-foreground text-sm">
+                No part payments scheduled yet
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
