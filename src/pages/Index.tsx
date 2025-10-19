@@ -21,6 +21,12 @@ const Index = () => {
   const [interestSavings, setInterestSavings] = useState<number>(0);
   const [timeSavings, setTimeSavings] = useState<number>(0);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  const handlePartPaymentAdded = () => {
+    setShowCelebration(true);
+    setTimeout(() => setShowCelebration(false), 2000);
+  };
 
   // Auto-calculate whenever loan details or part payments change
   useEffect(() => {
@@ -101,6 +107,7 @@ const Index = () => {
             calculation={calculation} 
             interestSavings={interestSavings}
             timeSavings={timeSavings}
+            showCelebration={showCelebration}
           />
         </div>
 
@@ -114,6 +121,7 @@ const Index = () => {
           loanTenure={loanTenure}
           showSchedule={showSchedule}
           setShowSchedule={setShowSchedule}
+          onPartPaymentAdded={handlePartPaymentAdded}
         />
       </div>
     </div>

@@ -21,9 +21,10 @@ interface LoanSummaryCardsProps {
   calculation: LoanCalculation | null;
   interestSavings?: number;
   timeSavings?: number;
+  showCelebration?: boolean;
 }
 
-export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings = 0 }: LoanSummaryCardsProps) => {
+export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings = 0, showCelebration = false }: LoanSummaryCardsProps) => {
   if (!calculation) {
     return null;
   }
@@ -90,6 +91,11 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
             <div className="absolute top-2 right-2 animate-pulse">
               <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
             </div>
+            {showCelebration && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <span className="text-6xl animate-party-popper">🎉</span>
+              </div>
+            )}
             <CardContent className="p-3">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground mb-1 font-bold">Interest Saved</p>
