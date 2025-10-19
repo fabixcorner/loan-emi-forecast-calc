@@ -24,8 +24,14 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(amount);
+};
+
+const formatCurrencyForPDF = (amount: number) => {
+  return '₹ ' + new Intl.NumberFormat('en-IN', {
+    maximumFractionDigits: 0,
+  }).format(Math.round(amount));
 };
 
 export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number) => {
@@ -33,11 +39,11 @@ export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInteres
     'Sr. No.': index + 1,
     'Month': getMonthName(row.month),
     'Year': row.year,
-    'EMI Amount': row.emiAmount,
-    'Principal Amount': row.principalAmount,
-    'Interest Amount': row.interestAmount,
-    'Part Payment': row.partPayment,
-    'Remaining Balance': row.remainingBalance,
+    'EMI Amount': Math.round(row.emiAmount),
+    'Principal Amount': Math.round(row.principalAmount),
+    'Interest Amount': Math.round(row.interestAmount),
+    'Part Payment': Math.round(row.partPayment),
+    'Remaining Balance': Math.round(row.remainingBalance),
   }));
 
   // Add summary at the end
@@ -45,10 +51,10 @@ export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInteres
     'Sr. No.': '' as any,
     'Month': '' as any,
     'Year': 'SUMMARY' as any,
-    'EMI Amount': emi,
-    'Principal Amount': totalAmount - totalInterest,
-    'Interest Amount': totalInterest,
-    'Part Payment': schedule.reduce((sum, row) => sum + row.partPayment, 0),
+    'EMI Amount': Math.round(emi),
+    'Principal Amount': Math.round(totalAmount - totalInterest),
+    'Interest Amount': Math.round(totalInterest),
+    'Part Payment': Math.round(schedule.reduce((sum, row) => sum + row.partPayment, 0)),
     'Remaining Balance': 0,
   });
 
@@ -81,20 +87,20 @@ export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest:
   
   // Summary information
   doc.setFontSize(11);
-  doc.text(`Monthly EMI: ${formatCurrency(emi)}`, 14, 32);
-  doc.text(`Total Amount: ${formatCurrency(totalAmount)}`, 14, 38);
-  doc.text(`Total Interest: ${formatCurrency(totalInterest)}`, 14, 44);
+  doc.text(`Monthly EMI: ${formatCurrencyForPDF(emi)}`, 14, 32);
+  doc.text(`Total Amount: ${formatCurrencyForPDF(totalAmount)}`, 14, 38);
+  doc.text(`Total Interest: ${formatCurrencyForPDF(totalInterest)}`, 14, 44);
   
   // Table data
   const tableData = schedule.map((row, index) => [
     index + 1,
     getMonthName(row.month),
     row.year,
-    formatCurrency(row.emiAmount),
-    formatCurrency(row.principalAmount),
-    formatCurrency(row.interestAmount),
-    row.partPayment > 0 ? formatCurrency(row.partPayment) : '-',
-    formatCurrency(row.remainingBalance),
+    formatCurrencyForPDF(row.emiAmount),
+    formatCurrencyForPDF(row.principalAmount),
+    formatCurrencyForPDF(row.interestAmount),
+    row.partPayment > 0 ? formatCurrencyForPDF(row.partPayment) : '-',
+    formatCurrencyForPDF(row.remainingBalance),
   ]);
 
   autoTable(doc, {
@@ -145,11 +151,11 @@ export const exportToCSV = (schedule: ScheduleRow[], emi: number, totalInterest:
     index + 1,
     getMonthName(row.month),
     row.year,
-    row.emiAmount.toFixed(2),
-    row.principalAmount.toFixed(2),
-    row.interestAmount.toFixed(2),
-    row.partPayment.toFixed(2),
-    row.remainingBalance.toFixed(2),
+    Math.round(row.emiAmount),
+    Math.round(row.principalAmount),
+    Math.round(row.interestAmount),
+    Math.round(row.partPayment),
+    Math.round(row.remainingBalance),
   ]);
 
   // Add summary row
@@ -157,11 +163,11 @@ export const exportToCSV = (schedule: ScheduleRow[], emi: number, totalInterest:
     '',
     '',
     'SUMMARY',
-    emi.toFixed(2),
-    (totalAmount - totalInterest).toFixed(2),
-    totalInterest.toFixed(2),
-    schedule.reduce((sum, row) => sum + row.partPayment, 0).toFixed(2),
-    '0.00',
+    Math.round(emi),
+    Math.round(totalAmount - totalInterest),
+    Math.round(totalInterest),
+    Math.round(schedule.reduce((sum, row) => sum + row.partPayment, 0)),
+    '0',
   ]);
 
   const csvContent = [
