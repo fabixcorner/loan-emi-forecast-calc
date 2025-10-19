@@ -26,7 +26,6 @@ interface PartPaymentSectionProps {
     year: number;
     remainingBalance: number;
   }[];
-  onPartPaymentAdded?: () => void;
 }
 
 export const PartPaymentSection = ({
@@ -36,7 +35,6 @@ export const PartPaymentSection = ({
   startYear,
   loanTenure,
   loanSchedule,
-  onPartPaymentAdded,
 }: PartPaymentSectionProps) => {
   const [newPayment, setNewPayment] = useState<Omit<PartPayment, 'id'>>({
     month: new Date().getMonth() + 1,
@@ -96,7 +94,6 @@ export const PartPaymentSection = ({
         amount: 100000,
         frequency: 'one-time',
       });
-      onPartPaymentAdded?.();
     }
   };
 
