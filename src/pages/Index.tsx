@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Calculator, TrendingUp } from "lucide-react";
+import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { LoanSummary } from "@/components/LoanSummary";
@@ -84,7 +85,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-center space-x-3">
             <div className="p-2 bg-gradient-to-r from-financial-primary to-financial-success rounded-lg">
-              <Calculator className="w-6 h-6 text-white" />
+              <img src={calculatorIcon} alt="Calculator" className="w-6 h-6" />
             </div>
             <div className="text-center">
               <h1 className="text-2xl font-bold text-white">Loan EMI Calculator</h1>
