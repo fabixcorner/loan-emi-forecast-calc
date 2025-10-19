@@ -7,6 +7,7 @@ import { LoanSummary } from "@/components/LoanSummary";
 import { LoanSummaryCards } from "@/components/LoanSummaryCards";
 import { LoanBreakdownChart } from "@/components/LoanBreakdownChart";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
+import confetti from "canvas-confetti";
 
 const Index = () => {
   // Default values
@@ -21,6 +22,24 @@ const Index = () => {
   const [interestSavings, setInterestSavings] = useState<number>(0);
   const [timeSavings, setTimeSavings] = useState<number>(0);
   const [showSchedule, setShowSchedule] = useState(false);
+
+  const handlePartPaymentAdded = () => {
+    // Fire confetti from bottom left corner
+    confetti({
+      particleCount: 300,
+      spread: 70,
+      origin: { x: 0, y: 1 },
+      angle: 45,
+    });
+    
+    // Fire confetti from bottom right corner
+    confetti({
+      particleCount: 300,
+      spread: 70,
+      origin: { x: 1, y: 1 },
+      angle: 135,
+    });
+  };
 
   // Auto-calculate whenever loan details or part payments change
   useEffect(() => {
@@ -114,6 +133,7 @@ const Index = () => {
           loanTenure={loanTenure}
           showSchedule={showSchedule}
           setShowSchedule={setShowSchedule}
+          onPartPaymentAdded={handlePartPaymentAdded}
         />
       </div>
     </div>

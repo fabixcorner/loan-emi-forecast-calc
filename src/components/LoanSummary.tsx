@@ -44,6 +44,7 @@ interface LoanSummaryProps {
   loanTenure: number;
   showSchedule: boolean;
   setShowSchedule: (show: boolean) => void;
+  onPartPaymentAdded?: () => void;
 }
 
 export const LoanSummary = ({ 
@@ -54,7 +55,8 @@ export const LoanSummary = ({
   startYear, 
   loanTenure,
   showSchedule,
-  setShowSchedule
+  setShowSchedule,
+  onPartPaymentAdded
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
@@ -165,6 +167,7 @@ export const LoanSummary = ({
           startYear={startYear}
           loanTenure={loanTenure}
           loanSchedule={calculation.schedule}
+          onPartPaymentAdded={onPartPaymentAdded}
         />
       )}
 
