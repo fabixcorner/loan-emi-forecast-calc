@@ -47,22 +47,22 @@ export const PartPaymentSection = ({
 
   const addPartPayment = () => {
     if (newPayment.amount > 0) {
-      // Calculate end month and year
-      const totalMonths = loanTenure * 12;
-      const endMonth = (startMonth - 1 + totalMonths) % 12;
-      const endYear = startYear + Math.floor((startMonth - 1 + totalMonths) / 12);
+      // Get actual end date from loan schedule (accounts for existing part payments)
+      const lastScheduleEntry = loanSchedule[loanSchedule.length - 1];
+      const endMonth = lastScheduleEntry?.month || startMonth;
+      const endYear = lastScheduleEntry?.year || startYear;
       
       // Convert dates to comparable values (year * 12 + month)
       const paymentDate = newPayment.year * 12 + newPayment.month;
       const startDate = startYear * 12 + startMonth;
       const endDate = endYear * 12 + endMonth;
       
-      // Validate if payment date is within loan schedule
+      // Validate if payment date is within actual remaining loan schedule
       if (paymentDate < startDate || paymentDate > endDate) {
         toast({
           variant: "destructive",
           title: "Invalid Part Payment Date",
-          description: `Part payments are accepted only between ${getMonthName(startMonth)} ${startYear} and ${getMonthName(endMonth)} ${endYear}`,
+          description: `Part payments are accepted only between ${getMonthName(startMonth)} ${startYear} and ${getMonthName(endMonth)} ${endYear}. Loan ends at ${getMonthName(endMonth)} ${endYear} with current part payments.`,
         });
         return;
       }
@@ -72,7 +72,16 @@ export const PartPaymentSection = ({
         (entry) => entry.month === newPayment.month && entry.year === newPayment.year
       );
       
-      if (scheduleEntry && newPayment.amount >= scheduleEntry.remainingBalance) {
+      if (!scheduleEntry) {
+        toast({
+          variant: "destructive",
+          title: "Invalid Part Payment Date",
+          description: `No remaining balance for ${getMonthName(newPayment.month)} ${newPayment.year}. Loan ends at ${getMonthName(endMonth)} ${endYear} with current part payments.`,
+        });
+        return;
+      }
+      
+      if (newPayment.amount >= scheduleEntry.remainingBalance) {
         toast({
           variant: "destructive",
           title: "Invalid Part Payment Amount",
@@ -105,8 +114,9 @@ export const PartPaymentSection = ({
   };
 
   const getYearOptions = () => {
-    const totalMonths = loanTenure * 12;
-    const endYear = startYear + Math.floor((startMonth - 1 + totalMonths) / 12);
+    // Get actual end date from loan schedule (accounts for existing part payments)
+    const lastScheduleEntry = loanSchedule[loanSchedule.length - 1];
+    const endYear = lastScheduleEntry?.year || startYear;
     
     const years = [];
     for (let year = startYear; year <= endYear; year++) {
@@ -116,9 +126,10 @@ export const PartPaymentSection = ({
   };
 
   const getMonthOptions = () => {
-    const totalMonths = loanTenure * 12;
-    const endMonth = (startMonth - 1 + totalMonths) % 12 || 12;
-    const endYear = startYear + Math.floor((startMonth - 1 + totalMonths) / 12);
+    // Get actual end date from loan schedule (accounts for existing part payments)
+    const lastScheduleEntry = loanSchedule[loanSchedule.length - 1];
+    const endMonth = lastScheduleEntry?.month || startMonth;
+    const endYear = lastScheduleEntry?.year || startYear;
     
     const months = [];
     
