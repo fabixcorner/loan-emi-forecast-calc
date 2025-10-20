@@ -55,7 +55,7 @@ export const CalculatorAnimation = ({ isVisible, onComplete }: CalculatorAnimati
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="calculator-animation bg-white rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-center mb-4">
-          <Calculator className="w-4 h-4 text-financial-primary" />
+          <Calculator className="w-8 h-8 text-financial-primary" />
         </div>
         
         {/* Calculator Display */}
