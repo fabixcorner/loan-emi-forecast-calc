@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Calculator } from "lucide-react";
+import calculatorIcon from "@/assets/calculator-animation.png";
 
 interface CalculatorAnimationProps {
   isVisible: boolean;
@@ -55,7 +55,7 @@ export const CalculatorAnimation = ({ isVisible, onComplete }: CalculatorAnimati
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="calculator-animation bg-white rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center justify-center mb-4">
-          <Calculator className="w-8 h-8 text-financial-primary" />
+          <img src={calculatorIcon} alt="Calculator" className="w-8 h-8" />
         </div>
         
         {/* Calculator Display */}
