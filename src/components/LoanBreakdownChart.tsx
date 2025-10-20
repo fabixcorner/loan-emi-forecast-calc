@@ -42,10 +42,12 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
   const totalPartPayments = calculation.schedule.reduce((sum, row) => sum + row.partPayment, 0);
   
   const pieChartData = [
-    { name: 'Principal', value: totalPrincipal, color: 'hsl(var(--financial-success))' },
+    { name: 'Principal', value: totalPrincipal, color: 'hsl(142, 70%, 35%)' },
     { name: 'Interest', value: calculation.totalInterest, color: 'hsl(var(--financial-warning))' },
     { name: 'Part Payments', value: totalPartPayments, color: 'hsl(var(--financial-primary))' }
   ].filter(item => item.value > 0);
+
+  const totalValue = pieChartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <Card className="shadow-[var(--shadow-card)]">
@@ -87,7 +89,10 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
                 })}
               </Pie>
               <Tooltip 
-                formatter={(value: number, name: string) => [formatCurrency(value), name]}
+                formatter={(value: number, name: string) => {
+                  const percentage = ((value / totalValue) * 100).toFixed(1);
+                  return [`${percentage}%`, name];
+                }}
               />
               <Legend 
                 formatter={(value, entry) => (
