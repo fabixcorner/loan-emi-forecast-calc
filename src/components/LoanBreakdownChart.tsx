@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
@@ -22,6 +23,8 @@ interface LoanBreakdownChartProps {
 }
 
 export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownChartProps) => {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
   if (!calculation) {
     return null;
   }
@@ -61,10 +64,27 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
                 outerRadius={120}
                 paddingAngle={5}
                 dataKey="value"
+                onMouseEnter={(_, index) => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
               >
-                {pieChartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
+                {pieChartData.map((entry, index) => {
+                  const isHovered = hoveredIndex === index;
+                  const isOtherHovered = hoveredIndex !== null && hoveredIndex !== index;
+                  
+                  return (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.color}
+                      style={{
+                        filter: isOtherHovered ? 'blur(3px) brightness(0.7)' : isHovered ? 'brightness(1.3)' : 'none',
+                        transition: 'all 0.3s ease',
+                        transform: isHovered ? 'scale(1.05)' : 'scale(1)',
+                        transformOrigin: 'center',
+                        cursor: 'pointer'
+                      }}
+                    />
+                  );
+                })}
               </Pie>
               <Tooltip 
                 formatter={(value: number, name: string) => [formatCurrency(value), name]}
