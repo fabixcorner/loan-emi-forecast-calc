@@ -254,7 +254,7 @@ export const LoanSummary = ({
                     <Bar 
                       yAxisId="left"
                       dataKey="principal" 
-                      fill="hsl(var(--financial-success))" 
+                      fill="hsl(142, 70%, 35%)" 
                       name="Principal"
                       radius={[2, 2, 0, 0]}
                     />
@@ -346,7 +346,7 @@ export const LoanSummary = ({
                         )}
                       </TableCell>
                       <TableCell className="font-bold">{yearData.year}</TableCell>
-                      <TableCell className="text-right font-bold text-financial-success">
+                      <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
                         {formatCurrency(yearData.totalPrincipal)}
                       </TableCell>
                       <TableCell className="text-right font-bold text-financial-primary">
@@ -373,7 +373,7 @@ export const LoanSummary = ({
                         <TableCell className="text-muted-foreground pl-4">
                           {getFullMonthName(row.month)}
                         </TableCell>
-                        <TableCell className="text-right text-financial-success">
+                        <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
                           {formatCurrency(row.principalAmount)}
                         </TableCell>
                         <TableCell className="text-right text-financial-primary">
