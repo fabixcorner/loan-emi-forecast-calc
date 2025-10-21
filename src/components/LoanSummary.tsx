@@ -276,10 +276,10 @@ export const LoanSummary = ({
                       yAxisId="right"
                       type="monotone"
                       dataKey="balance"
-                      stroke="hsl(var(--destructive))"
+                      stroke="hsl(25, 85%, 45%)"
                       strokeWidth={3}
                       name="Remaining Balance"
-                      dot={{ fill: 'hsl(var(--destructive))', strokeWidth: 2, r: 4 }}
+                      dot={{ fill: 'hsl(25, 85%, 45%)', strokeWidth: 2, r: 4 }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
