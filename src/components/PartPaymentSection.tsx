@@ -168,7 +168,7 @@ export const PartPaymentSection = ({
 
   return (
     <Card className="h-fit glass-card shadow-[var(--shadow-card)]">
-      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg">
+      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
         <CardTitle className="text-xl font-semibold">Part Payment Adjustments</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
