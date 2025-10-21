@@ -88,8 +88,8 @@ const Index = () => {
               <img src={calculatorIcon} alt="Calculator" className="w-10 h-10" />
             </div>
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-white">Loan EMI Calculator</h1>
-              <p className="text-sm text-white/80">Plan your loan with precision</p>
+              <h1 className="text-2xl font-bold text-white">Loan EMI Forecast Calculator</h1>
+              <p className="text-sm text-white/80">Plan loan payments. Save on interest. Be Smarter than your lender</p>
             </div>
           </div>
         </div>
