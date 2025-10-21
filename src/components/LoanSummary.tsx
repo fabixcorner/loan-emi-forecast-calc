@@ -61,6 +61,7 @@ export const LoanSummary = ({
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [hoveredElement, setHoveredElement] = useState<string | null>(null);
 
   const toggleYear = (year: number) => {
     const newExpanded = new Set(expandedYears);
@@ -207,13 +208,17 @@ export const LoanSummary = ({
             <CardContent>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={yearlyData.map(year => ({
-                    year: year.year,
-                    principal: year.totalPrincipal,
-                    interest: year.totalInterest,
-                    partPayment: year.totalPartPayment,
-                    balance: year.endBalance
-                  }))} barCategoryGap="10%">
+                  <ComposedChart 
+                    data={yearlyData.map(year => ({
+                      year: year.year,
+                      principal: year.totalPrincipal,
+                      interest: year.totalInterest,
+                      partPayment: year.totalPartPayment,
+                      balance: year.endBalance
+                    }))} 
+                    barCategoryGap="10%"
+                    onMouseLeave={() => setHoveredElement(null)}
+                  >
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis 
                       dataKey="year" 
@@ -257,6 +262,13 @@ export const LoanSummary = ({
                       fill="hsl(142, 70%, 35%)" 
                       name="Principal"
                       radius={[2, 2, 0, 0]}
+                      onMouseEnter={() => setHoveredElement('principal')}
+                      style={{
+                        opacity: hoveredElement === null || hoveredElement === 'principal' ? 1 : 0.3,
+                        filter: hoveredElement === 'principal' ? 'brightness(1.3)' : 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
                     />
                     <Bar 
                       yAxisId="left"
@@ -264,6 +276,13 @@ export const LoanSummary = ({
                       fill="hsl(var(--destructive))" 
                       name="Interest"
                       radius={[2, 2, 0, 0]}
+                      onMouseEnter={() => setHoveredElement('interest')}
+                      style={{
+                        opacity: hoveredElement === null || hoveredElement === 'interest' ? 1 : 0.3,
+                        filter: hoveredElement === 'interest' ? 'brightness(1.3)' : 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
                     />
                     <Bar 
                       yAxisId="left"
@@ -271,6 +290,13 @@ export const LoanSummary = ({
                       fill="hsl(var(--financial-primary))" 
                       name="Part Payment"
                       radius={[2, 2, 0, 0]}
+                      onMouseEnter={() => setHoveredElement('partPayment')}
+                      style={{
+                        opacity: hoveredElement === null || hoveredElement === 'partPayment' ? 1 : 0.3,
+                        filter: hoveredElement === 'partPayment' ? 'brightness(1.3)' : 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
                     />
                     <Line
                       yAxisId="right"
@@ -280,6 +306,13 @@ export const LoanSummary = ({
                       strokeWidth={3}
                       name="Remaining Balance"
                       dot={{ fill: 'hsl(25, 85%, 45%)', strokeWidth: 2, r: 4 }}
+                      onMouseEnter={() => setHoveredElement('balance')}
+                      style={{
+                        opacity: hoveredElement === null || hoveredElement === 'balance' ? 1 : 0.3,
+                        filter: hoveredElement === 'balance' ? 'brightness(1.3) drop-shadow(0 0 8px hsl(25, 85%, 45%))' : 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
