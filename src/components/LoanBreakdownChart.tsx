@@ -43,7 +43,7 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
   
   const pieChartData = [
     { name: 'Principal', value: totalPrincipal, color: 'hsl(142, 70%, 35%)' },
-    { name: 'Interest', value: calculation.totalInterest, color: 'hsl(var(--financial-warning))' },
+    { name: 'Interest', value: calculation.totalInterest, color: 'hsl(var(--destructive))' },
     { name: 'Part Payments', value: totalPartPayments, color: 'hsl(var(--financial-primary))' }
   ].filter(item => item.value > 0);
 

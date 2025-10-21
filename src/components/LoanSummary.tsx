@@ -261,7 +261,7 @@ export const LoanSummary = ({
                     <Bar 
                       yAxisId="left"
                       dataKey="interest" 
-                      fill="hsl(var(--financial-warning))" 
+                      fill="hsl(var(--destructive))" 
                       name="Interest"
                       radius={[2, 2, 0, 0]}
                     />
@@ -352,7 +352,7 @@ export const LoanSummary = ({
                       <TableCell className="text-right font-bold text-financial-primary">
                         {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
                       </TableCell>
-                      <TableCell className="text-right font-bold text-financial-warning">
+                      <TableCell className="text-right font-bold text-destructive">
                         {formatCurrency(yearData.totalInterest)}
                       </TableCell>
                       <TableCell className="text-right font-bold">
@@ -379,7 +379,7 @@ export const LoanSummary = ({
                         <TableCell className="text-right text-financial-primary">
                           {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
                         </TableCell>
-                        <TableCell className="text-right text-financial-warning">
+                        <TableCell className="text-right text-destructive">
                           {formatCurrency(row.interestAmount)}
                         </TableCell>
                         <TableCell className="text-right">
