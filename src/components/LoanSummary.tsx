@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Minus, BarChart3, CreditCard, Download } from "lucide-react";
+import { Plus, Minus, BarChart3, CreditCard, Download, Share2 } from "lucide-react";
 import { useState } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { CalculatorAnimation } from "@/components/CalculatorAnimation";
@@ -45,6 +45,8 @@ interface LoanSummaryProps {
   showSchedule: boolean;
   setShowSchedule: (show: boolean) => void;
   onPartPaymentAdded?: () => void;
+  loanAmount: number;
+  interestRate: number;
 }
 
 export const LoanSummary = ({ 
@@ -56,12 +58,45 @@ export const LoanSummary = ({
   loanTenure,
   showSchedule,
   setShowSchedule,
-  onPartPaymentAdded
+  onPartPaymentAdded,
+  loanAmount,
+  interestRate
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
+
+  const handleShare = async () => {
+    const params = new URLSearchParams({
+      amount: loanAmount.toString(),
+      rate: interestRate.toString(),
+      tenure: loanTenure.toString(),
+      startMonth: startMonth.toString(),
+      startYear: startYear.toString(),
+    });
+
+    if (partPayments.length > 0) {
+      params.set('partPayments', JSON.stringify(partPayments));
+    }
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'EMI Calculator Results',
+          text: `Check out my loan calculation: EMI ₹${calculation?.emi.toLocaleString('en-IN')}`,
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Link copied to clipboard!');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
 
   const toggleYear = (year: number) => {
     const newExpanded = new Set(expandedYears);
@@ -324,28 +359,39 @@ export const LoanSummary = ({
           <Card className="shadow-[var(--shadow-card)]">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-lg font-semibold">EMI Schedule</CardTitle>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Download className="h-4 w-4" />
-                Download
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
-                Excel (.xlsx)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
-                PDF (.pdf)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
-                JSON (.json)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
-                CSV (.csv)
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Download className="h-4 w-4" />
+                      Download
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                      Excel (.xlsx)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                      PDF (.pdf)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                      JSON (.json)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                      CSV (.csv)
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
         </CardHeader>
         <CardContent>
           <div className="max-h-96 overflow-y-auto border rounded-md">

@@ -135,6 +135,8 @@ const Index = () => {
           showSchedule={showSchedule}
           setShowSchedule={setShowSchedule}
           onPartPaymentAdded={handlePartPaymentAdded}
+          loanAmount={loanAmount}
+          interestRate={interestRate}
         />
       </div>
     </div>
