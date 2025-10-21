@@ -140,7 +140,7 @@ export const LoanInputSection = ({
                 onValueChange={(value) => setLoanAmount(value[0])}
                 max={30000000}
                 min={100000}
-                step={100000}
+                step={50000}
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
