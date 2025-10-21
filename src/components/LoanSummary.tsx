@@ -358,7 +358,7 @@ export const LoanSummary = ({
                       <TableCell className="text-right font-bold">
                         {formatCurrency(yearData.totalEmi)}
                       </TableCell>
-                      <TableCell className="text-right font-bold">
+                      <TableCell className="text-right font-bold" style={{ color: 'hsl(25, 85%, 45%)' }}>
                         {formatCurrency(yearData.endBalance)}
                       </TableCell>
                       <TableCell className="text-right font-bold">
@@ -385,7 +385,7 @@ export const LoanSummary = ({
                         <TableCell className="text-right">
                           {formatCurrency(row.emiAmount)}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right" style={{ color: 'hsl(25, 85%, 45%)' }}>
                           {formatCurrency(row.remainingBalance)}
                         </TableCell>
                         <TableCell className="text-right">
