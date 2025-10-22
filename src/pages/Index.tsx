@@ -42,6 +42,34 @@ const Index = () => {
     });
   };
 
+  // Load data from URL parameters on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const amount = params.get('amount');
+    const rate = params.get('rate');
+    const tenure = params.get('tenure');
+    const month = params.get('startMonth');
+    const year = params.get('startYear');
+    const payments = params.get('partPayments');
+    const view = params.get('view');
+
+    if (amount) setLoanAmount(Number(amount));
+    if (rate) setInterestRate(Number(rate));
+    if (tenure) setLoanTenure(Number(tenure));
+    if (month) setStartMonth(Number(month));
+    if (year) setStartYear(Number(year));
+    if (payments) {
+      try {
+        setPartPayments(JSON.parse(payments));
+      } catch (e) {
+        console.error('Error parsing part payments:', e);
+      }
+    }
+    if (view === 'schedule') {
+      setShowSchedule(true);
+    }
+  }, []);
+
   // Auto-calculate whenever loan details or part payments change
   useEffect(() => {
     // Calculate with part payments
@@ -78,6 +106,8 @@ const Index = () => {
     }
   }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
 
+  const isScheduleView = new URLSearchParams(window.location.search).get('view') === 'schedule';
+
   return (
     <div className="min-h-screen glass-background">
       {/* Header */}
@@ -88,56 +118,89 @@ const Index = () => {
               <img src={calculatorIcon} alt="Calculator" className="w-10 h-10" />
             </div>
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-white">Loan EMI Forecast Calculator</h1>
-              <p className="text-sm text-white/80">Plan loan payments. Save on interest. Be Smarter than your lender</p>
+              <h1 className="text-2xl font-bold text-white">
+                {isScheduleView ? 'Shared EMI Schedule' : 'Loan EMI Forecast Calculator'}
+              </h1>
+              <p className="text-sm text-white/80">
+                {isScheduleView ? 'View detailed loan repayment schedule' : 'Plan loan payments. Save on interest. Be Smarter than your lender'}
+              </p>
             </div>
           </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Left Section - Loan Inputs */}
-            <LoanInputSection
-              loanAmount={loanAmount}
-              setLoanAmount={setLoanAmount}
-              interestRate={interestRate}
-              setInterestRate={setInterestRate}
-              loanTenure={loanTenure}
-              setLoanTenure={setLoanTenure}
+        {isScheduleView ? (
+          /* Schedule-only view for shared links */
+          <>
+            <div className="mb-8">
+              <LoanSummaryCards 
+                calculation={calculation} 
+                interestSavings={interestSavings}
+                timeSavings={timeSavings}
+              />
+            </div>
+            <LoanSummary 
+              calculation={calculation}
+              partPayments={partPayments}
+              setPartPayments={setPartPayments}
               startMonth={startMonth}
-              setStartMonth={setStartMonth}
               startYear={startYear}
-              setStartYear={setStartYear}
+              loanTenure={loanTenure}
+              showSchedule={showSchedule}
+              setShowSchedule={setShowSchedule}
+              onPartPaymentAdded={handlePartPaymentAdded}
+              loanAmount={loanAmount}
+              interestRate={interestRate}
             />
+          </>
+        ) : (
+          /* Full calculator view */
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Left Section - Loan Inputs */}
+                <LoanInputSection
+                  loanAmount={loanAmount}
+                  setLoanAmount={setLoanAmount}
+                  interestRate={interestRate}
+                  setInterestRate={setInterestRate}
+                  loanTenure={loanTenure}
+                  setLoanTenure={setLoanTenure}
+                  startMonth={startMonth}
+                  setStartMonth={setStartMonth}
+                  startYear={startYear}
+                  setStartYear={setStartYear}
+                />
 
-          {/* Right Section - Loan Breakdown Chart */}
-          <LoanBreakdownChart calculation={calculation} showSchedule={showSchedule} />
-        </div>
+              {/* Right Section - Loan Breakdown Chart */}
+              <LoanBreakdownChart calculation={calculation} showSchedule={showSchedule} />
+            </div>
 
-        {/* Loan Summary Cards */}
-        <div className="mb-8">
-          <LoanSummaryCards 
-            calculation={calculation} 
-            interestSavings={interestSavings}
-            timeSavings={timeSavings}
-          />
-        </div>
+            {/* Loan Summary Cards */}
+            <div className="mb-8">
+              <LoanSummaryCards 
+                calculation={calculation} 
+                interestSavings={interestSavings}
+                timeSavings={timeSavings}
+              />
+            </div>
 
-        {/* Loan Summary */}
-        <LoanSummary 
-          calculation={calculation}
-          partPayments={partPayments}
-          setPartPayments={setPartPayments}
-          startMonth={startMonth}
-          startYear={startYear}
-          loanTenure={loanTenure}
-          showSchedule={showSchedule}
-          setShowSchedule={setShowSchedule}
-          onPartPaymentAdded={handlePartPaymentAdded}
-          loanAmount={loanAmount}
-          interestRate={interestRate}
-        />
+            {/* Loan Summary */}
+            <LoanSummary 
+              calculation={calculation}
+              partPayments={partPayments}
+              setPartPayments={setPartPayments}
+              startMonth={startMonth}
+              startYear={startYear}
+              loanTenure={loanTenure}
+              showSchedule={showSchedule}
+              setShowSchedule={setShowSchedule}
+              onPartPaymentAdded={handlePartPaymentAdded}
+              loanAmount={loanAmount}
+              interestRate={interestRate}
+            />
+          </>
+        )}
       </div>
     </div>
   );

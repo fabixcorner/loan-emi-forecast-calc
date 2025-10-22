@@ -69,6 +69,7 @@ export const LoanSummary = ({
 
   const handleShare = async () => {
     const params = new URLSearchParams({
+      view: 'schedule',
       amount: loanAmount.toString(),
       rate: interestRate.toString(),
       tenure: loanTenure.toString(),
@@ -85,13 +86,13 @@ export const LoanSummary = ({
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'EMI Calculator Results',
-          text: `Check out my loan calculation: EMI ₹${calculation?.emi.toLocaleString('en-IN')}`,
+          title: 'EMI Schedule',
+          text: `Check out this EMI schedule: EMI ₹${calculation?.emi.toLocaleString('en-IN')}`,
           url: shareUrl,
         });
       } else {
         await navigator.clipboard.writeText(shareUrl);
-        alert('Link copied to clipboard!');
+        alert('Schedule link copied to clipboard!');
       }
     } catch (error) {
       console.error('Error sharing:', error);
