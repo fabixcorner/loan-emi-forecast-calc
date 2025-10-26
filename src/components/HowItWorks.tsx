@@ -89,15 +89,15 @@ export const HowItWorks = () => {
 
       {isOpen && (
         <>
-          {/* Backdrop blur - covers entire page */}
+          {/* Backdrop blur - covers entire page and prevents interaction */}
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 animate-in fade-in"
+            className="fixed inset-0 bg-black/70 backdrop-blur-lg z-[100] animate-in fade-in pointer-events-auto"
             onClick={() => setIsOpen(false)}
           />
           
-          {/* Questions overlay - centered on screen */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="glass-card p-6 space-y-4 max-w-2xl w-full animate-in zoom-in-95 fade-in duration-300">
+          {/* Questions overlay - positioned below header */}
+          <div className="fixed left-0 right-0 top-24 z-[101] flex justify-center px-4 pb-4 overflow-y-auto max-h-[calc(100vh-6rem)]">
+            <div className="glass-card p-6 space-y-4 max-w-2xl w-full animate-in slide-in-from-top fade-in duration-300">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-2xl font-bold text-white">How it works?</h3>
                 <Button
