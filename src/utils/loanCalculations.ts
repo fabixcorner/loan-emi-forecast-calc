@@ -57,7 +57,8 @@ export const calculateLoanEMI = (
     } else {
       let currentDate = new Date(startDate);
       const monthIncrement = payment.frequency === 'monthly' ? 1 : 
-                            payment.frequency === 'quarterly' ? 3 : 12;
+                            payment.frequency === 'quarterly' ? 3 :
+                            payment.frequency === 'half-yearly' ? 6 : 12;
       
       while (currentDate <= endDate) {
         expandedPartPayments.push({

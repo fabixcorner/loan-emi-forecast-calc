@@ -12,7 +12,7 @@ export interface PartPayment {
   month: number;
   year: number;
   amount: number;
-  frequency: 'one-time' | 'monthly' | 'quarterly' | 'yearly';
+  frequency: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly';
 }
 
 interface PartPaymentSectionProps {
@@ -234,7 +234,7 @@ export const PartPaymentSection = ({
                 <Label className="text-sm text-muted-foreground">Frequency</Label>
                 <Select 
                   value={newPayment.frequency} 
-                  onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
+                  onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
                 >
                   <SelectTrigger className="h-9">
                     <SelectValue />
@@ -243,6 +243,7 @@ export const PartPaymentSection = ({
                     <SelectItem value="one-time">One-time</SelectItem>
                     <SelectItem value="monthly">Monthly</SelectItem>
                     <SelectItem value="quarterly">Quarterly</SelectItem>
+                    <SelectItem value="half-yearly">Half-Yearly</SelectItem>
                     <SelectItem value="yearly">Yearly</SelectItem>
                   </SelectContent>
                 </Select>
@@ -274,7 +275,7 @@ export const PartPaymentSection = ({
                         {getMonthName(payment.month)} {payment.year}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {formatAmount(payment.amount)} • {payment.frequency === 'one-time' ? 'One-time' : payment.frequency.charAt(0).toUpperCase() + payment.frequency.slice(1)}
+                        {formatAmount(payment.amount)} • {payment.frequency === 'one-time' ? 'One-time' : payment.frequency === 'half-yearly' ? 'Half-Yearly' : payment.frequency.charAt(0).toUpperCase() + payment.frequency.slice(1)}
                       </div>
                     </div>
                     <Button
