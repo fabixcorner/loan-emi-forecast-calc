@@ -113,11 +113,11 @@ const Index = () => {
       {/* Header */}
       <header className="glass-card shadow-sm border-b border-financial-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-center space-x-3">
+          <div className="flex items-center justify-start space-x-3">
             <div className="p-2 bg-gradient-to-r from-financial-primary to-financial-success rounded-lg">
               <img src={calculatorIcon} alt="Calculator" className="w-10 h-10" />
             </div>
-            <div className="text-center">
+            <div className="text-left">
               <h1 className="text-2xl font-bold text-white">
                 {isScheduleView ? 'Shared EMI Schedule' : 'Loan Forecast Calculator'}
               </h1>
