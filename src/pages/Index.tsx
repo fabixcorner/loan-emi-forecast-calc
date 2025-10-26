@@ -119,10 +119,10 @@ const Index = () => {
             </div>
             <div className="text-center">
               <h1 className="text-2xl font-bold text-white">
-                {isScheduleView ? 'Shared EMI Schedule' : 'Loan EMI Forecast Calculator'}
+                {isScheduleView ? 'Shared EMI Schedule' : 'Loan Forecast Calculator'}
               </h1>
               <p className="text-sm text-white/80">
-                {isScheduleView ? 'View detailed loan repayment schedule' : 'Plan loan payments. Save on interest. Be Smarter than your lender'}
+                {isScheduleView ? 'View detailed loan repayment schedule' : 'Plan your loan payments. Save on interest. Be Smarter than your lender.'}
               </p>
             </div>
           </div>
