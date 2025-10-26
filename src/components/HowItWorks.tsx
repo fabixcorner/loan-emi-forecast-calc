@@ -89,49 +89,51 @@ export const HowItWorks = () => {
 
       {isOpen && (
         <>
-          {/* Backdrop blur */}
+          {/* Backdrop blur - covers entire page */}
           <div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-in fade-in"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 animate-in fade-in"
             onClick={() => setIsOpen(false)}
           />
           
-          {/* Questions overlay - animates from bottom-left (west-south) */}
-          <div className="fixed bottom-8 left-8 z-50 animate-in slide-in-from-bottom-8 slide-in-from-left-8 duration-500">
-            <div className="glass-card p-6 space-y-4 max-w-md">
+          {/* Questions overlay - centered on screen */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="glass-card p-6 space-y-4 max-w-2xl w-full animate-in zoom-in-95 fade-in duration-300">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-white">How it works?</h3>
+                <h3 className="text-2xl font-bold text-white">How it works?</h3>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsOpen(false)}
                   className="text-white hover:bg-white/10"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-5 w-5" />
                 </Button>
               </div>
               
-              {questions.map((question, index) => {
-                const Icon = question.icon;
-                return (
-                  <button
-                    key={question.id}
-                    onClick={() => handleQuestionClick(question)}
-                    className="w-full text-left p-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:border-financial-primary/50 hover:scale-[1.02] group animate-in slide-in-from-left duration-300"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-financial-primary to-financial-success">
-                        <Icon className="h-5 w-5 text-white" />
+              <div className="grid gap-4">
+                {questions.map((question, index) => {
+                  const Icon = question.icon;
+                  return (
+                    <button
+                      key={question.id}
+                      onClick={() => handleQuestionClick(question)}
+                      className="w-full text-left p-5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:border-financial-primary/50 hover:scale-[1.02] group animate-in slide-in-from-bottom duration-300"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <div className="flex items-start space-x-4">
+                        <div className="p-3 rounded-lg bg-gradient-to-br from-financial-primary to-financial-success flex-shrink-0">
+                          <Icon className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-base font-medium text-white group-hover:text-financial-primary transition-colors leading-relaxed">
+                            {question.title}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-white group-hover:text-financial-primary transition-colors">
-                          {question.title}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </>
