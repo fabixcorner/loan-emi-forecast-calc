@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { HelpCircle, X, Calendar, TrendingDown, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,18 +88,18 @@ export const HowItWorks = () => {
         How it works?
       </Button>
 
-      {isOpen && (
+      {isOpen && createPortal(
         <>
           {/* Backdrop blur - covers entire page and prevents interaction */}
           <div 
             className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] animate-in fade-in"
             onClick={() => setIsOpen(false)}
-            style={{ pointerEvents: 'all' }}
+            style={{ pointerEvents: 'auto' }}
           />
           
           {/* Questions overlay - positioned below header */}
           <div className="fixed left-0 right-0 top-24 z-[10000] flex justify-center px-4 pb-4 overflow-y-auto max-h-[calc(100vh-6rem)]" style={{ pointerEvents: 'none' }}>
-            <div className="glass-card p-6 space-y-4 max-w-2xl w-full animate-in slide-in-from-top fade-in duration-300" style={{ pointerEvents: 'all' }}>
+            <div className="glass-card p-6 space-y-4 max-w-2xl w-full animate-in slide-in-from-top fade-in duration-300" style={{ pointerEvents: 'auto' }}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-2xl font-bold text-white">How it works?</h3>
                 <Button
@@ -137,7 +138,8 @@ export const HowItWorks = () => {
               </div>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
 
       {/* Question detail dialog */}
