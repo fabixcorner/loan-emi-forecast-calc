@@ -1,14 +1,7 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { HelpCircle, X, Calendar, TrendingDown, Wallet } from "lucide-react";
+import { HelpCircle, X, Calendar, TrendingDown, Wallet, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 interface Question {
   id: string;
@@ -71,9 +64,16 @@ const questions: Question[] = [
 export const HowItWorks = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   const handleQuestionClick = (question: Question) => {
     setSelectedQuestion(question);
+    setIsFlipped(true);
+  };
+
+  const handleBack = () => {
+    setIsFlipped(false);
+    setTimeout(() => setSelectedQuestion(null), 300);
   };
 
   return (
@@ -93,93 +93,151 @@ export const HowItWorks = () => {
           {/* Backdrop blur - covers entire page and prevents interaction */}
           <div 
             className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] animate-in fade-in"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+              setIsFlipped(false);
+              setSelectedQuestion(null);
+            }}
             style={{ pointerEvents: 'auto' }}
           />
           
-          {/* Questions overlay - positioned below header */}
+          {/* Flip card container */}
           <div className="fixed left-0 right-0 top-24 z-[10000] flex justify-center px-4 pb-4 overflow-y-auto max-h-[calc(100vh-6rem)]" style={{ pointerEvents: 'none' }}>
-            <div className="glass-card p-6 space-y-4 max-w-2xl w-full animate-in slide-in-from-top fade-in duration-300" style={{ pointerEvents: 'auto' }}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold text-white">How it works?</h3>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                  className="text-white hover:bg-white/10"
+            <div 
+              className="relative max-w-2xl w-full h-[600px]"
+              style={{ 
+                pointerEvents: 'auto',
+                perspective: '1000px'
+              }}
+            >
+              <div 
+                className={`relative w-full h-full transition-transform duration-700 ease-in-out`}
+                style={{
+                  transformStyle: 'preserve-3d',
+                  transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                }}
+              >
+                {/* Front - Questions List */}
+                <div 
+                  className="absolute inset-0 glass-card p-6 space-y-4 animate-in slide-in-from-top fade-in duration-300"
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden'
+                  }}
                 >
-                  <X className="h-5 w-5" />
-                </Button>
-              </div>
-              
-              <div className="grid gap-4">
-                {questions.map((question, index) => {
-                  const Icon = question.icon;
-                  return (
-                    <button
-                      key={question.id}
-                      onClick={() => handleQuestionClick(question)}
-                      className="w-full text-left p-5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:border-financial-primary/50 hover:scale-[1.02] group animate-in slide-in-from-bottom duration-300"
-                      style={{ animationDelay: `${index * 100}ms` }}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-2xl font-bold text-white">How it works?</h3>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setIsFlipped(false);
+                        setSelectedQuestion(null);
+                      }}
+                      className="text-white hover:bg-white/10"
                     >
-                      <div className="flex items-start space-x-4">
-                        <div className="p-3 rounded-lg bg-gradient-to-br from-financial-primary to-financial-success flex-shrink-0">
-                          <Icon className="h-6 w-6 text-white" />
+                      <X className="h-5 w-5" />
+                    </Button>
+                  </div>
+                  
+                  <div className="grid gap-4 overflow-y-auto max-h-[500px] pr-2">
+                    {questions.map((question, index) => {
+                      const Icon = question.icon;
+                      return (
+                        <button
+                          key={question.id}
+                          onClick={() => handleQuestionClick(question)}
+                          className="w-full text-left p-5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:border-financial-primary/50 hover:scale-[1.02] group animate-in slide-in-from-bottom duration-300"
+                          style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                          <div className="flex items-start space-x-4">
+                            <div className="p-3 rounded-lg bg-gradient-to-br from-financial-primary to-financial-success flex-shrink-0">
+                              <Icon className="h-6 w-6 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-base font-medium text-white group-hover:text-financial-primary transition-colors leading-relaxed">
+                                {question.title}
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Back - Answer Details */}
+                <div 
+                  className="absolute inset-0 glass-card p-6 overflow-y-auto"
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
+                    transform: 'rotateY(180deg)'
+                  }}
+                >
+                  {selectedQuestion && (
+                    <>
+                      <div className="flex items-center justify-between mb-4">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleBack}
+                          className="text-white hover:bg-white/10"
+                        >
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Back to questions
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setIsOpen(false);
+                            setIsFlipped(false);
+                            setSelectedQuestion(null);
+                          }}
+                          className="text-white hover:bg-white/10"
+                        >
+                          <X className="h-5 w-5" />
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center space-x-3 mb-6">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-financial-primary to-financial-success">
+                          <selectedQuestion.icon className="h-6 w-6 text-white" />
                         </div>
-                        <div className="flex-1">
-                          <p className="text-base font-medium text-white group-hover:text-financial-primary transition-colors leading-relaxed">
-                            {question.title}
-                          </p>
+                        <h3 className="text-xl font-bold text-white">{selectedQuestion.title}</h3>
+                      </div>
+                      
+                      <div className="space-y-6">
+                        <div>
+                          <h4 className="text-sm font-semibold text-financial-primary mb-3">Step-by-step guide:</h4>
+                          <ol className="space-y-3">
+                            {selectedQuestion.content.steps.map((step, index) => (
+                              <li key={index} className="flex items-start space-x-3">
+                                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-financial-primary to-financial-success flex items-center justify-center text-xs font-bold text-white">
+                                  {index + 1}
+                                </span>
+                                <span className="text-sm text-white/80">{step}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                        
+                        <div className="p-4 rounded-lg bg-white/5 border border-financial-border">
+                          <h4 className="text-sm font-semibold text-financial-success mb-2">💡 Pro Tip:</h4>
+                          <p className="text-sm text-white/80">{selectedQuestion.content.visual}</p>
                         </div>
                       </div>
-                    </button>
-                  );
-                })}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </>,
         document.body
       )}
-
-      {/* Question detail dialog */}
-      <Dialog open={!!selectedQuestion} onOpenChange={() => setSelectedQuestion(null)}>
-        <DialogContent className="max-w-2xl glass-card border-financial-border">
-          {selectedQuestion && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center space-x-3 mb-2">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-financial-primary to-financial-success">
-                    <selectedQuestion.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <DialogTitle className="text-white">{selectedQuestion.title}</DialogTitle>
-                </div>
-              </DialogHeader>
-              
-              <div className="space-y-6 mt-4">
-                <div>
-                  <h4 className="text-sm font-semibold text-financial-primary mb-3">Step-by-step guide:</h4>
-                  <ol className="space-y-3">
-                    {selectedQuestion.content.steps.map((step, index) => (
-                      <li key={index} className="flex items-start space-x-3">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-financial-primary to-financial-success flex items-center justify-center text-xs font-bold text-white">
-                          {index + 1}
-                        </span>
-                        <span className="text-sm text-white/80">{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-                
-                <div className="p-4 rounded-lg bg-white/5 border border-financial-border">
-                  <h4 className="text-sm font-semibold text-financial-success mb-2">💡 Pro Tip:</h4>
-                  <p className="text-sm text-white/80">{selectedQuestion.content.visual}</p>
-                </div>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
