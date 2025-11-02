@@ -29,9 +29,9 @@ const Index = () => {
     // Explosion confetti around Interest Saved card
     confetti({
       particleCount: 150,
-      spread: 360,
+      spread: 180,
       origin: { x: 0.65, y: 0.35 },
-      startVelocity: 30,
+      startVelocity: 24,
       ticks: 60,
       gravity: 1.2,
       scalar: 1.2,
@@ -40,9 +40,9 @@ const Index = () => {
     // Explosion confetti around Time Saved card
     confetti({
       particleCount: 150,
-      spread: 360,
+      spread: 180,
       origin: { x: 0.85, y: 0.35 },
-      startVelocity: 30,
+      startVelocity: 24,
       ticks: 60,
       gravity: 1.2,
       scalar: 1.2,
