@@ -26,20 +26,26 @@ const Index = () => {
   const [showSchedule, setShowSchedule] = useState(false);
 
   const handlePartPaymentAdded = () => {
-    // Fire confetti from bottom left corner
+    // Explosion confetti around Interest Saved card
     confetti({
-      particleCount: 300,
-      spread: 70,
-      origin: { x: 0, y: 1 },
-      angle: 45,
+      particleCount: 150,
+      spread: 360,
+      origin: { x: 0.65, y: 0.35 },
+      startVelocity: 30,
+      ticks: 60,
+      gravity: 1.2,
+      scalar: 1.2,
     });
     
-    // Fire confetti from bottom right corner
+    // Explosion confetti around Time Saved card
     confetti({
-      particleCount: 300,
-      spread: 70,
-      origin: { x: 1, y: 1 },
-      angle: 135,
+      particleCount: 150,
+      spread: 360,
+      origin: { x: 0.85, y: 0.35 },
+      startVelocity: 30,
+      ticks: 60,
+      gravity: 1.2,
+      scalar: 1.2,
     });
   };
 
