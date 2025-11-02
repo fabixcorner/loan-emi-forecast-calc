@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
@@ -394,28 +395,12 @@ export const LoanSummary = ({
               </div>
         </CardHeader>
         <CardContent>
-          {/* NOTE: changed overflow to allow both X and Y scrolling (needed for sticky left columns when horizontally scrolled) */}
-          <div className="max-h-96 overflow-auto border rounded-md">
+          <div className="max-h-96 overflow-y-auto border rounded-md">
             <Table>
-              {/* Header stays sticky at top */}
               <TableHeader className="sticky top-0 z-30 bg-card shadow-md">
                 <TableRow className="border-b">
-                  {/* Expand/indicator column - sticky left */}
-                  <TableHead
-                    className="w-12 bg-card font-bold uppercase"
-                    style={{ position: 'sticky', top: 0, left: 0, zIndex: 50, background: 'var(--card)' }}
-                  >
-                    ×
-                  </TableHead>
-
-                  {/* Year column - sticky left (offset by width of previous column) */}
-                  <TableHead
-                    className="w-20 bg-card font-bold uppercase"
-                    style={{ position: 'sticky', top: 0, left: '3rem', zIndex: 45, background: 'var(--card)' }}
-                  >
-                    Year
-                  </TableHead>
-
+                  <TableHead className="w-12 bg-card font-bold uppercase sticky top-0 z-30">×</TableHead>
+                  <TableHead className="w-20 bg-card font-bold uppercase sticky top-0 z-30">Year</TableHead>
                   <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">Principal</TableHead>
                   <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">Part Payment</TableHead>
                   <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">Interest</TableHead>
@@ -433,26 +418,14 @@ export const LoanSummary = ({
                       className="bg-muted/50 hover:bg-muted/70 cursor-pointer border-b-2"
                       onClick={() => toggleYear(yearData.year)}
                     >
-                      {/* Expand cell - keep sticky so expand icon remains visible when scrolling horizontally */}
-                      <TableCell
-                        className="text-center"
-                        style={{ position: 'sticky', left: 0, zIndex: 40, background: 'var(--muted)' }}
-                      >
+                      <TableCell className="text-center">
                         {expandedYears.has(yearData.year) ? (
                           <Minus className="w-4 h-4 text-muted-foreground" />
                         ) : (
                           <Plus className="w-4 h-4 text-muted-foreground" />
                         )}
                       </TableCell>
-
-                      {/* Year cell - sticky with left offset matching header */}
-                      <TableCell
-                        className="font-bold"
-                        style={{ position: 'sticky', left: '3rem', zIndex: 38, background: 'var(--muted)' }}
-                      >
-                        {yearData.year}
-                      </TableCell>
-
+                      <TableCell className="font-bold">{yearData.year}</TableCell>
                       <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
                         {formatCurrency(yearData.totalPrincipal)}
                       </TableCell>
@@ -476,19 +449,10 @@ export const LoanSummary = ({
                     {/* Monthly Detail Rows */}
                     {expandedYears.has(yearData.year) && yearData.months.map((row, monthIndex) => (
                       <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background">
-                        {/* Empty expand cell - kept sticky to align with header */}
-                        <TableCell
-                          style={{ position: 'sticky', left: 0, zIndex: 30, background: 'var(--background)' }}
-                        ></TableCell>
-
-                        {/* Month name - sticky so month always visible next to expand column when horizontally scrolled */}
-                        <TableCell
-                          className="text-muted-foreground pl-4"
-                          style={{ position: 'sticky', left: '3rem', zIndex: 28, background: 'var(--background)' }}
-                        >
+                        <TableCell></TableCell>
+                        <TableCell className="text-muted-foreground pl-4">
                           {getFullMonthName(row.month)}
                         </TableCell>
-
                         <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
                           {formatCurrency(row.principalAmount)}
                         </TableCell>
