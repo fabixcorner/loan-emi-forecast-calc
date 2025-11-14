@@ -47,6 +47,8 @@ interface LoanSummaryProps {
   onPartPaymentAdded?: () => void;
   loanAmount: number;
   interestRate: number;
+  partPaymentStrategy: 'reduce-tenure' | 'reduce-emi';
+  setPartPaymentStrategy: (strategy: 'reduce-tenure' | 'reduce-emi') => void;
 }
 
 export const LoanSummary = ({ 
@@ -60,7 +62,9 @@ export const LoanSummary = ({
   setShowSchedule,
   onPartPaymentAdded,
   loanAmount,
-  interestRate
+  interestRate,
+  partPaymentStrategy,
+  setPartPaymentStrategy
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
@@ -79,6 +83,10 @@ export const LoanSummary = ({
 
     if (partPayments.length > 0) {
       params.set('partPayments', JSON.stringify(partPayments));
+    }
+    
+    if (partPaymentStrategy !== 'reduce-tenure') {
+      params.set('strategy', partPaymentStrategy);
     }
 
     const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
@@ -205,6 +213,8 @@ export const LoanSummary = ({
           loanTenure={loanTenure}
           loanSchedule={calculation.schedule}
           onPartPaymentAdded={onPartPaymentAdded}
+          partPaymentStrategy={partPaymentStrategy}
+          setPartPaymentStrategy={setPartPaymentStrategy}
         />
       )}
 
@@ -378,16 +388,16 @@ export const LoanSummary = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPaymentStrategy)}>
                       Excel (.xlsx)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPaymentStrategy)}>
                       PDF (.pdf)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPaymentStrategy)}>
                       JSON (.json)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount)}>
+                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPaymentStrategy)}>
                       CSV (.csv)
                     </DropdownMenuItem>
                   </DropdownMenuContent>
