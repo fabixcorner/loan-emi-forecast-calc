@@ -19,6 +19,7 @@ const Index = () => {
   const [startMonth, setStartMonth] = useState<number>(new Date().getMonth() + 1);
   const [startYear, setStartYear] = useState<number>(new Date().getFullYear());
   const [partPayments, setPartPayments] = useState<PartPayment[]>([]);
+  const [partPaymentStrategy, setPartPaymentStrategy] = useState<'reduce-tenure' | 'reduce-emi'>('reduce-tenure');
   const [calculation, setCalculation] = useState<any>(null);
   const [calculationWithoutPartPayments, setCalculationWithoutPartPayments] = useState<any>(null);
   const [interestSavings, setInterestSavings] = useState<number>(0);
@@ -58,6 +59,7 @@ const Index = () => {
     const month = params.get('startMonth');
     const year = params.get('startYear');
     const payments = params.get('partPayments');
+    const strategy = params.get('strategy');
     const view = params.get('view');
 
     if (amount) setLoanAmount(Number(amount));
@@ -71,6 +73,9 @@ const Index = () => {
       } catch (e) {
         console.error('Error parsing part payments:', e);
       }
+    }
+    if (strategy && (strategy === 'reduce-tenure' || strategy === 'reduce-emi')) {
+      setPartPaymentStrategy(strategy);
     }
     if (view === 'schedule') {
       setShowSchedule(true);
@@ -86,7 +91,8 @@ const Index = () => {
       loanTenure,
       startMonth,
       startYear,
-      partPayments
+      partPayments,
+      partPaymentStrategy
     );
     setCalculation(resultWithPartPayments);
 
@@ -97,7 +103,8 @@ const Index = () => {
       loanTenure,
       startMonth,
       startYear,
-      []
+      [],
+      partPaymentStrategy
     );
     setCalculationWithoutPartPayments(resultWithoutPartPayments);
 
@@ -111,7 +118,7 @@ const Index = () => {
       setInterestSavings(0);
       setTimeSavings(0);
     }
-  }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
+  }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments, partPaymentStrategy]);
 
   const isScheduleView = new URLSearchParams(window.location.search).get('view') === 'schedule';
 
@@ -148,6 +155,7 @@ const Index = () => {
                 calculation={calculation} 
                 interestSavings={interestSavings}
                 timeSavings={timeSavings}
+                partPaymentStrategy={partPaymentStrategy}
               />
             </div>
             <LoanSummary 
@@ -162,6 +170,8 @@ const Index = () => {
               onPartPaymentAdded={handlePartPaymentAdded}
               loanAmount={loanAmount}
               interestRate={interestRate}
+              partPaymentStrategy={partPaymentStrategy}
+              setPartPaymentStrategy={setPartPaymentStrategy}
             />
           </>
         ) : (
@@ -192,6 +202,7 @@ const Index = () => {
                 calculation={calculation} 
                 interestSavings={interestSavings}
                 timeSavings={timeSavings}
+                partPaymentStrategy={partPaymentStrategy}
               />
             </div>
 
@@ -208,6 +219,8 @@ const Index = () => {
               onPartPaymentAdded={handlePartPaymentAdded}
               loanAmount={loanAmount}
               interestRate={interestRate}
+              partPaymentStrategy={partPaymentStrategy}
+              setPartPaymentStrategy={setPartPaymentStrategy}
             />
           </>
         )}

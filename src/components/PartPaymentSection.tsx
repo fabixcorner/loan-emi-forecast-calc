@@ -13,6 +13,7 @@ export interface PartPayment {
   year: number;
   amount: number;
   frequency: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly';
+  strategy?: 'reduce-tenure' | 'reduce-emi';
 }
 
 interface PartPaymentSectionProps {
@@ -27,6 +28,8 @@ interface PartPaymentSectionProps {
     remainingBalance: number;
   }[];
   onPartPaymentAdded?: () => void;
+  partPaymentStrategy: 'reduce-tenure' | 'reduce-emi';
+  setPartPaymentStrategy: (strategy: 'reduce-tenure' | 'reduce-emi') => void;
 }
 
 export const PartPaymentSection = ({
@@ -37,6 +40,8 @@ export const PartPaymentSection = ({
   loanTenure,
   loanSchedule,
   onPartPaymentAdded,
+  partPaymentStrategy,
+  setPartPaymentStrategy,
 }: PartPaymentSectionProps) => {
   const [newPayment, setNewPayment] = useState<Omit<PartPayment, 'id'>>({
     month: new Date().getMonth() + 1,
@@ -172,6 +177,34 @@ export const PartPaymentSection = ({
         <CardTitle className="text-xl font-semibold">Part Payment Adjustments</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
+        {/* Strategy Selection */}
+        <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+          <Label className="text-sm font-semibold text-foreground mb-3 block">Part Payment Strategy</Label>
+          <div className="flex gap-3">
+            <Button
+              variant={partPaymentStrategy === 'reduce-tenure' ? 'default' : 'outline'}
+              onClick={() => setPartPaymentStrategy('reduce-tenure')}
+              className="flex-1"
+              size="sm"
+            >
+              Reduce Tenure
+            </Button>
+            <Button
+              variant={partPaymentStrategy === 'reduce-emi' ? 'default' : 'outline'}
+              onClick={() => setPartPaymentStrategy('reduce-emi')}
+              className="flex-1"
+              size="sm"
+            >
+              Reduce EMI
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {partPaymentStrategy === 'reduce-tenure' 
+              ? 'Keep EMI constant, pay off loan faster' 
+              : 'Keep loan tenure same, reduce monthly EMI'}
+          </p>
+        </div>
+        
         <div className="grid grid-cols-2 gap-6">
           {/* Add New Part Payment */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">

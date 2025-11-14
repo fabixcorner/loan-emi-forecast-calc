@@ -27,7 +27,8 @@ export const calculateLoanEMI = (
   tenureYears: number,
   startMonth: number,
   startYear: number,
-  partPayments: PartPayment[] = []
+  partPayments: PartPayment[] = [],
+  emiReductionStrategy: 'reduce-tenure' | 'reduce-emi' = 'reduce-tenure'
 ): LoanCalculationResult => {
   const monthlyRate = annualRate / 12 / 100;
   const totalMonths = tenureYears * 12;
@@ -81,21 +82,24 @@ export const calculateLoanEMI = (
   let currentDate = new Date(startYear, startMonth - 1, 1);
   let monthCount = 0;
   let principalPaidTotal = 0;
+  let currentEMI = emi; // Track current EMI for reduce-emi strategy
+  const originalEndDate = new Date(startYear, startMonth - 1);
+  originalEndDate.setMonth(originalEndDate.getMonth() + totalMonths);
 
-  while (remainingBalance > 0.01 && monthCount < totalMonths) {
+  while (remainingBalance > 0.01 && (emiReductionStrategy === 'reduce-emi' ? currentDate < originalEndDate : monthCount < totalMonths)) {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1;
     
     // Calculate interest for current month
     const interestAmount = remainingBalance * monthlyRate;
-    let principalAmount = emi - interestAmount;
+    let principalAmount = currentEMI - interestAmount;
     
     // Check if there are part payments this month (sum all payments for this month)
     const partPaymentsThisMonth = sortedPartPayments.filter(
       pp => pp.year === currentYear && pp.month === currentMonth
     );
     
-    let emiForThisMonth = emi;
+    let emiForThisMonth = currentEMI;
     let partPaymentAmount = 0;
     
     if (partPaymentsThisMonth.length > 0) {
@@ -113,6 +117,21 @@ export const calculateLoanEMI = (
     remainingBalance -= (principalAmount + partPaymentAmount);
     totalInterestPaid += interestAmount;
     principalPaidTotal += (principalAmount + partPaymentAmount);
+    
+    // Recalculate EMI if using reduce-emi strategy and part payment was made
+    if (emiReductionStrategy === 'reduce-emi' && partPaymentAmount > 0 && remainingBalance > 0.01) {
+      // Calculate remaining months to original end date
+      const remainingMonths = Math.ceil(
+        (originalEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
+      );
+      
+      if (remainingMonths > 0) {
+        // Recalculate EMI with remaining balance and remaining months
+        currentEMI = remainingBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths) / 
+                    (Math.pow(1 + monthlyRate, remainingMonths) - 1);
+        console.log(`EMI recalculated for ${currentMonth}/${currentYear}: ₹${currentEMI.toFixed(2)}, Remaining months: ${remainingMonths}`);
+      }
+    }
     
     schedule.push({
       month: currentMonth,
