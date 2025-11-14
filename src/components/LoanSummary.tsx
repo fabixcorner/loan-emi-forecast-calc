@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Minus, BarChart3, CreditCard, Download, Share2 } from "lucide-react";
+import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown } from "lucide-react";
 import { useState } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { CalculatorAnimation } from "@/components/CalculatorAnimation";
@@ -457,32 +457,51 @@ export const LoanSummary = ({
                     </TableRow>
                     
                     {/* Monthly Detail Rows */}
-                    {expandedYears.has(yearData.year) && yearData.months.map((row, monthIndex) => (
-                      <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background">
-                        <TableCell></TableCell>
-                        <TableCell className="text-muted-foreground pl-4">
-                          {getFullMonthName(row.month)}
-                        </TableCell>
-                        <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
-                          {formatCurrency(row.principalAmount)}
-                        </TableCell>
-                        <TableCell className="text-right text-financial-primary">
-                          {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
-                        </TableCell>
-                        <TableCell className="text-right text-destructive">
-                          {formatCurrency(row.interestAmount)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrency(row.emiAmount)}
-                        </TableCell>
-                        <TableCell className="text-right" style={{ color: 'hsl(25, 85%, 45%)' }}>
-                          {formatCurrency(row.remainingBalance)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {(((totalPrincipal - row.remainingBalance) / totalPrincipal) * 100).toFixed(1)}%
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {expandedYears.has(yearData.year) && yearData.months.map((row, monthIndex) => {
+                      // Check if EMI changed (for reduce-emi mode)
+                      const previousRow = monthIndex > 0 ? yearData.months[monthIndex - 1] : null;
+                      const emiChanged = partPaymentStrategy === 'reduce-emi' && 
+                                        previousRow && 
+                                        Math.abs(row.emiAmount - previousRow.emiAmount) > 1;
+                      const emiReduced = emiChanged && row.emiAmount < previousRow!.emiAmount;
+                      
+                      return (
+                        <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background">
+                          <TableCell></TableCell>
+                          <TableCell className="text-muted-foreground pl-4">
+                            {getFullMonthName(row.month)}
+                          </TableCell>
+                          <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                            {formatCurrency(row.principalAmount)}
+                          </TableCell>
+                          <TableCell className="text-right text-financial-primary">
+                            {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
+                          </TableCell>
+                          <TableCell className="text-right text-destructive">
+                            {formatCurrency(row.interestAmount)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              {formatCurrency(row.emiAmount)}
+                              {emiReduced && (
+                                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                  <TrendingDown className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                  <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                    EMI ↓
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right" style={{ color: 'hsl(25, 85%, 45%)' }}>
+                            {formatCurrency(row.remainingBalance)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {(((totalPrincipal - row.remainingBalance) / totalPrincipal) * 100).toFixed(1)}%
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </>
                 ))}
               </TableBody>
