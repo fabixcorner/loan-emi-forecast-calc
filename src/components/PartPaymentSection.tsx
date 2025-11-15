@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, Clock, TrendingDown } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export interface PartPayment {
   id: string;
@@ -13,7 +14,7 @@ export interface PartPayment {
   year: number;
   amount: number;
   frequency: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly';
-  strategy?: 'reduce-tenure' | 'reduce-emi';
+  strategy: 'reduce-tenure' | 'reduce-emi';
 }
 
 interface PartPaymentSectionProps {
@@ -28,8 +29,6 @@ interface PartPaymentSectionProps {
     remainingBalance: number;
   }[];
   onPartPaymentAdded?: () => void;
-  partPaymentStrategy: 'reduce-tenure' | 'reduce-emi';
-  setPartPaymentStrategy: (strategy: 'reduce-tenure' | 'reduce-emi') => void;
 }
 
 export const PartPaymentSection = ({
@@ -40,14 +39,13 @@ export const PartPaymentSection = ({
   loanTenure,
   loanSchedule,
   onPartPaymentAdded,
-  partPaymentStrategy,
-  setPartPaymentStrategy,
 }: PartPaymentSectionProps) => {
   const [newPayment, setNewPayment] = useState<Omit<PartPayment, 'id'>>({
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
     amount: 100000,
     frequency: 'one-time',
+    strategy: 'reduce-tenure',
   });
 
   const addPartPayment = () => {
@@ -109,6 +107,7 @@ export const PartPaymentSection = ({
         year: new Date().getFullYear(),
         amount: 100000,
         frequency: 'one-time',
+        strategy: 'reduce-tenure',
       });
       onPartPaymentAdded?.();
     }
@@ -177,34 +176,6 @@ export const PartPaymentSection = ({
         <CardTitle className="text-xl font-semibold">Part Payment Adjustments</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        {/* Strategy Selection */}
-        <div className="mb-6 p-4 bg-muted/30 rounded-lg">
-          <Label className="text-sm font-semibold text-foreground mb-3 block">Part Payment Strategy</Label>
-          <div className="flex gap-3">
-            <Button
-              variant={partPaymentStrategy === 'reduce-tenure' ? 'default' : 'outline'}
-              onClick={() => setPartPaymentStrategy('reduce-tenure')}
-              className="flex-1"
-              size="sm"
-            >
-              Reduce Tenure
-            </Button>
-            <Button
-              variant={partPaymentStrategy === 'reduce-emi' ? 'default' : 'outline'}
-              onClick={() => setPartPaymentStrategy('reduce-emi')}
-              className="flex-1"
-              size="sm"
-            >
-              Reduce EMI
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            {partPaymentStrategy === 'reduce-tenure' 
-              ? 'Keep EMI constant, pay off loan faster' 
-              : 'Keep loan tenure same, reduce monthly EMI'}
-          </p>
-        </div>
-        
         <div className="grid grid-cols-2 gap-6">
           {/* Add New Part Payment */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
@@ -278,10 +249,37 @@ export const PartPaymentSection = ({
                     <SelectItem value="quarterly">Quarterly</SelectItem>
                     <SelectItem value="half-yearly">Half-Yearly</SelectItem>
                     <SelectItem value="yearly">Yearly</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Strategy Selection for this part payment */}
+          <div className="space-y-2">
+            <Label htmlFor="strategy">Strategy</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={newPayment.strategy === 'reduce-tenure' ? 'default' : 'outline'}
+                onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-tenure' })}
+                className="flex-1"
+                size="sm"
+              >
+                <Clock className="w-4 h-4 mr-2" />
+                Reduce Tenure
+              </Button>
+              <Button
+                type="button"
+                variant={newPayment.strategy === 'reduce-emi' ? 'default' : 'outline'}
+                onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-emi' })}
+                className="flex-1"
+                size="sm"
+              >
+                <TrendingDown className="w-4 h-4 mr-2" />
+                Reduce EMI
+              </Button>
             </div>
+          </div>
+        </div>
             
             <Button 
               onClick={addPartPayment} 
@@ -303,12 +301,25 @@ export const PartPaymentSection = ({
                     key={payment.id}
                     className="flex items-center justify-between p-3 bg-financial-card border border-financial-border rounded-lg"
                   >
-                    <div className="flex-1">
+                     <div className="flex-1">
                       <div className="text-sm font-medium text-foreground">
                         {getMonthName(payment.month)} {payment.year}
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatAmount(payment.amount)} • {payment.frequency === 'one-time' ? 'One-time' : payment.frequency === 'half-yearly' ? 'Half-Yearly' : payment.frequency.charAt(0).toUpperCase() + payment.frequency.slice(1)}
+                      <div className="text-xs text-muted-foreground flex items-center gap-2">
+                        <span>{formatAmount(payment.amount)} • {payment.frequency === 'one-time' ? 'One-time' : payment.frequency === 'half-yearly' ? 'Half-Yearly' : payment.frequency.charAt(0).toUpperCase() + payment.frequency.slice(1)}</span>
+                        <span className="flex items-center gap-1">
+                          {payment.strategy === 'reduce-tenure' ? (
+                            <>
+                              <Clock className="w-3 h-3" />
+                              <span>Tenure</span>
+                            </>
+                          ) : (
+                            <>
+                              <TrendingDown className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                              <span>EMI</span>
+                            </>
+                          )}
+                        </span>
                       </div>
                     </div>
                     <Button

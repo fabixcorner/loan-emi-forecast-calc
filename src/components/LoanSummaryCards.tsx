@@ -21,19 +21,23 @@ interface LoanSummaryCardsProps {
   calculation: LoanCalculation | null;
   interestSavings?: number;
   timeSavings?: number;
-  partPaymentStrategy?: 'reduce-tenure' | 'reduce-emi';
 }
 
-export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings = 0, partPaymentStrategy = 'reduce-tenure' }: LoanSummaryCardsProps) => {
+export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings = 0 }: LoanSummaryCardsProps) => {
   if (!calculation) {
     return null;
   }
 
   const hasPartPayments = interestSavings > 0;
-  const isReduceEMI = partPaymentStrategy === 'reduce-emi';
   
-  // Calculate average EMI for reduce-emi strategy
-  const averageEMI = isReduceEMI && calculation.schedule.length > 0
+  // Check if EMI varies (indicates reduce-emi strategy was used)
+  const hasVariableEMI = calculation.schedule.length > 1 && 
+    calculation.schedule.some((row, idx) => 
+      idx > 0 && Math.abs(row.emiAmount - calculation.schedule[idx - 1].emiAmount) > 1
+    );
+  
+  // Calculate average EMI when it varies
+  const averageEMI = hasVariableEMI && calculation.schedule.length > 0
     ? calculation.schedule.reduce((sum, row) => sum + row.emiAmount, 0) / calculation.schedule.length
     : calculation.emi;
 
@@ -61,10 +65,10 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
         <CardContent className="p-3">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1 font-bold">
-              {isReduceEMI && hasPartPayments ? 'Avg. Monthly EMI' : 'Monthly EMI'}
+              {hasVariableEMI ? 'Avg. Monthly EMI' : 'Monthly EMI'}
             </p>
             <p className="text-2xl font-bold text-financial-primary">
-              {formatCurrency(isReduceEMI && hasPartPayments ? averageEMI : calculation.emi)}
+              {formatCurrency(hasVariableEMI ? averageEMI : calculation.emi)}
             </p>
           </div>
         </CardContent>
