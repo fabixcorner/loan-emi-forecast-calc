@@ -246,6 +246,65 @@ export const LoanSummary = ({
 
       {showSchedule && (
         <>
+          {/* EMI Reduction Summary - Only for reduce-emi mode */}
+          {partPaymentStrategy === 'reduce-emi' && (() => {
+            const firstEMI = calculation.schedule[0]?.emiAmount || 0;
+            const lastEMI = calculation.schedule[calculation.schedule.length - 1]?.emiAmount || 0;
+            let emiChanges = 0;
+            
+            for (let i = 1; i < calculation.schedule.length; i++) {
+              if (Math.abs(calculation.schedule[i].emiAmount - calculation.schedule[i-1].emiAmount) > 1) {
+                emiChanges++;
+              }
+            }
+            
+            const emiReduction = firstEMI - lastEMI;
+            const reductionPercentage = ((emiReduction / firstEMI) * 100).toFixed(1);
+            
+            return (
+              <Card className="shadow-[var(--shadow-card)] mb-6 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                    <TrendingDown className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                    EMI Reduction Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Total EMI Changes</p>
+                      <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                        {emiChanges}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">EMI Reduction</p>
+                      <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                        {formatCurrency(emiReduction)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Reduction Percentage</p>
+                      <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                        {reductionPercentage}%
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-emerald-500/20">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Original EMI:</span>
+                      <span className="font-semibold">{formatCurrency(firstEMI)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm mt-2">
+                      <span className="text-muted-foreground">Final EMI:</span>
+                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(lastEMI)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
+
           {/* Yearly Payments Chart */}
           <Card className="shadow-[var(--shadow-card)] mb-6">
             <CardHeader>
