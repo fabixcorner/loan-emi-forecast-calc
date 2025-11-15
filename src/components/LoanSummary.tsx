@@ -47,8 +47,6 @@ interface LoanSummaryProps {
   onPartPaymentAdded?: () => void;
   loanAmount: number;
   interestRate: number;
-  partPaymentStrategy: 'reduce-tenure' | 'reduce-emi';
-  setPartPaymentStrategy: (strategy: 'reduce-tenure' | 'reduce-emi') => void;
 }
 
 export const LoanSummary = ({ 
@@ -62,9 +60,7 @@ export const LoanSummary = ({
   setShowSchedule,
   onPartPaymentAdded,
   loanAmount,
-  interestRate,
-  partPaymentStrategy,
-  setPartPaymentStrategy
+  interestRate
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
@@ -83,10 +79,6 @@ export const LoanSummary = ({
 
     if (partPayments.length > 0) {
       params.set('partPayments', JSON.stringify(partPayments));
-    }
-    
-    if (partPaymentStrategy !== 'reduce-tenure') {
-      params.set('strategy', partPaymentStrategy);
     }
 
     const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
@@ -213,8 +205,6 @@ export const LoanSummary = ({
           loanTenure={loanTenure}
           loanSchedule={calculation.schedule}
           onPartPaymentAdded={onPartPaymentAdded}
-          partPaymentStrategy={partPaymentStrategy}
-          setPartPaymentStrategy={setPartPaymentStrategy}
         />
       )}
 
@@ -246,8 +236,10 @@ export const LoanSummary = ({
 
       {showSchedule && (
         <>
-          {/* EMI Reduction Summary - Only for reduce-emi mode */}
-          {partPaymentStrategy === 'reduce-emi' && (() => {
+          {/* EMI Reduction Summary - Only when there are reduce-emi payments */}
+          {(() => {
+            const hasReduceEMIPayments = partPayments.some(pp => pp.strategy === 'reduce-emi');
+            if (!hasReduceEMIPayments) return null;
             const firstEMI = calculation.schedule[0]?.emiAmount || 0;
             const lastEMI = calculation.schedule[calculation.schedule.length - 1]?.emiAmount || 0;
             let emiChanges = 0;
@@ -447,16 +439,16 @@ export const LoanSummary = ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPaymentStrategy)}>
+                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
                       Excel (.xlsx)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPaymentStrategy)}>
+                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
                       PDF (.pdf)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPaymentStrategy)}>
+                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
                       JSON (.json)
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPaymentStrategy)}>
+                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
                       CSV (.csv)
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -517,11 +509,9 @@ export const LoanSummary = ({
                     
                     {/* Monthly Detail Rows */}
                     {expandedYears.has(yearData.year) && yearData.months.map((row, monthIndex) => {
-                      // Check if EMI changed (for reduce-emi mode)
+                      // Check if EMI changed (when previous month had reduce-emi part payment)
                       const previousRow = monthIndex > 0 ? yearData.months[monthIndex - 1] : null;
-                      const emiChanged = partPaymentStrategy === 'reduce-emi' && 
-                                        previousRow && 
-                                        Math.abs(row.emiAmount - previousRow.emiAmount) > 1;
+                      const emiChanged = previousRow && Math.abs(row.emiAmount - previousRow.emiAmount) > 1;
                       const emiReduced = emiChanged && row.emiAmount < previousRow!.emiAmount;
                       
                       return (

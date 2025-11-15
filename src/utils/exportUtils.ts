@@ -34,8 +34,9 @@ const formatCurrencyForPDF = (amount: number) => {
   }).format(Math.round(amount));
 };
 
-export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, strategy: 'reduce-tenure' | 'reduce-emi' = 'reduce-tenure') => {
-  const hasVariableEMI = strategy === 'reduce-emi';
+export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
+  const hasVariableEMI = schedule.length > 1 && 
+    schedule.some((row, idx) => idx > 0 && Math.abs(row.emiAmount - schedule[idx - 1].emiAmount) > 1);
   const avgEMI = hasVariableEMI ? schedule.reduce((sum, row) => sum + row.emiAmount, 0) / schedule.length : emi;
   
   const data = schedule.map((row, index) => ({
@@ -81,9 +82,10 @@ export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInteres
   XLSX.writeFile(wb, 'EMI_Schedule.xlsx');
 };
 
-export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, strategy: 'reduce-tenure' | 'reduce-emi' = 'reduce-tenure') => {
+export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
   const doc = new jsPDF();
-  const hasVariableEMI = strategy === 'reduce-emi';
+  const hasVariableEMI = schedule.length > 1 && 
+    schedule.some((row, idx) => idx > 0 && Math.abs(row.emiAmount - schedule[idx - 1].emiAmount) > 1);
   const avgEMI = hasVariableEMI ? schedule.reduce((sum, row) => sum + row.emiAmount, 0) / schedule.length : emi;
   
   // Title
@@ -97,7 +99,7 @@ export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest:
   doc.text(`Total Interest: ${formatCurrencyForPDF(totalInterest)}`, 14, 44);
   if (hasVariableEMI) {
     doc.setFontSize(9);
-    doc.text('Strategy: Reduce EMI (Variable EMI amounts)', 14, 50);
+    doc.text('Note: EMI amounts vary due to part payment strategies', 14, 50);
   }
   
   // Table data
@@ -124,8 +126,9 @@ export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest:
   doc.save('EMI_Schedule.pdf');
 };
 
-export const exportToJSON = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, strategy: 'reduce-tenure' | 'reduce-emi' = 'reduce-tenure') => {
-  const hasVariableEMI = strategy === 'reduce-emi';
+export const exportToJSON = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
+  const hasVariableEMI = schedule.length > 1 && 
+    schedule.some((row, idx) => idx > 0 && Math.abs(row.emiAmount - schedule[idx - 1].emiAmount) > 1);
   const avgEMI = hasVariableEMI ? schedule.reduce((sum, row) => sum + row.emiAmount, 0) / schedule.length : emi;
   
   const data = {
@@ -134,7 +137,6 @@ export const exportToJSON = (schedule: ScheduleRow[], emi: number, totalInterest
       totalAmount: totalAmount,
       totalInterest: totalInterest,
       totalPrincipal: totalAmount - totalInterest,
-      strategy: strategy,
       isVariableEMI: hasVariableEMI,
     },
     schedule: schedule.map((row, index) => ({
@@ -158,8 +160,9 @@ export const exportToJSON = (schedule: ScheduleRow[], emi: number, totalInterest
   URL.revokeObjectURL(url);
 };
 
-export const exportToCSV = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, strategy: 'reduce-tenure' | 'reduce-emi' = 'reduce-tenure') => {
-  const hasVariableEMI = strategy === 'reduce-emi';
+export const exportToCSV = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
+  const hasVariableEMI = schedule.length > 1 && 
+    schedule.some((row, idx) => idx > 0 && Math.abs(row.emiAmount - schedule[idx - 1].emiAmount) > 1);
   const avgEMI = hasVariableEMI ? schedule.reduce((sum, row) => sum + row.emiAmount, 0) / schedule.length : emi;
   
   const headers = ['Sr. No.', 'Month', 'Year', 'EMI Amount', 'Principal Amount', 'Interest Amount', 'Part Payment', 'Remaining Balance'];

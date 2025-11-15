@@ -27,8 +27,7 @@ export const calculateLoanEMI = (
   tenureYears: number,
   startMonth: number,
   startYear: number,
-  partPayments: PartPayment[] = [],
-  emiReductionStrategy: 'reduce-tenure' | 'reduce-emi' = 'reduce-tenure'
+  partPayments: PartPayment[] = []
 ): LoanCalculationResult => {
   const monthlyRate = annualRate / 12 / 100;
   const totalMonths = tenureYears * 12;
@@ -42,8 +41,8 @@ export const calculateLoanEMI = (
   const schedule = [];
   const chartData = [];
   
-  // Expand recurring part payments into individual monthly payments
-  const expandedPartPayments: Array<{ month: number; year: number; amount: number }> = [];
+  // Expand recurring part payments into individual monthly payments with strategy
+  const expandedPartPayments: Array<{ month: number; year: number; amount: number; strategy: 'reduce-tenure' | 'reduce-emi' }> = [];
   
   partPayments.forEach(payment => {
     const startDate = new Date(payment.year, payment.month - 1);
@@ -53,7 +52,8 @@ export const calculateLoanEMI = (
       expandedPartPayments.push({
         month: payment.month,
         year: payment.year,
-        amount: payment.amount
+        amount: payment.amount,
+        strategy: payment.strategy
       });
     } else {
       let currentDate = new Date(startDate);
@@ -65,7 +65,8 @@ export const calculateLoanEMI = (
         expandedPartPayments.push({
           month: currentDate.getMonth() + 1,
           year: currentDate.getFullYear(),
-          amount: payment.amount
+          amount: payment.amount,
+          strategy: payment.strategy
         });
         currentDate.setMonth(currentDate.getMonth() + monthIncrement);
       }
@@ -82,11 +83,14 @@ export const calculateLoanEMI = (
   let currentDate = new Date(startYear, startMonth - 1, 1);
   let monthCount = 0;
   let principalPaidTotal = 0;
-  let currentEMI = emi; // Track current EMI for reduce-emi strategy
+  let currentEMI = emi; // Track current EMI
   const originalEndDate = new Date(startYear, startMonth - 1);
   originalEndDate.setMonth(originalEndDate.getMonth() + totalMonths);
+  
+  // Track if we're in reduce-emi mode (any part payment with reduce-emi strategy)
+  const hasReduceEMIPayments = sortedPartPayments.some(pp => pp.strategy === 'reduce-emi');
 
-  while (remainingBalance > 0.01 && (emiReductionStrategy === 'reduce-emi' ? currentDate < originalEndDate : monthCount < totalMonths)) {
+  while (remainingBalance > 0.01 && (hasReduceEMIPayments ? currentDate < originalEndDate : monthCount < totalMonths)) {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1;
     
@@ -118,19 +122,24 @@ export const calculateLoanEMI = (
     totalInterestPaid += interestAmount;
     principalPaidTotal += (principalAmount + partPaymentAmount);
     
-    // Recalculate EMI if using reduce-emi strategy and part payment was made
-    if (emiReductionStrategy === 'reduce-emi' && partPaymentAmount > 0 && remainingBalance > 0.01) {
-      // Calculate remaining months to original end date
-      const remainingMonths = Math.ceil(
-        (originalEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
-      );
+    // Apply part payment if any
+    if (partPaymentAmount > 0) {
+      // Get the strategy for this month's part payments (use reduce-emi if any payment uses it)
+      const paymentStrategy = partPaymentsThisMonth.some(pp => pp.strategy === 'reduce-emi') ? 'reduce-emi' : 'reduce-tenure';
       
-      if (remainingMonths > 0) {
-        // Recalculate EMI with remaining balance and remaining months
-        currentEMI = remainingBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths) / 
-                    (Math.pow(1 + monthlyRate, remainingMonths) - 1);
-        console.log(`EMI recalculated for ${currentMonth}/${currentYear}: ₹${currentEMI.toFixed(2)}, Remaining months: ${remainingMonths}`);
+      remainingBalance -= partPaymentAmount;
+      
+      // Recalculate EMI based on the payment's strategy
+      if (paymentStrategy === 'reduce-emi') {
+        // For reduce-emi: Keep the tenure same but reduce EMI
+        const remainingMonths = Math.ceil((originalEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
+        if (remainingMonths > 1 && remainingBalance > 0) {
+          currentEMI = remainingBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths) / 
+                      (Math.pow(1 + monthlyRate, remainingMonths) - 1);
+          console.log(`EMI recalculated to: ₹${currentEMI.toFixed(2)} for remaining ${remainingMonths} months`);
+        }
       }
+      // For reduce-tenure: EMI stays the same, just pay off faster (default behavior)
     }
     
     schedule.push({
