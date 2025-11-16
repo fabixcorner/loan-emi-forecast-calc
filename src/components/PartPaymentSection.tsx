@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus, Clock, TrendingDown } from "lucide-react";
+import { Trash2, Plus, Clock, TrendingDown, Edit2, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -47,6 +47,7 @@ export const PartPaymentSection = ({
     frequency: 'one-time',
     strategy: 'reduce-tenure',
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const addPartPayment = () => {
     if (newPayment.amount > 0) {
@@ -93,15 +94,34 @@ export const PartPaymentSection = ({
         return;
       }
       
-      const id = Date.now().toString();
-      const updatedPayments = [...partPayments, { ...newPayment, id }].sort((a, b) => {
-        // Sort by year first, then by month
-        if (a.year !== b.year) {
-          return a.year - b.year;
-        }
-        return a.month - b.month;
-      });
-      setPartPayments(updatedPayments);
+      if (editingId) {
+        // Update existing payment
+        const updatedPayments = partPayments.map(payment => 
+          payment.id === editingId ? { ...newPayment, id: editingId } : payment
+        ).sort((a, b) => {
+          if (a.year !== b.year) {
+            return a.year - b.year;
+          }
+          return a.month - b.month;
+        });
+        setPartPayments(updatedPayments);
+        toast({
+          title: "Part Payment Updated",
+          description: `Updated payment for ${getMonthName(newPayment.month)} ${newPayment.year}`,
+        });
+      } else {
+        // Add new payment
+        const id = Date.now().toString();
+        const updatedPayments = [...partPayments, { ...newPayment, id }].sort((a, b) => {
+          if (a.year !== b.year) {
+            return a.year - b.year;
+          }
+          return a.month - b.month;
+        });
+        setPartPayments(updatedPayments);
+      }
+      
+      // Reset form
       setNewPayment({
         month: new Date().getMonth() + 1,
         year: new Date().getFullYear(),
@@ -109,8 +129,31 @@ export const PartPaymentSection = ({
         frequency: 'one-time',
         strategy: 'reduce-tenure',
       });
+      setEditingId(null);
       onPartPaymentAdded?.();
     }
+  };
+
+  const editPartPayment = (payment: PartPayment) => {
+    setNewPayment({
+      month: payment.month,
+      year: payment.year,
+      amount: payment.amount,
+      frequency: payment.frequency,
+      strategy: payment.strategy,
+    });
+    setEditingId(payment.id);
+  };
+
+  const cancelEdit = () => {
+    setNewPayment({
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      amount: 100000,
+      frequency: 'one-time',
+      strategy: 'reduce-tenure',
+    });
+    setEditingId(null);
   };
 
   const removePartPayment = (id: string) => {
@@ -179,7 +222,22 @@ export const PartPaymentSection = ({
         <div className="grid grid-cols-2 gap-6">
           {/* Add New Part Payment */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-            <h4 className="font-medium text-foreground">Add Part Payment</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-foreground">
+                {editingId ? 'Edit Part Payment' : 'Add Part Payment'}
+              </h4>
+              {editingId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={cancelEdit}
+                  className="h-8 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Cancel
+                </Button>
+              )}
+            </div>
             
             <div className="space-y-3">
               <div className="flex gap-3 items-end">
@@ -286,8 +344,17 @@ export const PartPaymentSection = ({
               className="w-full h-9 bg-financial-success hover:bg-financial-success/90"
               size="sm"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Payment
+              {editingId ? (
+                <>
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  Update Payment
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Payment
+                </>
+              )}
             </Button>
           </div>
 
@@ -322,14 +389,24 @@ export const PartPaymentSection = ({
                         </span>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removePartPayment(payment.id)}
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editPartPayment(payment)}
+                        className="h-8 w-8 p-0 text-primary hover:text-primary"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removePartPayment(payment.id)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
