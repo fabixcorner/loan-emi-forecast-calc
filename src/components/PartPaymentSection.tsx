@@ -71,6 +71,22 @@ export const PartPaymentSection = ({
         return;
       }
       
+      // Check for duplicate date with other existing payments (excluding current payment if editing)
+      const conflictingPayment = partPayments.find(
+        payment => payment.id !== editingId && 
+                   payment.month === newPayment.month && 
+                   payment.year === newPayment.year
+      );
+      
+      if (conflictingPayment) {
+        toast({
+          variant: "destructive",
+          title: "Duplicate Part Payment Date",
+          description: `A part payment already exists for ${getMonthName(newPayment.month)} ${newPayment.year}. Please choose a different date or edit the existing payment.`,
+        });
+        return;
+      }
+      
       // Find the remaining balance for the specified month and year
       const scheduleEntry = loanSchedule.find(
         (entry) => entry.month === newPayment.month && entry.year === newPayment.year
@@ -85,11 +101,17 @@ export const PartPaymentSection = ({
         return;
       }
       
-      if (newPayment.amount >= scheduleEntry.remainingBalance) {
+      // Calculate total existing payment amount for this month (excluding current payment if editing)
+      const existingPaymentAmount = partPayments
+        .filter(p => p.id !== editingId && p.month === newPayment.month && p.year === newPayment.year)
+        .reduce((sum, p) => sum + p.amount, 0);
+      
+      // Check if new amount plus existing payments exceed remaining balance
+      if (newPayment.amount + existingPaymentAmount >= scheduleEntry.remainingBalance) {
         toast({
           variant: "destructive",
           title: "Invalid Part Payment Amount",
-          description: `Amount is more than remaining loan amount of ${formatAmount(scheduleEntry.remainingBalance)} for ${getMonthName(newPayment.month)} ${newPayment.year}`,
+          description: `Amount ${existingPaymentAmount > 0 ? `(including existing payment of ${formatAmount(existingPaymentAmount)}) ` : ''}exceeds remaining loan amount of ${formatAmount(scheduleEntry.remainingBalance)} for ${getMonthName(newPayment.month)} ${newPayment.year}`,
         });
         return;
       }
