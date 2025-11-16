@@ -314,51 +314,53 @@ export const PartPaymentSection = ({
                 </div>
               </div>
 
-              <div>
-                <Label className="text-sm text-muted-foreground">Frequency</Label>
-                <Select 
-                  value={newPayment.frequency} 
-                  onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="one-time">One-time</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="quarterly">Quarterly</SelectItem>
-                    <SelectItem value="half-yearly">Half-Yearly</SelectItem>
-                    <SelectItem value="yearly">Yearly</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm text-muted-foreground">Frequency</Label>
+                  <Select 
+                    value={newPayment.frequency} 
+                    onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="one-time">One-time</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="quarterly">Quarterly</SelectItem>
+                      <SelectItem value="half-yearly">Half-Yearly</SelectItem>
+                      <SelectItem value="yearly">Yearly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-          {/* Strategy Selection for this part payment */}
-          <div className="space-y-2">
-            <Label htmlFor="strategy">Strategy</Label>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant={newPayment.strategy === 'reduce-tenure' ? 'default' : 'outline'}
-                onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-tenure' })}
-                className="flex-1"
-                size="sm"
-              >
-                <Clock className="w-4 h-4 mr-2" />
-                Reduce Tenure
-              </Button>
-              <Button
-                type="button"
-                variant={newPayment.strategy === 'reduce-emi' ? 'default' : 'outline'}
-                onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-emi' })}
-                className="flex-1"
-                size="sm"
-              >
-                <TrendingDown className="w-4 h-4 mr-2" />
-                Reduce EMI
-              </Button>
-            </div>
-          </div>
+                {/* Strategy Selection for this part payment */}
+                <div>
+                  <Label className="text-sm text-muted-foreground">Strategy</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant={newPayment.strategy === 'reduce-tenure' ? 'default' : 'outline'}
+                      onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-tenure' })}
+                      className="flex-1"
+                      size="sm"
+                    >
+                      <Clock className="w-4 h-4 mr-2" />
+                      Reduce Tenure
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={newPayment.strategy === 'reduce-emi' ? 'default' : 'outline'}
+                      onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-emi' })}
+                      className="flex-1"
+                      size="sm"
+                    >
+                      <TrendingDown className="w-4 h-4 mr-2" />
+                      Reduce EMI
+                    </Button>
+                  </div>
+                </div>
+              </div>
         </div>
             
             <Button 
