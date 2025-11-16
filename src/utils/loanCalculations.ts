@@ -117,29 +117,28 @@ export const calculateLoanEMI = (
       emiForThisMonth = interestAmount + principalAmount;
     }
     
-    // Apply part payment separately to remaining balance
+    // Apply principal payment and part payment to remaining balance
     remainingBalance -= (principalAmount + partPaymentAmount);
     totalInterestPaid += interestAmount;
     principalPaidTotal += (principalAmount + partPaymentAmount);
     
-    // Apply part payment if any
+    // Recalculate EMI only for reduce-emi strategy part payments
     if (partPaymentAmount > 0) {
-      // Get the strategy for this month's part payments (use reduce-emi if any payment uses it)
-      const paymentStrategy = partPaymentsThisMonth.some(pp => pp.strategy === 'reduce-emi') ? 'reduce-emi' : 'reduce-tenure';
+      // Check if any part payment this month has 'reduce-emi' strategy
+      const hasReduceEMIPayment = partPaymentsThisMonth.some(pp => pp.strategy === 'reduce-emi');
       
-      remainingBalance -= partPaymentAmount;
-      
-      // Recalculate EMI based on the payment's strategy
-      if (paymentStrategy === 'reduce-emi') {
+      // Only recalculate EMI if at least one payment uses reduce-emi strategy
+      if (hasReduceEMIPayment) {
         // For reduce-emi: Keep the tenure same but reduce EMI
         const remainingMonths = Math.ceil((originalEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24 * 30));
         if (remainingMonths > 1 && remainingBalance > 0) {
           currentEMI = remainingBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths) / 
                       (Math.pow(1 + monthlyRate, remainingMonths) - 1);
-          console.log(`EMI recalculated to: ₹${currentEMI.toFixed(2)} for remaining ${remainingMonths} months`);
+          console.log(`EMI recalculated to: ₹${currentEMI.toFixed(2)} for remaining ${remainingMonths} months (reduce-emi strategy)`);
         }
+      } else {
+        console.log(`Part payment applied but EMI remains ₹${currentEMI.toFixed(2)} (reduce-tenure strategy)`);
       }
-      // For reduce-tenure: EMI stays the same, just pay off faster (default behavior)
     }
     
     schedule.push({
