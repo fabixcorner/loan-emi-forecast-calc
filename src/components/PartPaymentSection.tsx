@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, Clock, TrendingDown, Edit2, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export interface PartPayment {
   id: string;
@@ -13,6 +14,7 @@ export interface PartPayment {
   year: number;
   amount: number;
   frequency: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly';
+  strategy: 'reduce-tenure' | 'reduce-emi';
 }
 
 interface PartPaymentSectionProps {
@@ -43,7 +45,9 @@ export const PartPaymentSection = ({
     year: new Date().getFullYear(),
     amount: 100000,
     frequency: 'one-time',
+    strategy: 'reduce-tenure',
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const addPartPayment = () => {
     if (newPayment.amount > 0) {
@@ -67,6 +71,22 @@ export const PartPaymentSection = ({
         return;
       }
       
+      // Check for duplicate date with other existing payments (excluding current payment if editing)
+      const conflictingPayment = partPayments.find(
+        payment => payment.id !== editingId && 
+                   payment.month === newPayment.month && 
+                   payment.year === newPayment.year
+      );
+      
+      if (conflictingPayment) {
+        toast({
+          variant: "destructive",
+          title: "Duplicate Part Payment Date",
+          description: `A part payment already exists for ${getMonthName(newPayment.month)} ${newPayment.year}. Please choose a different date or edit the existing payment.`,
+        });
+        return;
+      }
+      
       // Find the remaining balance for the specified month and year
       const scheduleEntry = loanSchedule.find(
         (entry) => entry.month === newPayment.month && entry.year === newPayment.year
@@ -81,32 +101,81 @@ export const PartPaymentSection = ({
         return;
       }
       
-      if (newPayment.amount >= scheduleEntry.remainingBalance) {
+      // Calculate total existing payment amount for this month (excluding current payment if editing)
+      const existingPaymentAmount = partPayments
+        .filter(p => p.id !== editingId && p.month === newPayment.month && p.year === newPayment.year)
+        .reduce((sum, p) => sum + p.amount, 0);
+      
+      // Check if new amount plus existing payments exceed remaining balance
+      if (newPayment.amount + existingPaymentAmount >= scheduleEntry.remainingBalance) {
         toast({
           variant: "destructive",
           title: "Invalid Part Payment Amount",
-          description: `Amount is more than remaining loan amount of ${formatAmount(scheduleEntry.remainingBalance)} for ${getMonthName(newPayment.month)} ${newPayment.year}`,
+          description: `Amount ${existingPaymentAmount > 0 ? `(including existing payment of ${formatAmount(existingPaymentAmount)}) ` : ''}exceeds remaining loan amount of ${formatAmount(scheduleEntry.remainingBalance)} for ${getMonthName(newPayment.month)} ${newPayment.year}`,
         });
         return;
       }
       
-      const id = Date.now().toString();
-      const updatedPayments = [...partPayments, { ...newPayment, id }].sort((a, b) => {
-        // Sort by year first, then by month
-        if (a.year !== b.year) {
-          return a.year - b.year;
-        }
-        return a.month - b.month;
-      });
-      setPartPayments(updatedPayments);
+      if (editingId) {
+        // Update existing payment
+        const updatedPayments = partPayments.map(payment => 
+          payment.id === editingId ? { ...newPayment, id: editingId } : payment
+        ).sort((a, b) => {
+          if (a.year !== b.year) {
+            return a.year - b.year;
+          }
+          return a.month - b.month;
+        });
+        setPartPayments(updatedPayments);
+        toast({
+          title: "Part Payment Updated",
+          description: `Updated payment for ${getMonthName(newPayment.month)} ${newPayment.year}`,
+        });
+      } else {
+        // Add new payment
+        const id = Date.now().toString();
+        const updatedPayments = [...partPayments, { ...newPayment, id }].sort((a, b) => {
+          if (a.year !== b.year) {
+            return a.year - b.year;
+          }
+          return a.month - b.month;
+        });
+        setPartPayments(updatedPayments);
+      }
+      
+      // Reset form
       setNewPayment({
         month: new Date().getMonth() + 1,
         year: new Date().getFullYear(),
         amount: 100000,
         frequency: 'one-time',
+        strategy: 'reduce-tenure',
       });
+      setEditingId(null);
       onPartPaymentAdded?.();
     }
+  };
+
+  const editPartPayment = (payment: PartPayment) => {
+    setNewPayment({
+      month: payment.month,
+      year: payment.year,
+      amount: payment.amount,
+      frequency: payment.frequency,
+      strategy: payment.strategy,
+    });
+    setEditingId(payment.id);
+  };
+
+  const cancelEdit = () => {
+    setNewPayment({
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      amount: 100000,
+      frequency: 'one-time',
+      strategy: 'reduce-tenure',
+    });
+    setEditingId(null);
   };
 
   const removePartPayment = (id: string) => {
@@ -175,7 +244,22 @@ export const PartPaymentSection = ({
         <div className="grid grid-cols-2 gap-6">
           {/* Add New Part Payment */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-            <h4 className="font-medium text-foreground">Add Part Payment</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-foreground">
+                {editingId ? 'Edit Part Payment' : 'Add Part Payment'}
+              </h4>
+              {editingId && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={cancelEdit}
+                  className="h-8 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Cancel
+                </Button>
+              )}
+            </div>
             
             <div className="space-y-3">
               <div className="flex gap-3 items-end">
@@ -230,33 +314,71 @@ export const PartPaymentSection = ({
                 </div>
               </div>
 
-              <div>
-                <Label className="text-sm text-muted-foreground">Frequency</Label>
-                <Select 
-                  value={newPayment.frequency} 
-                  onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="one-time">One-time</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="quarterly">Quarterly</SelectItem>
-                    <SelectItem value="half-yearly">Half-Yearly</SelectItem>
-                    <SelectItem value="yearly">Yearly</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex gap-3">
+                <div className="w-36">
+                  <Label className="text-sm text-muted-foreground">Frequency</Label>
+                  <Select 
+                    value={newPayment.frequency} 
+                    onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="one-time">One-time</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="quarterly">Quarterly</SelectItem>
+                      <SelectItem value="half-yearly">Half-Yearly</SelectItem>
+                      <SelectItem value="yearly">Yearly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Strategy Selection for this part payment */}
+                <div>
+                  <Label className="text-sm text-muted-foreground">Strategy</Label>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant={newPayment.strategy === 'reduce-tenure' ? 'default' : 'outline'}
+                      onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-tenure' })}
+                      className="flex-1"
+                      size="sm"
+                    >
+                      <Clock className="w-4 h-4 mr-2" />
+                      Reduce Tenure
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={newPayment.strategy === 'reduce-emi' ? 'default' : 'outline'}
+                      onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-emi' })}
+                      className="flex-1"
+                      size="sm"
+                    >
+                      <TrendingDown className="w-4 h-4 mr-2" />
+                      Reduce EMI
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
+        </div>
             
             <Button 
               onClick={addPartPayment} 
               className="w-full h-9 bg-financial-success hover:bg-financial-success/90"
               size="sm"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Payment
+              {editingId ? (
+                <>
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  Update Payment
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Payment
+                </>
+              )}
             </Button>
           </div>
 
@@ -270,22 +392,45 @@ export const PartPaymentSection = ({
                     key={payment.id}
                     className="flex items-center justify-between p-3 bg-financial-card border border-financial-border rounded-lg"
                   >
-                    <div className="flex-1">
+                     <div className="flex-1">
                       <div className="text-sm font-medium text-foreground">
                         {getMonthName(payment.month)} {payment.year}
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        {formatAmount(payment.amount)} • {payment.frequency === 'one-time' ? 'One-time' : payment.frequency === 'half-yearly' ? 'Half-Yearly' : payment.frequency.charAt(0).toUpperCase() + payment.frequency.slice(1)}
+                      <div className="text-xs text-muted-foreground flex items-center gap-2">
+                        <span>{formatAmount(payment.amount)} • {payment.frequency === 'one-time' ? 'One-time' : payment.frequency === 'half-yearly' ? 'Half-Yearly' : payment.frequency.charAt(0).toUpperCase() + payment.frequency.slice(1)}</span>
+                        <span className="flex items-center gap-1">
+                          {payment.strategy === 'reduce-tenure' ? (
+                            <>
+                              <Clock className="w-3 h-3" />
+                              <span>Tenure</span>
+                            </>
+                          ) : (
+                            <>
+                              <TrendingDown className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                              <span>EMI</span>
+                            </>
+                          )}
+                        </span>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removePartPayment(payment.id)}
-                      className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editPartPayment(payment)}
+                        className="h-8 w-8 p-0 text-primary hover:text-primary"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removePartPayment(payment.id)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

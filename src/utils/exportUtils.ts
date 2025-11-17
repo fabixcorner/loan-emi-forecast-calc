@@ -34,7 +34,11 @@ const formatCurrencyForPDF = (amount: number) => {
   }).format(Math.round(amount));
 };
 
-export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number) => {
+export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
+  const hasVariableEMI = schedule.length > 1 && 
+    schedule.some((row, idx) => idx > 0 && Math.abs(row.emiAmount - schedule[idx - 1].emiAmount) > 1);
+  const avgEMI = hasVariableEMI ? schedule.reduce((sum, row) => sum + row.emiAmount, 0) / schedule.length : emi;
+  
   const data = schedule.map((row, index) => ({
     'Sr. No.': index + 1,
     'Month': getMonthName(row.month),
@@ -51,7 +55,7 @@ export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInteres
     'Sr. No.': '' as any,
     'Month': '' as any,
     'Year': 'SUMMARY' as any,
-    'EMI Amount': Math.round(emi),
+    'EMI Amount': Math.round(hasVariableEMI ? avgEMI : emi),
     'Principal Amount': Math.round(totalAmount - totalInterest),
     'Interest Amount': Math.round(totalInterest),
     'Part Payment': Math.round(schedule.reduce((sum, row) => sum + row.partPayment, 0)),
@@ -78,8 +82,11 @@ export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInteres
   XLSX.writeFile(wb, 'EMI_Schedule.xlsx');
 };
 
-export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number) => {
+export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
   const doc = new jsPDF();
+  const hasVariableEMI = schedule.length > 1 && 
+    schedule.some((row, idx) => idx > 0 && Math.abs(row.emiAmount - schedule[idx - 1].emiAmount) > 1);
+  const avgEMI = hasVariableEMI ? schedule.reduce((sum, row) => sum + row.emiAmount, 0) / schedule.length : emi;
   
   // Title
   doc.setFontSize(18);
@@ -87,9 +94,13 @@ export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest:
   
   // Summary information
   doc.setFontSize(11);
-  doc.text(`Monthly EMI: ${formatCurrencyForPDF(emi)}`, 14, 32);
+  doc.text(`${hasVariableEMI ? 'Avg. ' : ''}Monthly EMI: ${formatCurrencyForPDF(hasVariableEMI ? avgEMI : emi)}`, 14, 32);
   doc.text(`Total Amount: ${formatCurrencyForPDF(totalAmount)}`, 14, 38);
   doc.text(`Total Interest: ${formatCurrencyForPDF(totalInterest)}`, 14, 44);
+  if (hasVariableEMI) {
+    doc.setFontSize(9);
+    doc.text('Note: EMI amounts vary due to part payment strategies', 14, 50);
+  }
   
   // Table data
   const tableData = schedule.map((row, index) => [
@@ -104,7 +115,7 @@ export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest:
   ]);
 
   autoTable(doc, {
-    startY: 50,
+    startY: hasVariableEMI ? 56 : 50,
     head: [['#', 'Month', 'Year', 'EMI', 'Principal', 'Interest', 'Part Payment', 'Balance']],
     body: tableData,
     theme: 'grid',
@@ -115,13 +126,18 @@ export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest:
   doc.save('EMI_Schedule.pdf');
 };
 
-export const exportToJSON = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number) => {
+export const exportToJSON = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
+  const hasVariableEMI = schedule.length > 1 && 
+    schedule.some((row, idx) => idx > 0 && Math.abs(row.emiAmount - schedule[idx - 1].emiAmount) > 1);
+  const avgEMI = hasVariableEMI ? schedule.reduce((sum, row) => sum + row.emiAmount, 0) / schedule.length : emi;
+  
   const data = {
     summary: {
-      monthlyEMI: emi,
+      monthlyEMI: hasVariableEMI ? avgEMI : emi,
       totalAmount: totalAmount,
       totalInterest: totalInterest,
       totalPrincipal: totalAmount - totalInterest,
+      isVariableEMI: hasVariableEMI,
     },
     schedule: schedule.map((row, index) => ({
       serialNo: index + 1,
@@ -144,7 +160,11 @@ export const exportToJSON = (schedule: ScheduleRow[], emi: number, totalInterest
   URL.revokeObjectURL(url);
 };
 
-export const exportToCSV = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number) => {
+export const exportToCSV = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
+  const hasVariableEMI = schedule.length > 1 && 
+    schedule.some((row, idx) => idx > 0 && Math.abs(row.emiAmount - schedule[idx - 1].emiAmount) > 1);
+  const avgEMI = hasVariableEMI ? schedule.reduce((sum, row) => sum + row.emiAmount, 0) / schedule.length : emi;
+  
   const headers = ['Sr. No.', 'Month', 'Year', 'EMI Amount', 'Principal Amount', 'Interest Amount', 'Part Payment', 'Remaining Balance'];
   
   const rows = schedule.map((row, index) => [
@@ -163,7 +183,7 @@ export const exportToCSV = (schedule: ScheduleRow[], emi: number, totalInterest:
     '',
     '',
     'SUMMARY',
-    Math.round(emi),
+    Math.round(hasVariableEMI ? avgEMI : emi),
     Math.round(totalAmount - totalInterest),
     Math.round(totalInterest),
     Math.round(schedule.reduce((sum, row) => sum + row.partPayment, 0)),

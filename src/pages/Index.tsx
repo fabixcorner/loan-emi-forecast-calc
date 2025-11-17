@@ -188,27 +188,27 @@ const Index = () => {
 
             {/* Loan Summary Cards */}
             <div className="mb-8">
-              <LoanSummaryCards 
-                calculation={calculation} 
-                interestSavings={interestSavings}
-                timeSavings={timeSavings}
-              />
+          <LoanSummaryCards 
+            calculation={calculation} 
+            interestSavings={interestSavings} 
+            timeSavings={timeSavings}
+          />
             </div>
 
             {/* Loan Summary */}
-            <LoanSummary 
-              calculation={calculation}
-              partPayments={partPayments}
-              setPartPayments={setPartPayments}
-              startMonth={startMonth}
-              startYear={startYear}
-              loanTenure={loanTenure}
-              showSchedule={showSchedule}
-              setShowSchedule={setShowSchedule}
-              onPartPaymentAdded={handlePartPaymentAdded}
-              loanAmount={loanAmount}
-              interestRate={interestRate}
-            />
+          <LoanSummary 
+            calculation={calculation}
+            partPayments={partPayments}
+            setPartPayments={setPartPayments}
+            startMonth={startMonth}
+            startYear={startYear}
+            loanTenure={loanTenure}
+            showSchedule={showSchedule}
+            setShowSchedule={setShowSchedule}
+            onPartPaymentAdded={handlePartPaymentAdded}
+            loanAmount={loanAmount}
+            interestRate={interestRate}
+          />
           </>
         )}
       </div>

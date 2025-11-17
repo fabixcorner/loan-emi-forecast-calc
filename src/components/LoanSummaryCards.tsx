@@ -29,6 +29,17 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
   }
 
   const hasPartPayments = interestSavings > 0;
+  
+  // Check if EMI varies (indicates reduce-emi strategy was used)
+  const hasVariableEMI = calculation.schedule.length > 1 && 
+    calculation.schedule.some((row, idx) => 
+      idx > 0 && Math.abs(row.emiAmount - calculation.schedule[idx - 1].emiAmount) > 1
+    );
+  
+  // Calculate average EMI when it varies
+  const averageEMI = hasVariableEMI && calculation.schedule.length > 0
+    ? calculation.schedule.reduce((sum, row) => sum + row.emiAmount, 0) / calculation.schedule.length
+    : calculation.emi;
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -53,9 +64,11 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
       <Card className="shadow-[var(--shadow-card)]">
         <CardContent className="p-3">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-1 font-bold">Monthly EMI</p>
+            <p className="text-sm text-muted-foreground mb-1 font-bold">
+              {hasVariableEMI ? 'Avg. Monthly EMI' : 'Monthly EMI'}
+            </p>
             <p className="text-2xl font-bold text-financial-primary">
-              {formatCurrency(calculation.emi)}
+              {formatCurrency(hasVariableEMI ? averageEMI : calculation.emi)}
             </p>
           </div>
         </CardContent>
@@ -100,19 +113,21 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
             </CardContent>
           </Card>
 
-          <Card className="shadow-[var(--shadow-card)] bg-gradient-to-br from-financial-primary/10 to-financial-primary/5 border-financial-primary/30 relative overflow-hidden">
-            <div className="absolute top-2 right-2 animate-pulse">
-              <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
-            </div>
-            <CardContent className="p-3">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-1 font-bold">Time Saved</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">
-                  {timeSavings} {timeSavings === 1 ? 'month' : 'months'}
-                </p>
+          {timeSavings > 0 && (
+            <Card className="shadow-[var(--shadow-card)] bg-gradient-to-br from-financial-primary/10 to-financial-primary/5 border-financial-primary/30 relative overflow-hidden">
+              <div className="absolute top-2 right-2 animate-pulse">
+                <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
               </div>
-            </CardContent>
-          </Card>
+              <CardContent className="p-3">
+                <div className="text-center">
+                  <p className="text-sm text-muted-foreground mb-1 font-bold">Time Saved</p>
+                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">
+                    {timeSavings} {timeSavings === 1 ? 'month' : 'months'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
     </div>
