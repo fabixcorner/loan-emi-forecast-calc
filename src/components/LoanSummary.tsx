@@ -244,7 +244,7 @@ export const LoanSummary = ({
             const lastEMI = calculation.schedule[calculation.schedule.length - 2]?.emiAmount || 0;
             let emiChanges = 0;
             
-            for (let i = 1; i < calculation.schedule.length; i++) {
+            for (let i = 1; i < calculation.schedule.length - 1; i++) {
               if (Math.abs(calculation.schedule[i].emiAmount - calculation.schedule[i-1].emiAmount) > 1) {
                 emiChanges++;
               }
