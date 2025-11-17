@@ -241,7 +241,7 @@ export const LoanSummary = ({
             const hasReduceEMIPayments = partPayments.some(pp => pp.strategy === 'reduce-emi');
             if (!hasReduceEMIPayments) return null;
             const firstEMI = calculation.schedule[0]?.emiAmount || 0;
-            const lastEMI = calculation.schedule[calculation.schedule.length - 1]?.emiAmount || 0;
+            const lastEMI = calculation.schedule[calculation.schedule.length - 2]?.emiAmount || 0;
             let emiChanges = 0;
             
             for (let i = 1; i < calculation.schedule.length; i++) {
