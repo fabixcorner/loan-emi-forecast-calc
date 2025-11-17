@@ -262,34 +262,36 @@ export const LoanSummary = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">Total EMI Changes</p>
-                      <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                      <p className="text-xs text-muted-foreground">EMI Changes</p>
+                      <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                         {emiChanges}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">EMI Reduction</p>
-                      <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                      <p className="text-xs text-muted-foreground">Original EMI</p>
+                      <p className="text-xl font-bold">
+                        {formatCurrency(firstEMI)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">Final EMI</p>
+                      <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                        {formatCurrency(lastEMI)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">Reduction</p>
+                      <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                         {formatCurrency(emiReduction)}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">Reduction Percentage</p>
-                      <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                      <p className="text-xs text-muted-foreground">% Reduced</p>
+                      <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                         {reductionPercentage}%
                       </p>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-emerald-500/20">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Original EMI:</span>
-                      <span className="font-semibold">{formatCurrency(firstEMI)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-sm mt-2">
-                      <span className="text-muted-foreground">Final EMI:</span>
-                      <span className="font-semibold text-emerald-600 dark:text-emerald-400">{formatCurrency(lastEMI)}</span>
                     </div>
                   </div>
                 </CardContent>
