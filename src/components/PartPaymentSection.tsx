@@ -314,8 +314,8 @@ export const PartPaymentSection = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
+              <div className="flex gap-3">
+                <div className="w-36">
                   <Label className="text-sm text-muted-foreground">Frequency</Label>
                   <Select 
                     value={newPayment.frequency} 
