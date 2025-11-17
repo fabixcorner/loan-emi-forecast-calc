@@ -458,18 +458,18 @@ export const LoanSummary = ({
               </div>
         </CardHeader>
         <CardContent>
-          <div className="max-h-96 overflow-y-auto border rounded-md">
+          <div className="border rounded-md">
             <Table>
-              <TableHeader className="sticky top-0 z-30 bg-card shadow-md">
+              <TableHeader className="bg-muted/50">
                 <TableRow className="border-b">
-                  <TableHead className="w-12 bg-card font-bold uppercase sticky top-0 z-30">×</TableHead>
-                  <TableHead className="w-20 bg-card font-bold uppercase sticky top-0 z-30">Year</TableHead>
-                  <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">Principal</TableHead>
-                  <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">Part Payment</TableHead>
-                  <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">Interest</TableHead>
-                  <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">EMI</TableHead>
-                  <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">Balance</TableHead>
-                  <TableHead className="text-right bg-card font-bold uppercase sticky top-0 z-30">Paid %</TableHead>
+                  <TableHead className="w-12 font-bold uppercase">×</TableHead>
+                  <TableHead className="w-20 font-bold uppercase">Year</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Principal</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Part Payment</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Interest</TableHead>
+                  <TableHead className="text-right font-bold uppercase">EMI</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Balance</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Paid %</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
