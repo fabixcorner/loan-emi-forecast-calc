@@ -263,41 +263,40 @@ export const PartPaymentSection = ({
             
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Month</Label>
-                <Select 
-                  value={newPayment.month.toString()} 
-                  onValueChange={(value) => setNewPayment(prev => ({ ...prev, month: parseInt(value) }))}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getMonthOptions().map((month) => (
-                      <SelectItem key={month} value={month.toString()}>
-                        {getMonthName(month)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Year</Label>
-                <Select 
-                  value={newPayment.year.toString()} 
-                  onValueChange={(value) => setNewPayment(prev => ({ ...prev, year: parseInt(value) }))}
-                >
-                  <SelectTrigger className="h-9">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getYearOptions().map((year) => (
-                      <SelectItem key={year} value={year.toString()}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="text-sm text-muted-foreground w-20 shrink-0">Date</Label>
+                <div className="grid grid-cols-2 gap-3 flex-1">
+                  <Select 
+                    value={newPayment.month.toString()} 
+                    onValueChange={(value) => setNewPayment(prev => ({ ...prev, month: parseInt(value) }))}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getMonthOptions().map((month) => (
+                        <SelectItem key={month} value={month.toString()}>
+                          {getMonthName(month)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select 
+                    value={newPayment.year.toString()} 
+                    onValueChange={(value) => setNewPayment(prev => ({ ...prev, year: parseInt(value) }))}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getYearOptions().map((year) => (
+                        <SelectItem key={year} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="flex items-center gap-3">
