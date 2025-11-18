@@ -52,7 +52,7 @@ export const LoanInputSection = ({
   const getYearOptions = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
-    for (let year = 2001; year <= currentYear + 30; year++) {
+    for (let year = 2010; year <= currentYear + 40; year++) {
       years.push(year);
     }
     return years;
