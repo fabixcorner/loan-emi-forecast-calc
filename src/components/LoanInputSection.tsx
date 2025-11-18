@@ -75,7 +75,6 @@ export const LoanInputSection = ({
             <div className="w-4/5">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs text-muted-foreground">Month</Label>
                   <Select 
                     value={startMonth.toString()} 
                     onValueChange={(value) => setStartMonth(parseInt(value))}
@@ -94,7 +93,6 @@ export const LoanInputSection = ({
                 </div>
                 
                 <div>
-                  <Label className="text-xs text-muted-foreground">Year</Label>
                   <Select 
                     value={startYear.toString()} 
                     onValueChange={(value) => setStartYear(parseInt(value))}
