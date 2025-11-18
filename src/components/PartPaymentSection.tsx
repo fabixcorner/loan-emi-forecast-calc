@@ -262,106 +262,102 @@ export const PartPaymentSection = ({
             </div>
             
             <div className="space-y-3">
-              <div className="flex gap-3 items-end">
-                <div className="flex-1">
-                  <Label className="text-sm text-muted-foreground">Month</Label>
-                  <Select 
-                    value={newPayment.month.toString()} 
-                    onValueChange={(value) => setNewPayment(prev => ({ ...prev, month: parseInt(value) }))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getMonthOptions().map((month) => (
-                        <SelectItem key={month} value={month.toString()}>
-                          {getMonthName(month)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex-1">
-                  <Label className="text-sm text-muted-foreground">Year</Label>
-                  <Select 
-                    value={newPayment.year.toString()} 
-                    onValueChange={(value) => setNewPayment(prev => ({ ...prev, year: parseInt(value) }))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getYearOptions().map((year) => (
-                        <SelectItem key={year} value={year.toString()}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex-1">
-                  <Label className="text-sm text-muted-foreground">Amount (₹)</Label>
-                  <Input
-                    type="number"
-                    value={newPayment.amount}
-                    onChange={(e) => setNewPayment(prev => ({ ...prev, amount: Number(e.target.value) }))}
-                    className="h-9"
-                    min={1000}
-                    step={1000}
-                  />
-                </div>
+              <div className="flex items-center gap-3">
+                <Label className="text-sm text-muted-foreground w-20 shrink-0">Month</Label>
+                <Select 
+                  value={newPayment.month.toString()} 
+                  onValueChange={(value) => setNewPayment(prev => ({ ...prev, month: parseInt(value) }))}
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getMonthOptions().map((month) => (
+                      <SelectItem key={month} value={month.toString()}>
+                        {getMonthName(month)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Label className="text-sm text-muted-foreground w-20 shrink-0">Year</Label>
+                <Select 
+                  value={newPayment.year.toString()} 
+                  onValueChange={(value) => setNewPayment(prev => ({ ...prev, year: parseInt(value) }))}
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getYearOptions().map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="flex gap-3">
-                <div className="w-36">
-                  <Label className="text-sm text-muted-foreground">Frequency</Label>
-                  <Select 
-                    value={newPayment.frequency} 
-                    onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="one-time">One-time</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="quarterly">Quarterly</SelectItem>
-                      <SelectItem value="half-yearly">Half-Yearly</SelectItem>
-                      <SelectItem value="yearly">Yearly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="flex items-center gap-3">
+                <Label className="text-sm text-muted-foreground w-20 shrink-0">Amount</Label>
+                <Input
+                  type="number"
+                  value={newPayment.amount}
+                  onChange={(e) => setNewPayment(prev => ({ ...prev, amount: Number(e.target.value) }))}
+                  className="h-9"
+                  min={1000}
+                  step={1000}
+                  placeholder="₹"
+                />
+              </div>
 
-                {/* Strategy Selection for this part payment */}
-                <div>
-                  <Label className="text-sm text-muted-foreground">Strategy</Label>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant={newPayment.strategy === 'reduce-tenure' ? 'default' : 'outline'}
-                      onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-tenure' })}
-                      className="flex-1"
-                      size="sm"
-                    >
-                      <Clock className="w-4 h-4 mr-2" />
-                      Reduce Tenure
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={newPayment.strategy === 'reduce-emi' ? 'default' : 'outline'}
-                      onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-emi' })}
-                      className="flex-1"
-                      size="sm"
-                    >
-                      <TrendingDown className="w-4 h-4 mr-2" />
-                      Reduce EMI
-                    </Button>
-                  </div>
+              <div className="flex items-center gap-3">
+                <Label className="text-sm text-muted-foreground w-20 shrink-0">Frequency</Label>
+                <Select 
+                  value={newPayment.frequency} 
+                  onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
+                >
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="one-time">One-time</SelectItem>
+                    <SelectItem value="monthly">Monthly</SelectItem>
+                    <SelectItem value="quarterly">Quarterly</SelectItem>
+                    <SelectItem value="half-yearly">Half-Yearly</SelectItem>
+                    <SelectItem value="yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Label className="text-sm text-muted-foreground w-20 shrink-0">Strategy</Label>
+                <div className="flex gap-2 flex-1">
+                  <Button
+                    type="button"
+                    variant={newPayment.strategy === 'reduce-tenure' ? 'default' : 'outline'}
+                    onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-tenure' })}
+                    className="flex-1"
+                    size="sm"
+                  >
+                    <Clock className="w-4 h-4 mr-1" />
+                    Tenure
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={newPayment.strategy === 'reduce-emi' ? 'default' : 'outline'}
+                    onClick={() => setNewPayment({ ...newPayment, strategy: 'reduce-emi' })}
+                    className="flex-1"
+                    size="sm"
+                  >
+                    <TrendingDown className="w-4 h-4 mr-1" />
+                    EMI
+                  </Button>
                 </div>
               </div>
-        </div>
+            </div>
             
             <Button 
               onClick={addPartPayment} 
