@@ -306,8 +306,8 @@ export const PartPaymentSection = ({
                   value={newPayment.amount}
                   onChange={(e) => setNewPayment(prev => ({ ...prev, amount: Number(e.target.value) }))}
                   className="h-9"
-                  min={1000}
-                  step={1000}
+                  min={50000}
+                  step={10000}
                   placeholder="₹"
                 />
               </div>
