@@ -60,14 +60,14 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
   ].filter(item => item.value > 0);
 
   return (
-    <div className={`grid gap-3 ${hasPartPayments ? 'grid-cols-2 md:grid-cols-4 lg:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'}`}>
+    <div className={`grid gap-4 ${hasPartPayments ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'}`}>
       <Card className="shadow-[var(--shadow-card)]">
-        <CardContent className="p-2">
+        <CardContent className="p-3">
           <div className="text-center">
-            <p className="text-xs text-muted-foreground mb-1 font-bold">
+            <p className="text-sm text-muted-foreground mb-1 font-bold">
               {hasVariableEMI ? 'Avg. Monthly EMI' : 'Monthly EMI'}
             </p>
-            <p className="text-xl font-bold text-financial-primary">
+            <p className="text-2xl font-bold text-financial-primary">
               {formatCurrency(hasVariableEMI ? averageEMI : calculation.emi)}
             </p>
           </div>
@@ -75,10 +75,10 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
       </Card>
 
       <Card className="shadow-[var(--shadow-card)]">
-        <CardContent className="p-2">
+        <CardContent className="p-3">
           <div className="text-center">
-            <p className="text-xs text-muted-foreground mb-1 font-bold">Total Interest</p>
-            <p className="text-xl font-bold text-destructive">
+            <p className="text-sm text-muted-foreground mb-1 font-bold">Total Interest</p>
+            <p className="text-2xl font-bold text-destructive">
               {formatCurrency(calculation.totalInterest)}
             </p>
           </div>
@@ -86,10 +86,10 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
       </Card>
 
       <Card className="shadow-[var(--shadow-card)]">
-        <CardContent className="p-2">
+        <CardContent className="p-3">
           <div className="text-center">
-            <p className="text-xs text-muted-foreground mb-1 font-bold">Total Amount</p>
-            <p className="text-xl font-bold text-primary">
+            <p className="text-sm text-muted-foreground mb-1 font-bold">Total Amount</p>
+            <p className="text-2xl font-bold text-primary">
               {formatCurrency(calculation.totalAmount)}
             </p>
           </div>
@@ -100,13 +100,13 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
       {hasPartPayments && (
         <>
           <Card className="shadow-[var(--shadow-card)] bg-gradient-to-br from-financial-success/10 to-financial-success/5 border-financial-success/30 relative overflow-hidden">
-            <div className="absolute top-1 right-1 animate-pulse">
-              <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
+            <div className="absolute top-2 right-2 animate-pulse">
+              <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
             </div>
-            <CardContent className="p-2">
+            <CardContent className="p-3">
               <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-1 font-bold">Interest Saved</p>
-                <p className="text-xl font-bold text-emerald-600 dark:text-emerald-500">
+                <p className="text-sm text-muted-foreground mb-1 font-bold">Interest Saved</p>
+                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">
                   {formatCurrency(interestSavings)}
                 </p>
               </div>
@@ -115,13 +115,13 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
 
           {timeSavings > 0 && (
             <Card className="shadow-[var(--shadow-card)] bg-gradient-to-br from-financial-primary/10 to-financial-primary/5 border-financial-primary/30 relative overflow-hidden">
-              <div className="absolute top-1 right-1 animate-pulse">
-                <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
+              <div className="absolute top-2 right-2 animate-pulse">
+                <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
               </div>
-              <CardContent className="p-2">
+              <CardContent className="p-3">
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground mb-1 font-bold">Time Saved</p>
-                  <p className="text-xl font-bold text-emerald-600 dark:text-emerald-500">
+                  <p className="text-sm text-muted-foreground mb-1 font-bold">Time Saved</p>
+                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">
                     {timeSavings} {timeSavings === 1 ? 'month' : 'months'}
                   </p>
                 </div>
