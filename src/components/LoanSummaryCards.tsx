@@ -60,7 +60,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
   ].filter(item => item.value > 0);
 
   return (
-    <div className={`grid gap-4 ${hasPartPayments ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'}`}>
+    <div className={`grid gap-4 ${hasPartPayments ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'}`}>
       <Card className="shadow-[var(--shadow-card)]">
         <CardContent className="p-3">
           <div className="text-center">
