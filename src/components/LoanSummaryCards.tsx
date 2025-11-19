@@ -59,8 +59,15 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
     { name: 'Part Payments', value: totalPartPayments, color: 'hsl(var(--financial-primary))' }
   ].filter(item => item.value > 0);
 
+  // Determine grid columns based on number of cards
+  const getGridCols = () => {
+    if (hasPartPayments && timeSavings > 0) return 'grid-cols-5'; // 5 cards for reduce tenure
+    if (hasPartPayments) return 'grid-cols-4'; // 4 cards for reduce EMI
+    return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'; // 3 cards, responsive
+  };
+
   return (
-    <div className={`grid gap-4 ${hasPartPayments ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'}`}>
+    <div className={`grid gap-4 ${getGridCols()}`}>
       <Card className="shadow-[var(--shadow-card)]">
         <CardContent className="p-3">
           <div className="text-center">
