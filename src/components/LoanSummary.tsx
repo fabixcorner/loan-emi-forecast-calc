@@ -255,9 +255,9 @@ export const LoanSummary = ({
             
             return (
               <Card className="shadow-[var(--shadow-card)] mb-6 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                    <TrendingDown className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+                  <CardTitle className="text-xl font-semibold flex items-center gap-2">
+                    <TrendingDown className="w-5 h-5 text-white" />
                     EMI Reduction Summary
                   </CardTitle>
                 </CardHeader>
@@ -301,8 +301,8 @@ export const LoanSummary = ({
 
           {/* Yearly Payments Chart */}
           <Card className="shadow-[var(--shadow-card)] mb-6">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Yearly Payments & Remaining Balance</CardTitle>
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+              <CardTitle className="text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-80">
@@ -421,8 +421,8 @@ export const LoanSummary = ({
 
           {/* EMI Schedule Table */}
           <Card className="shadow-[var(--shadow-card)]">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg font-semibold">EMI Schedule</CardTitle>
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3 flex flex-row items-center justify-between">
+              <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
