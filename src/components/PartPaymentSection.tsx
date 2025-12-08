@@ -244,11 +244,9 @@ export const PartPaymentSection = ({
         <div className="grid grid-cols-2 gap-6">
           {/* Add New Part Payment */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium text-foreground">
-                {editingId ? 'Edit Part Payment' : 'Add Part Payment'}
-              </h4>
-              {editingId && (
+            {editingId && (
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium text-foreground">Edit Part Payment</h4>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -258,8 +256,8 @@ export const PartPaymentSection = ({
                   <X className="w-4 h-4 mr-1" />
                   Cancel
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
             
             <div className="space-y-3">
               <div className="flex items-center gap-3">
