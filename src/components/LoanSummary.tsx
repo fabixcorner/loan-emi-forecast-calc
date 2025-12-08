@@ -465,7 +465,9 @@ export const LoanSummary = ({
                   <TableHead className="w-12 font-bold uppercase">×</TableHead>
                   <TableHead className="w-20 font-bold uppercase">Year</TableHead>
                   <TableHead className="text-right font-bold uppercase">Principal</TableHead>
-                  <TableHead className="text-right font-bold uppercase">Part Payment</TableHead>
+                  {partPayments.length > 0 && (
+                    <TableHead className="text-right font-bold uppercase">Part Payment</TableHead>
+                  )}
                   <TableHead className="text-right font-bold uppercase">Interest</TableHead>
                   <TableHead className="text-right font-bold uppercase">EMI</TableHead>
                   <TableHead className="text-right font-bold uppercase">Balance</TableHead>
@@ -492,9 +494,11 @@ export const LoanSummary = ({
                       <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
                         {formatCurrency(yearData.totalPrincipal)}
                       </TableCell>
-                      <TableCell className="text-right font-bold text-financial-primary">
-                        {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
-                      </TableCell>
+                      {partPayments.length > 0 && (
+                        <TableCell className="text-right font-bold text-financial-primary">
+                          {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
+                        </TableCell>
+                      )}
                       <TableCell className="text-right font-bold text-destructive">
                         {formatCurrency(yearData.totalInterest)}
                       </TableCell>
@@ -525,9 +529,11 @@ export const LoanSummary = ({
                           <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
                             {formatCurrency(row.principalAmount)}
                           </TableCell>
-                          <TableCell className="text-right text-financial-primary">
-                            {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
-                          </TableCell>
+                          {partPayments.length > 0 && (
+                            <TableCell className="text-right text-financial-primary">
+                              {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
+                            </TableCell>
+                          )}
                           <TableCell className="text-right text-destructive">
                             {formatCurrency(row.interestAmount)}
                           </TableCell>
