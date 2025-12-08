@@ -460,20 +460,20 @@ export const LoanSummary = ({
               </div>
         </CardHeader>
         <CardContent>
-          <div className="border rounded-md max-h-[500px] overflow-auto">
+          <div className="border rounded-md">
             <Table>
-              <TableHeader className="bg-muted/50 sticky top-0 z-10">
+              <TableHeader className="bg-muted/50">
                 <TableRow className="border-b">
-                  <TableHead className="w-12 font-bold uppercase bg-muted/50">×</TableHead>
-                  <TableHead className="w-20 font-bold uppercase bg-muted/50">Year</TableHead>
-                  <TableHead className="text-right font-bold uppercase bg-muted/50">Principal</TableHead>
+                  <TableHead className="w-12 font-bold uppercase">×</TableHead>
+                  <TableHead className="w-20 font-bold uppercase">Year</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Principal</TableHead>
                   {partPayments.length > 0 && (
-                    <TableHead className="text-right font-bold uppercase bg-muted/50">Part Payment</TableHead>
+                    <TableHead className="text-right font-bold uppercase">Part Payment</TableHead>
                   )}
-                  <TableHead className="text-right font-bold uppercase bg-muted/50">Interest</TableHead>
-                  <TableHead className="text-right font-bold uppercase bg-muted/50">EMI</TableHead>
-                  <TableHead className="text-right font-bold uppercase bg-muted/50">Balance</TableHead>
-                  <TableHead className="text-right font-bold uppercase bg-muted/50">Paid %</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Interest</TableHead>
+                  <TableHead className="text-right font-bold uppercase">EMI</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Balance</TableHead>
+                  <TableHead className="text-right font-bold uppercase">Paid %</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
