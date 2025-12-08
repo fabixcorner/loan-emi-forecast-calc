@@ -383,20 +383,22 @@ export const LoanSummary = ({
                         cursor: 'pointer'
                       }}
                     />
-                    <Bar 
-                      yAxisId="left"
-                      dataKey="partPayment" 
-                      fill="hsl(var(--financial-primary))" 
-                      name="Part Payment"
-                      radius={[2, 2, 0, 0]}
-                      onMouseEnter={() => setHoveredElement('partPayment')}
-                      style={{
-                        opacity: hoveredElement === null || hoveredElement === 'partPayment' ? 1 : 0.3,
-                        filter: hoveredElement === 'partPayment' ? 'brightness(1.3)' : 'none',
-                        transition: 'all 0.3s ease',
-                        cursor: 'pointer'
-                      }}
-                    />
+                    {partPayments.length > 0 && (
+                      <Bar 
+                        yAxisId="left"
+                        dataKey="partPayment" 
+                        fill="hsl(var(--financial-primary))" 
+                        name="Part Payment"
+                        radius={[2, 2, 0, 0]}
+                        onMouseEnter={() => setHoveredElement('partPayment')}
+                        style={{
+                          opacity: hoveredElement === null || hoveredElement === 'partPayment' ? 1 : 0.3,
+                          filter: hoveredElement === 'partPayment' ? 'brightness(1.3)' : 'none',
+                          transition: 'all 0.3s ease',
+                          cursor: 'pointer'
+                        }}
+                      />
+                    )}
                     <Line
                       yAxisId="right"
                       type="monotone"
