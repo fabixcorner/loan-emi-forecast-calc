@@ -429,7 +429,7 @@ export const LoanSummary = ({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2"
+                  className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
                   onClick={handleShare}
                 >
                   <Share2 className="h-4 w-4" />
@@ -437,7 +437,7 @@ export const LoanSummary = ({
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2">
+                    <Button variant="outline" size="sm" className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white">
                       <Download className="h-4 w-4" />
                       Download
                     </Button>
