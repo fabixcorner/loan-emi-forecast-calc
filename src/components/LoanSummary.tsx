@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown } from "lucide-react";
+import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare } from "lucide-react";
 import { useState } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { CalculatorAnimation } from "@/components/CalculatorAnimation";
+import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,6 +48,9 @@ interface LoanSummaryProps {
   onPartPaymentAdded?: () => void;
   loanAmount: number;
   interestRate: number;
+  baseAmount?: number;
+  baseRate?: number;
+  baseTenure?: number;
 }
 
 export const LoanSummary = ({ 
@@ -60,12 +64,16 @@ export const LoanSummary = ({
   setShowSchedule,
   onPartPaymentAdded,
   loanAmount,
-  interestRate
+  interestRate,
+  baseAmount,
+  baseRate,
+  baseTenure
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
+  const [showComparison, setShowComparison] = useState(false);
 
   const handleShare = async () => {
     const params = new URLSearchParams({
@@ -184,8 +192,8 @@ export const LoanSummary = ({
 
   return (
     <div className="space-y-6">
-      {/* Add Part Payments Button */}
-      <div className="flex justify-center">
+      {/* Action Buttons Row */}
+      <div className="flex justify-center gap-3 flex-wrap">
         <Button
           onClick={() => setShowPrepayments(!showPrepayments)}
           variant="outline"
@@ -194,22 +202,14 @@ export const LoanSummary = ({
           <CreditCard className="w-4 h-4" />
           {showPrepayments ? 'Hide Part Payments' : 'Add Part Payments'}
         </Button>
-      </div>
-
-      {showPrepayments && (
-        <PartPaymentSection
-          partPayments={partPayments}
-          setPartPayments={setPartPayments}
-          startMonth={startMonth}
-          startYear={startYear}
-          loanTenure={loanTenure}
-          loanSchedule={calculation.schedule}
-          onPartPaymentAdded={onPartPaymentAdded}
-        />
-      )}
-
-      {/* Show EMI Schedule Button */}
-      <div className="flex justify-center">
+        <Button
+          onClick={() => setShowComparison(!showComparison)}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <GitCompare className="w-4 h-4" />
+          {showComparison ? 'Hide Comparison' : 'Compare Loan Scenarios'}
+        </Button>
         <Button
           onClick={() => {
             if (showSchedule) {
@@ -225,6 +225,29 @@ export const LoanSummary = ({
           {showSchedule ? 'Hide EMI Schedule' : 'Show EMI Schedule'}
         </Button>
       </div>
+
+      {showPrepayments && (
+        <PartPaymentSection
+          partPayments={partPayments}
+          setPartPayments={setPartPayments}
+          startMonth={startMonth}
+          startYear={startYear}
+          loanTenure={loanTenure}
+          loanSchedule={calculation.schedule}
+          onPartPaymentAdded={onPartPaymentAdded}
+        />
+      )}
+
+      {showComparison && (
+        <LoanComparisonSection
+          baseAmount={baseAmount || loanAmount}
+          baseRate={baseRate || interestRate}
+          baseTenure={baseTenure || loanTenure}
+          basePartPayments={partPayments}
+          startMonth={startMonth}
+          startYear={startYear}
+        />
+      )}
 
       <CalculatorAnimation 
         isVisible={showAnimation} 

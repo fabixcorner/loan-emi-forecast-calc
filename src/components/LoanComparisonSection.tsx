@@ -61,7 +61,6 @@ export const LoanComparisonSection = ({
   startMonth,
   startYear,
 }: LoanComparisonSectionProps) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [scenarios, setScenarios] = useState<LoanScenario[]>([
     {
       id: "base",
@@ -180,52 +179,25 @@ export const LoanComparisonSection = ({
   const bestInterest = getBestForMetric('totalInterest');
   const bestTenure = getBestForMetric('tenureMonths');
 
-  if (!isOpen) {
-    return (
-      <Card className="glass-card border-financial-border">
-        <CardContent className="p-4">
-          <Button 
-            onClick={() => setIsOpen(true)}
-            variant="outline"
-            className="w-full border-financial-primary/30 text-white hover:bg-financial-primary/20"
-          >
-            <GitCompare className="w-4 h-4 mr-2" />
-            Compare Loan Scenarios
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="glass-card border-financial-border">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-white flex items-center gap-2">
-            <GitCompare className="w-5 h-5 text-financial-primary" />
+            <GitCompare className="w-5 h-5 text-white" />
             Loan Comparison
           </CardTitle>
-          <div className="flex gap-2">
-            {scenarios.length < 4 && (
-              <Button 
-                onClick={addScenario} 
-                size="sm"
-                variant="outline"
-                className="border-financial-success/50 text-financial-success hover:bg-financial-success/20"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Add Scenario
-              </Button>
-            )}
+          {scenarios.length < 4 && (
             <Button 
-              onClick={() => setIsOpen(false)} 
+              onClick={addScenario} 
               size="sm"
-              variant="ghost"
-              className="text-muted-foreground hover:text-white"
+              variant="outline"
+              className="border-financial-success/50 text-financial-success hover:bg-financial-success/20"
             >
-              Close
+              <Plus className="w-4 h-4 mr-1" />
+              Add Scenario
             </Button>
-          </div>
+          )}
         </div>
       </CardHeader>
       <CardContent>
