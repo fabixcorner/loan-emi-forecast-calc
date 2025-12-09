@@ -200,23 +200,23 @@ export const LoanComparisonSection = ({
           )}
         </div>
       </CardHeader>
-      <CardContent>
-        <div className={`grid gap-4 ${scenarios.length === 2 ? 'grid-cols-1 md:grid-cols-2' : scenarios.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
+      <CardContent className="pt-0">
+        <div className={`grid gap-3 ${scenarios.length === 2 ? 'grid-cols-1 md:grid-cols-2' : scenarios.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
           {scenarios.map((scenario, index) => (
             <div 
               key={scenario.id} 
-              className={`p-4 rounded-lg border ${
+              className={`p-3 rounded-lg border ${
                 scenario.id === 'base' 
                   ? 'bg-financial-primary/10 border-financial-primary/30' 
                   : 'bg-muted/10 border-muted/30'
               }`}
             >
               {/* Scenario Header */}
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-2">
                 <Input
                   value={scenario.name}
                   onChange={(e) => updateScenario(scenario.id, { name: e.target.value })}
-                  className="text-sm font-medium bg-transparent border-none p-0 h-auto text-white focus-visible:ring-0"
+                  className="text-sm font-medium bg-transparent border-none p-0 h-auto text-foreground focus-visible:ring-0"
                   disabled={scenario.id === 'base'}
                 />
                 {scenario.id !== 'base' && (
@@ -224,7 +224,7 @@ export const LoanComparisonSection = ({
                     onClick={() => removeScenario(scenario.id)}
                     size="sm"
                     variant="ghost"
-                    className="h-6 w-6 p-0 text-destructive hover:bg-destructive/20"
+                    className="h-5 w-5 p-0 text-destructive hover:bg-destructive/20"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
@@ -232,20 +232,18 @@ export const LoanComparisonSection = ({
               </div>
 
               {/* Loan Parameters */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div>
                   <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                    <IndianRupee className="w-3 h-3" /> Loan Amount
+                    <IndianRupee className="w-3 h-3" /> Amount
                   </Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Input
-                      type="number"
-                      value={scenario.loanAmount}
-                      onChange={(e) => updateScenario(scenario.id, { loanAmount: Number(e.target.value) })}
-                      className="text-sm h-8"
-                      disabled={scenario.id === 'base'}
-                    />
-                  </div>
+                  <Input
+                    type="number"
+                    value={scenario.loanAmount}
+                    onChange={(e) => updateScenario(scenario.id, { loanAmount: Number(e.target.value) })}
+                    className="text-xs h-7 mt-0.5"
+                    disabled={scenario.id === 'base'}
+                  />
                   {scenario.id !== 'base' && (
                     <Slider
                       value={[scenario.loanAmount]}
@@ -253,21 +251,21 @@ export const LoanComparisonSection = ({
                       min={100000}
                       max={50000000}
                       step={100000}
-                      className="mt-2"
+                      className="mt-1"
                     />
                   )}
                 </div>
 
                 <div>
                   <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Percent className="w-3 h-3" /> Interest Rate (%)
+                    <Percent className="w-3 h-3" /> Rate (%)
                   </Label>
                   <Input
                     type="number"
                     value={scenario.interestRate}
                     onChange={(e) => updateScenario(scenario.id, { interestRate: Number(e.target.value) })}
                     step={0.1}
-                    className="text-sm h-8 mt-1"
+                    className="text-xs h-7 mt-0.5"
                     disabled={scenario.id === 'base'}
                   />
                   {scenario.id !== 'base' && (
@@ -277,20 +275,20 @@ export const LoanComparisonSection = ({
                       min={5}
                       max={20}
                       step={0.1}
-                      className="mt-2"
+                      className="mt-1"
                     />
                   )}
                 </div>
 
                 <div>
                   <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Tenure (Years)
+                    <Clock className="w-3 h-3" /> Tenure (Yrs)
                   </Label>
                   <Input
                     type="number"
                     value={scenario.loanTenure}
                     onChange={(e) => updateScenario(scenario.id, { loanTenure: Number(e.target.value) })}
-                    className="text-sm h-8 mt-1"
+                    className="text-xs h-7 mt-0.5"
                     disabled={scenario.id === 'base'}
                   />
                   {scenario.id !== 'base' && (
@@ -300,30 +298,30 @@ export const LoanComparisonSection = ({
                       min={1}
                       max={30}
                       step={1}
-                      className="mt-2"
+                      className="mt-1"
                     />
                   )}
                 </div>
 
                 {/* Part Payments */}
                 {scenario.id !== 'base' && (
-                  <div className="pt-2 border-t border-muted/30">
-                    <div className="flex items-center justify-between mb-2">
+                  <div className="pt-1.5 border-t border-muted/30">
+                    <div className="flex items-center justify-between mb-1">
                       <Label className="text-xs text-muted-foreground">Part Payments</Label>
                       <Button
                         onClick={() => addPartPaymentToScenario(scenario.id)}
                         size="sm"
                         variant="ghost"
-                        className="h-6 text-xs text-financial-success hover:bg-financial-success/20"
+                        className="h-5 text-xs text-financial-success hover:bg-financial-success/20 px-1"
                       >
-                        <Plus className="w-3 h-3 mr-1" /> Add
+                        <Plus className="w-3 h-3 mr-0.5" /> Add
                       </Button>
                     </div>
                     {scenario.partPayments.length > 0 ? (
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         {scenario.partPayments.map(pp => (
-                          <div key={pp.id} className="flex items-center justify-between text-xs bg-muted/20 rounded px-2 py-1">
-                            <span className="text-white">{formatAmount(pp.amount)}</span>
+                          <div key={pp.id} className="flex items-center justify-between text-xs bg-muted/20 rounded px-2 py-0.5">
+                            <span className="text-foreground">{formatAmount(pp.amount)}</span>
                             <div className="flex items-center gap-1">
                               <Select
                                 value={pp.strategy}
@@ -335,7 +333,7 @@ export const LoanComparisonSection = ({
                                   ));
                                 }}
                               >
-                                <SelectTrigger className="h-6 text-xs w-[90px]">
+                                <SelectTrigger className="h-5 text-xs w-[80px]">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -347,9 +345,9 @@ export const LoanComparisonSection = ({
                                 onClick={() => removePartPaymentFromScenario(scenario.id, pp.id)}
                                 size="sm"
                                 variant="ghost"
-                                className="h-5 w-5 p-0 text-destructive"
+                                className="h-4 w-4 p-0 text-destructive"
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-2.5 h-2.5" />
                               </Button>
                             </div>
                           </div>
@@ -364,21 +362,21 @@ export const LoanComparisonSection = ({
 
               {/* Results */}
               {results[scenario.id] && (
-                <div className="mt-4 pt-4 border-t border-muted/30 space-y-2">
-                  <div className={`flex justify-between items-center text-sm ${bestEMI === scenario.id ? 'text-financial-success font-medium' : 'text-white'}`}>
-                    <span>EMI</span>
+                <div className="mt-2 pt-2 border-t border-muted/30 space-y-1">
+                  <div className={`flex justify-between items-center text-xs ${bestEMI === scenario.id ? 'text-financial-success font-medium' : 'text-foreground'}`}>
+                    <span className="text-muted-foreground">EMI</span>
                     <span>{formatCurrency(results[scenario.id].emi)}</span>
                   </div>
-                  <div className={`flex justify-between items-center text-sm ${bestInterest === scenario.id ? 'text-financial-success font-medium' : 'text-white'}`}>
-                    <span>Total Interest</span>
+                  <div className={`flex justify-between items-center text-xs ${bestInterest === scenario.id ? 'text-financial-success font-medium' : 'text-foreground'}`}>
+                    <span className="text-muted-foreground">Interest</span>
                     <span>{formatCurrency(results[scenario.id].totalInterest)}</span>
                   </div>
-                  <div className="flex justify-between items-center text-sm text-white">
-                    <span>Total Amount</span>
+                  <div className="flex justify-between items-center text-xs text-foreground">
+                    <span className="text-muted-foreground">Total</span>
                     <span>{formatCurrency(results[scenario.id].totalAmount)}</span>
                   </div>
-                  <div className={`flex justify-between items-center text-sm ${bestTenure === scenario.id ? 'text-financial-success font-medium' : 'text-white'}`}>
-                    <span>Tenure</span>
+                  <div className={`flex justify-between items-center text-xs ${bestTenure === scenario.id ? 'text-financial-success font-medium' : 'text-foreground'}`}>
+                    <span className="text-muted-foreground">Tenure</span>
                     <span>{Math.floor(results[scenario.id].tenureMonths / 12)}y {results[scenario.id].tenureMonths % 12}m</span>
                   </div>
                 </div>
@@ -386,16 +384,16 @@ export const LoanComparisonSection = ({
 
               {/* Savings vs Base */}
               {scenario.id !== 'base' && results['base'] && results[scenario.id] && (
-                <div className="mt-3 pt-3 border-t border-muted/30">
-                  <p className="text-xs text-muted-foreground mb-1">vs Current:</p>
-                  <div className="grid grid-cols-2 gap-2">
+                <div className="mt-2 pt-2 border-t border-muted/30">
+                  <p className="text-xs text-muted-foreground mb-0.5">vs Current:</p>
+                  <div className="grid grid-cols-2 gap-1">
                     <div className={`text-xs ${results[scenario.id].totalInterest < results['base'].totalInterest ? 'text-financial-success' : 'text-destructive'}`}>
-                      <TrendingDown className="w-3 h-3 inline mr-1" />
+                      <TrendingDown className="w-3 h-3 inline mr-0.5" />
                       {formatAmount(Math.abs(results['base'].totalInterest - results[scenario.id].totalInterest))}
                       {results[scenario.id].totalInterest < results['base'].totalInterest ? ' saved' : ' more'}
                     </div>
                     <div className={`text-xs ${results[scenario.id].tenureMonths < results['base'].tenureMonths ? 'text-financial-success' : 'text-destructive'}`}>
-                      <Clock className="w-3 h-3 inline mr-1" />
+                      <Clock className="w-3 h-3 inline mr-0.5" />
                       {Math.abs(results['base'].tenureMonths - results[scenario.id].tenureMonths)}m
                       {results[scenario.id].tenureMonths < results['base'].tenureMonths ? ' less' : ' more'}
                     </div>
