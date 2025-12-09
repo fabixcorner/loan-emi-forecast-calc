@@ -8,6 +8,7 @@ import { LoanSummary } from "@/components/LoanSummary";
 import { LoanSummaryCards } from "@/components/LoanSummaryCards";
 import { LoanBreakdownChart } from "@/components/LoanBreakdownChart";
 import { HowItWorks } from "@/components/HowItWorks";
+import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import confetti from "canvas-confetti";
 
@@ -188,11 +189,23 @@ const Index = () => {
 
             {/* Loan Summary Cards */}
             <div className="mb-8">
-          <LoanSummaryCards 
-            calculation={calculation} 
-            interestSavings={interestSavings} 
-            timeSavings={timeSavings}
-          />
+              <LoanSummaryCards 
+                calculation={calculation} 
+                interestSavings={interestSavings} 
+                timeSavings={timeSavings}
+              />
+            </div>
+
+            {/* Loan Comparison Section */}
+            <div className="mb-8">
+              <LoanComparisonSection
+                baseAmount={loanAmount}
+                baseRate={interestRate}
+                baseTenure={loanTenure}
+                basePartPayments={partPayments}
+                startMonth={startMonth}
+                startYear={startYear}
+              />
             </div>
 
             {/* Loan Summary */}
