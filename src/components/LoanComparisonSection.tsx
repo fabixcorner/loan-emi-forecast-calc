@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, GitCompare, TrendingDown, Clock, IndianRupee, Percent } from "lucide-react";
+import { Plus, Trash2, TrendingDown, Clock, IndianRupee, Percent } from "lucide-react";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { PartPayment } from "./PartPaymentSection";
 
@@ -15,7 +14,6 @@ interface LoanScenario {
   loanAmount: number;
   interestRate: number;
   loanTenure: number;
-  partPayments: PartPayment[];
 }
 
 interface ScenarioResult {
@@ -68,7 +66,6 @@ export const LoanComparisonSection = ({
       loanAmount: baseAmount,
       interestRate: baseRate,
       loanTenure: baseTenure,
-      partPayments: basePartPayments,
     },
     {
       id: "scenario-1",
@@ -76,7 +73,6 @@ export const LoanComparisonSection = ({
       loanAmount: baseAmount,
       interestRate: baseRate - 0.5,
       loanTenure: baseTenure,
-      partPayments: [],
     },
   ]);
 
@@ -86,7 +82,7 @@ export const LoanComparisonSection = ({
   useEffect(() => {
     setScenarios(prev => prev.map(s => 
       s.id === "base" 
-        ? { ...s, loanAmount: baseAmount, interestRate: baseRate, loanTenure: baseTenure, partPayments: basePartPayments }
+        ? { ...s, loanAmount: baseAmount, interestRate: baseRate, loanTenure: baseTenure }
         : s
     ));
   }, [baseAmount, baseRate, baseTenure, basePartPayments]);
@@ -101,7 +97,7 @@ export const LoanComparisonSection = ({
         scenario.loanTenure,
         startMonth,
         startYear,
-        scenario.partPayments
+        scenario.id === "base" ? basePartPayments : []
       );
       newResults[scenario.id] = {
         emi: calc.emi,
@@ -122,7 +118,6 @@ export const LoanComparisonSection = ({
       loanAmount: baseAmount,
       interestRate: baseRate,
       loanTenure: baseTenure,
-      partPayments: [],
     }]);
   };
 
@@ -134,30 +129,6 @@ export const LoanComparisonSection = ({
   const updateScenario = (id: string, updates: Partial<LoanScenario>) => {
     setScenarios(prev => prev.map(s => 
       s.id === id ? { ...s, ...updates } : s
-    ));
-  };
-
-  const addPartPaymentToScenario = (scenarioId: string) => {
-    const newPayment: PartPayment = {
-      id: `pp-${Date.now()}`,
-      month: startMonth,
-      year: startYear + 1,
-      amount: 100000,
-      frequency: 'one-time',
-      strategy: 'reduce-tenure',
-    };
-    setScenarios(prev => prev.map(s => 
-      s.id === scenarioId 
-        ? { ...s, partPayments: [...s.partPayments, newPayment] }
-        : s
-    ));
-  };
-
-  const removePartPaymentFromScenario = (scenarioId: string, paymentId: string) => {
-    setScenarios(prev => prev.map(s => 
-      s.id === scenarioId 
-        ? { ...s, partPayments: s.partPayments.filter(p => p.id !== paymentId) }
-        : s
     ));
   };
 
@@ -181,18 +152,15 @@ export const LoanComparisonSection = ({
 
   return (
     <Card className="glass-card border-financial-border">
-      <CardHeader className="pb-4">
+      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-white flex items-center gap-2">
-            <GitCompare className="w-5 h-5 text-white" />
-            Loan Comparison
-          </CardTitle>
+          <CardTitle className="text-xl font-semibold">Loan Comparison</CardTitle>
           {scenarios.length < 4 && (
             <Button 
               onClick={addScenario} 
               size="sm"
               variant="outline"
-              className="border-financial-success/50 text-financial-success hover:bg-financial-success/20"
+              className="border-white/50 text-white hover:bg-white/20"
             >
               <Plus className="w-4 h-4 mr-1" />
               Add Scenario
@@ -303,61 +271,6 @@ export const LoanComparisonSection = ({
                   )}
                 </div>
 
-                {/* Part Payments */}
-                {scenario.id !== 'base' && (
-                  <div className="pt-1.5 border-t border-muted/30">
-                    <div className="flex items-center justify-between mb-1">
-                      <Label className="text-xs text-muted-foreground">Part Payments</Label>
-                      <Button
-                        onClick={() => addPartPaymentToScenario(scenario.id)}
-                        size="sm"
-                        variant="ghost"
-                        className="h-5 text-xs text-financial-success hover:bg-financial-success/20 px-1"
-                      >
-                        <Plus className="w-3 h-3 mr-0.5" /> Add
-                      </Button>
-                    </div>
-                    {scenario.partPayments.length > 0 ? (
-                      <div className="space-y-1">
-                        {scenario.partPayments.map(pp => (
-                          <div key={pp.id} className="flex items-center justify-between text-xs bg-muted/20 rounded px-2 py-0.5">
-                            <span className="text-foreground">{formatAmount(pp.amount)}</span>
-                            <div className="flex items-center gap-1">
-                              <Select
-                                value={pp.strategy}
-                                onValueChange={(v: 'reduce-tenure' | 'reduce-emi') => {
-                                  setScenarios(prev => prev.map(s => 
-                                    s.id === scenario.id 
-                                      ? { ...s, partPayments: s.partPayments.map(p => p.id === pp.id ? { ...p, strategy: v } : p) }
-                                      : s
-                                  ));
-                                }}
-                              >
-                                <SelectTrigger className="h-5 text-xs w-[80px]">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="reduce-tenure">Tenure</SelectItem>
-                                  <SelectItem value="reduce-emi">EMI</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <Button
-                                onClick={() => removePartPaymentFromScenario(scenario.id, pp.id)}
-                                size="sm"
-                                variant="ghost"
-                                className="h-4 w-4 p-0 text-destructive"
-                              >
-                                <Trash2 className="w-2.5 h-2.5" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">No part payments</p>
-                    )}
-                  </div>
-                )}
               </div>
 
               {/* Results */}
