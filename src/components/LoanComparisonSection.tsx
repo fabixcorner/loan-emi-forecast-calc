@@ -155,7 +155,7 @@ export const LoanComparisonSection = ({
       <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-semibold">Loan Comparison</CardTitle>
-          {scenarios.length < 4 && (
+          {scenarios.length < 3 && (
             <Button 
               onClick={addScenario} 
               size="sm"
