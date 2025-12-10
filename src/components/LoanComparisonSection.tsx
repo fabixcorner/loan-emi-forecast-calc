@@ -201,76 +201,81 @@ export const LoanComparisonSection = ({
 
               {/* Loan Parameters */}
               <div className="space-y-2">
-                <div>
-                  <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-muted-foreground flex items-center gap-1 w-16 shrink-0">
                     <IndianRupee className="w-3 h-3" /> Amount
                   </Label>
-                  <Input
-                    type="number"
-                    value={scenario.loanAmount}
-                    onChange={(e) => updateScenario(scenario.id, { loanAmount: Number(e.target.value) })}
-                    className="text-xs h-7 mt-0.5"
-                    disabled={scenario.id === 'base'}
-                  />
-                  {scenario.id !== 'base' && (
-                    <Slider
-                      value={[scenario.loanAmount]}
-                      onValueChange={(v) => updateScenario(scenario.id, { loanAmount: v[0] })}
-                      min={100000}
-                      max={50000000}
-                      step={100000}
-                      className="mt-1"
+                  <div className="flex-1">
+                    <Input
+                      type="number"
+                      value={scenario.loanAmount}
+                      onChange={(e) => updateScenario(scenario.id, { loanAmount: Number(e.target.value) })}
+                      className="text-xs h-7"
+                      disabled={scenario.id === 'base'}
                     />
-                  )}
+                    {scenario.id !== 'base' && (
+                      <Slider
+                        value={[scenario.loanAmount]}
+                        onValueChange={(v) => updateScenario(scenario.id, { loanAmount: v[0] })}
+                        min={100000}
+                        max={50000000}
+                        step={100000}
+                        className="mt-1"
+                      />
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Percent className="w-3 h-3" /> Rate (%)
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-muted-foreground flex items-center gap-1 w-16 shrink-0">
+                    <Percent className="w-3 h-3" /> Rate
                   </Label>
-                  <Input
-                    type="number"
-                    value={scenario.interestRate}
-                    onChange={(e) => updateScenario(scenario.id, { interestRate: Number(e.target.value) })}
-                    step={0.1}
-                    className="text-xs h-7 mt-0.5"
-                    disabled={scenario.id === 'base'}
-                  />
-                  {scenario.id !== 'base' && (
-                    <Slider
-                      value={[scenario.interestRate]}
-                      onValueChange={(v) => updateScenario(scenario.id, { interestRate: v[0] })}
-                      min={5}
-                      max={20}
+                  <div className="flex-1">
+                    <Input
+                      type="number"
+                      value={scenario.interestRate}
+                      onChange={(e) => updateScenario(scenario.id, { interestRate: Number(e.target.value) })}
                       step={0.1}
-                      className="mt-1"
+                      className="text-xs h-7"
+                      disabled={scenario.id === 'base'}
                     />
-                  )}
+                    {scenario.id !== 'base' && (
+                      <Slider
+                        value={[scenario.interestRate]}
+                        onValueChange={(v) => updateScenario(scenario.id, { interestRate: v[0] })}
+                        min={5}
+                        max={20}
+                        step={0.1}
+                        className="mt-1"
+                      />
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Tenure (Yrs)
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs text-muted-foreground flex items-center gap-1 w-16 shrink-0">
+                    <Clock className="w-3 h-3" /> Tenure
                   </Label>
-                  <Input
-                    type="number"
-                    value={scenario.loanTenure}
-                    onChange={(e) => updateScenario(scenario.id, { loanTenure: Number(e.target.value) })}
-                    className="text-xs h-7 mt-0.5"
-                    disabled={scenario.id === 'base'}
-                  />
-                  {scenario.id !== 'base' && (
-                    <Slider
-                      value={[scenario.loanTenure]}
-                      onValueChange={(v) => updateScenario(scenario.id, { loanTenure: v[0] })}
-                      min={1}
-                      max={30}
-                      step={1}
-                      className="mt-1"
+                  <div className="flex-1">
+                    <Input
+                      type="number"
+                      value={scenario.loanTenure}
+                      onChange={(e) => updateScenario(scenario.id, { loanTenure: Number(e.target.value) })}
+                      className="text-xs h-7"
+                      disabled={scenario.id === 'base'}
                     />
-                  )}
+                    {scenario.id !== 'base' && (
+                      <Slider
+                        value={[scenario.loanTenure]}
+                        onValueChange={(v) => updateScenario(scenario.id, { loanTenure: v[0] })}
+                        min={1}
+                        max={30}
+                        step={1}
+                        className="mt-1"
+                      />
+                    )}
+                  </div>
                 </div>
-
               </div>
 
               {/* Results */}
