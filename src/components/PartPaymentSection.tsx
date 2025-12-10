@@ -267,7 +267,7 @@ export const PartPaymentSection = ({
             
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Date</Label>
+                <Label className="text-sm text-muted-foreground w-20 shrink-0">Month-Year</Label>
                 <div className="grid grid-cols-2 gap-3 flex-1">
                   <Select 
                     value={newPayment.month.toString()} 
