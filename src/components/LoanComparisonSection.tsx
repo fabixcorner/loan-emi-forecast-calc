@@ -160,9 +160,9 @@ export const LoanComparisonSection = ({
               onClick={addScenario} 
               size="sm"
               variant="outline"
-              className="border-white/50 text-white hover:bg-white/20"
+              className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
             >
-              <Plus className="w-4 h-4 mr-1" />
+              <Plus className="w-4 h-4" />
               Add Scenario
             </Button>
           )}
