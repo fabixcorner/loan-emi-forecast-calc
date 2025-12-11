@@ -4,7 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus, Clock, TrendingDown, Edit2, X } from "lucide-react";
+import { Trash2, Plus, Clock, TrendingDown, Edit2, X, MessageSquare } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -15,6 +16,7 @@ export interface PartPayment {
   amount: number;
   frequency: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly';
   strategy: 'reduce-tenure' | 'reduce-emi';
+  notes?: string;
 }
 
 interface PartPaymentSectionProps {
@@ -46,6 +48,7 @@ export const PartPaymentSection = ({
     amount: 100000,
     frequency: 'one-time',
     strategy: 'reduce-tenure',
+    notes: '',
   });
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -150,6 +153,7 @@ export const PartPaymentSection = ({
         amount: 100000,
         frequency: 'one-time',
         strategy: 'reduce-tenure',
+        notes: '',
       });
       setEditingId(null);
       onPartPaymentAdded?.();
@@ -163,6 +167,7 @@ export const PartPaymentSection = ({
       amount: payment.amount,
       frequency: payment.frequency,
       strategy: payment.strategy,
+      notes: payment.notes || '',
     });
     setEditingId(payment.id);
   };
@@ -174,6 +179,7 @@ export const PartPaymentSection = ({
       amount: 100000,
       frequency: 'one-time',
       strategy: 'reduce-tenure',
+      notes: '',
     });
     setEditingId(null);
   };
@@ -244,11 +250,9 @@ export const PartPaymentSection = ({
         <div className="grid grid-cols-2 gap-6">
           {/* Add New Part Payment */}
           <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium text-foreground">
-                {editingId ? 'Edit Part Payment' : 'Add Part Payment'}
-              </h4>
-              {editingId && (
+            {editingId && (
+              <div className="flex items-center justify-between">
+                <h4 className="font-medium text-foreground">Edit Part Payment</h4>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -258,12 +262,12 @@ export const PartPaymentSection = ({
                   <X className="w-4 h-4 mr-1" />
                   Cancel
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
             
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Date</Label>
+                <Label className="text-sm text-muted-foreground w-20 shrink-0">Month-Year</Label>
                 <div className="grid grid-cols-2 gap-3 flex-1">
                   <Select 
                     value={newPayment.month.toString()} 
@@ -356,6 +360,16 @@ export const PartPaymentSection = ({
                   </Button>
                 </div>
               </div>
+
+              <div className="flex items-start gap-3">
+                <Label className="text-sm text-muted-foreground w-20 shrink-0 pt-2">Notes</Label>
+                <Textarea
+                  value={newPayment.notes || ''}
+                  onChange={(e) => setNewPayment(prev => ({ ...prev, notes: e.target.value }))}
+                  className="min-h-[60px] text-sm"
+                  placeholder="Add a note (e.g., Bonus, Tax refund, etc.)"
+                />
+              </div>
             </div>
             
             <Button 
@@ -407,6 +421,12 @@ export const PartPaymentSection = ({
                           )}
                         </span>
                       </div>
+                      {payment.notes && (
+                        <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                          <MessageSquare className="w-3 h-3" />
+                          <span className="truncate max-w-[180px]">{payment.notes}</span>
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-1">
                       <Button

@@ -3,10 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown } from "lucide-react";
+import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { CalculatorAnimation } from "@/components/CalculatorAnimation";
+import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,6 +49,9 @@ interface LoanSummaryProps {
   onPartPaymentAdded?: () => void;
   loanAmount: number;
   interestRate: number;
+  baseAmount?: number;
+  baseRate?: number;
+  baseTenure?: number;
 }
 
 export const LoanSummary = ({ 
@@ -60,12 +65,18 @@ export const LoanSummary = ({
   setShowSchedule,
   onPartPaymentAdded,
   loanAmount,
-  interestRate
+  interestRate,
+  baseAmount,
+  baseRate,
+  baseTenure
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
+  const [showComparison, setShowComparison] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [yearsPerPage, setYearsPerPage] = useState(5);
 
   const handleShare = async () => {
     const params = new URLSearchParams({
@@ -182,10 +193,20 @@ export const LoanSummary = ({
   const yearlyData = getYearlyData();
   const totalPrincipal = calculation.totalAmount - calculation.totalInterest;
 
+  // Pagination logic
+  const totalPages = Math.ceil(yearlyData.length / yearsPerPage);
+  const startIndex = (currentPage - 1) * yearsPerPage;
+  const endIndex = startIndex + yearsPerPage;
+  const paginatedYearlyData = yearlyData.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
+
   return (
     <div className="space-y-6">
-      {/* Add Part Payments Button */}
-      <div className="flex justify-center">
+      {/* Action Buttons Row */}
+      <div className="flex justify-center gap-3 flex-wrap">
         <Button
           onClick={() => setShowPrepayments(!showPrepayments)}
           variant="outline"
@@ -194,22 +215,14 @@ export const LoanSummary = ({
           <CreditCard className="w-4 h-4" />
           {showPrepayments ? 'Hide Part Payments' : 'Add Part Payments'}
         </Button>
-      </div>
-
-      {showPrepayments && (
-        <PartPaymentSection
-          partPayments={partPayments}
-          setPartPayments={setPartPayments}
-          startMonth={startMonth}
-          startYear={startYear}
-          loanTenure={loanTenure}
-          loanSchedule={calculation.schedule}
-          onPartPaymentAdded={onPartPaymentAdded}
-        />
-      )}
-
-      {/* Show EMI Schedule Button */}
-      <div className="flex justify-center">
+        <Button
+          onClick={() => setShowComparison(!showComparison)}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <GitCompare className="w-4 h-4" />
+          {showComparison ? 'Hide Comparison' : 'Compare Loan Scenarios'}
+        </Button>
         <Button
           onClick={() => {
             if (showSchedule) {
@@ -225,6 +238,29 @@ export const LoanSummary = ({
           {showSchedule ? 'Hide EMI Schedule' : 'Show EMI Schedule'}
         </Button>
       </div>
+
+      {showPrepayments && (
+        <PartPaymentSection
+          partPayments={partPayments}
+          setPartPayments={setPartPayments}
+          startMonth={startMonth}
+          startYear={startYear}
+          loanTenure={loanTenure}
+          loanSchedule={calculation.schedule}
+          onPartPaymentAdded={onPartPaymentAdded}
+        />
+      )}
+
+      {showComparison && (
+        <LoanComparisonSection
+          baseAmount={baseAmount || loanAmount}
+          baseRate={baseRate || interestRate}
+          baseTenure={baseTenure || loanTenure}
+          basePartPayments={partPayments}
+          startMonth={startMonth}
+          startYear={startYear}
+        />
+      )}
 
       <CalculatorAnimation 
         isVisible={showAnimation} 
@@ -383,20 +419,22 @@ export const LoanSummary = ({
                         cursor: 'pointer'
                       }}
                     />
-                    <Bar 
-                      yAxisId="left"
-                      dataKey="partPayment" 
-                      fill="hsl(var(--financial-primary))" 
-                      name="Part Payment"
-                      radius={[2, 2, 0, 0]}
-                      onMouseEnter={() => setHoveredElement('partPayment')}
-                      style={{
-                        opacity: hoveredElement === null || hoveredElement === 'partPayment' ? 1 : 0.3,
-                        filter: hoveredElement === 'partPayment' ? 'brightness(1.3)' : 'none',
-                        transition: 'all 0.3s ease',
-                        cursor: 'pointer'
-                      }}
-                    />
+                    {partPayments.length > 0 && (
+                      <Bar 
+                        yAxisId="left"
+                        dataKey="partPayment" 
+                        fill="hsl(var(--financial-primary))" 
+                        name="Part Payment"
+                        radius={[2, 2, 0, 0]}
+                        onMouseEnter={() => setHoveredElement('partPayment')}
+                        style={{
+                          opacity: hoveredElement === null || hoveredElement === 'partPayment' ? 1 : 0.3,
+                          filter: hoveredElement === 'partPayment' ? 'brightness(1.3)' : 'none',
+                          transition: 'all 0.3s ease',
+                          cursor: 'pointer'
+                        }}
+                      />
+                    )}
                     <Line
                       yAxisId="right"
                       type="monotone"
@@ -427,7 +465,7 @@ export const LoanSummary = ({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2"
+                  className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
                   onClick={handleShare}
                 >
                   <Share2 className="h-4 w-4" />
@@ -435,7 +473,7 @@ export const LoanSummary = ({
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2">
+                    <Button variant="outline" size="sm" className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white">
                       <Download className="h-4 w-4" />
                       Download
                     </Button>
@@ -465,7 +503,9 @@ export const LoanSummary = ({
                   <TableHead className="w-12 font-bold uppercase">×</TableHead>
                   <TableHead className="w-20 font-bold uppercase">Year</TableHead>
                   <TableHead className="text-right font-bold uppercase">Principal</TableHead>
-                  <TableHead className="text-right font-bold uppercase">Part Payment</TableHead>
+                  {partPayments.length > 0 && (
+                    <TableHead className="text-right font-bold uppercase">Part Payment</TableHead>
+                  )}
                   <TableHead className="text-right font-bold uppercase">Interest</TableHead>
                   <TableHead className="text-right font-bold uppercase">EMI</TableHead>
                   <TableHead className="text-right font-bold uppercase">Balance</TableHead>
@@ -473,7 +513,7 @@ export const LoanSummary = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {yearlyData.map((yearData) => (
+                {paginatedYearlyData.map((yearData) => (
                   <>
                     {/* Year Summary Row */}
                     <TableRow 
@@ -492,9 +532,11 @@ export const LoanSummary = ({
                       <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
                         {formatCurrency(yearData.totalPrincipal)}
                       </TableCell>
-                      <TableCell className="text-right font-bold text-financial-primary">
-                        {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
-                      </TableCell>
+                      {partPayments.length > 0 && (
+                        <TableCell className="text-right font-bold text-financial-primary">
+                          {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
+                        </TableCell>
+                      )}
                       <TableCell className="text-right font-bold text-destructive">
                         {formatCurrency(yearData.totalInterest)}
                       </TableCell>
@@ -525,9 +567,11 @@ export const LoanSummary = ({
                           <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
                             {formatCurrency(row.principalAmount)}
                           </TableCell>
-                          <TableCell className="text-right text-financial-primary">
-                            {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
-                          </TableCell>
+                          {partPayments.length > 0 && (
+                            <TableCell className="text-right text-financial-primary">
+                              {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
+                            </TableCell>
+                          )}
                           <TableCell className="text-right text-destructive">
                             {formatCurrency(row.interestAmount)}
                           </TableCell>
@@ -558,6 +602,84 @@ export const LoanSummary = ({
               </TableBody>
             </Table>
           </div>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-4 px-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Show</span>
+                <Select
+                  value={yearsPerPage.toString()}
+                  onValueChange={(value) => {
+                    setYearsPerPage(Number(value));
+                    setCurrentPage(1);
+                  }}
+                >
+                  <SelectTrigger className="w-[70px] h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="15">15</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>years per page</span>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {startIndex + 1}-{Math.min(endIndex, yearlyData.length)} of {yearlyData.length} years
+                </span>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant={currentPage === pageNum ? "default" : "outline"}
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => goToPage(pageNum)}
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
         </>
