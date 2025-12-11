@@ -249,7 +249,13 @@ export const LoanComparisonSection = ({
                     <span className="text-muted-foreground">EMI</span>
                     <span>{formatCurrency(results[scenario.id].emi)}</span>
                   </div>
-                  <div className={`flex justify-between items-center text-xs ${bestInterest === scenario.id ? 'text-financial-success font-medium' : 'text-foreground'}`}>
+                  <div className={`flex justify-between items-center text-xs ${
+                    bestInterest === scenario.id 
+                      ? 'text-financial-success font-medium' 
+                      : scenario.id !== 'base' && results['base'] && results[scenario.id].totalInterest > results['base'].totalInterest 
+                        ? 'text-destructive font-medium' 
+                        : 'text-foreground'
+                  }`}>
                     <span className="text-muted-foreground">Interest</span>
                     <span>{formatCurrency(results[scenario.id].totalInterest)}</span>
                   </div>
