@@ -44,19 +44,35 @@ const questions: Question[] = [
     },
   },
   {
-    id: "part-payments",
-    title: "How to benefit by making part payments during a loan tenure?",
+    id: "part-payments-tenure",
+    title: "How to benefit by making part payment to reduce loan tenure?",
     icon: TrendingDown,
     content: {
       steps: [
         "Scroll to the 'Part Payment' section in the Loan Summary area",
         "Click 'Add Part Payment' to schedule an additional payment",
         "Choose the month/year and amount for your part payment",
-        "Select frequency: one-time, monthly, quarterly, half-yearly, or yearly",
-        "Watch your interest savings and time savings appear in real-time!",
-        "The updated schedule shows how part payments reduce your loan tenure and total interest",
+        "Select 'Reduce Tenure' as the adjustment strategy",
+        "Your EMI stays the same, but loan tenure decreases significantly",
+        "Watch the time savings and interest savings update in real-time!",
       ],
-      visual: "Part payments directly reduce your principal, leading to substantial interest savings. The calculator shows you exactly how much time and money you'll save with each part payment.",
+      visual: "With 'Reduce Tenure' strategy, your monthly EMI remains unchanged while the loan duration shortens. This is ideal if you want to become debt-free faster and save maximum interest over the loan period.",
+    },
+  },
+  {
+    id: "part-payments-emi",
+    title: "How to benefit by making part payment to reduce monthly EMI?",
+    icon: Wallet,
+    content: {
+      steps: [
+        "Scroll to the 'Part Payment' section in the Loan Summary area",
+        "Click 'Add Part Payment' to schedule an additional payment",
+        "Choose the month/year and amount for your part payment",
+        "Select 'Reduce EMI' as the adjustment strategy",
+        "Your loan tenure stays the same, but monthly EMI decreases",
+        "See the reduced EMI amount reflected in your payment schedule!",
+      ],
+      visual: "With 'Reduce EMI' strategy, your loan duration remains the same while monthly payments become lighter. This is ideal if you want to improve monthly cash flow while still saving on interest.",
     },
   },
 ];
