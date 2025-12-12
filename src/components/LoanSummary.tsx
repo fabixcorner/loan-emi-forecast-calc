@@ -632,6 +632,30 @@ export const LoanSummary = ({
                 <span className="text-sm text-muted-foreground">
                   {startIndex + 1}-{Math.min(endIndex, yearlyData.length)} of {yearlyData.length} years
                 </span>
+                
+                {/* Go to specific year dropdown */}
+                <Select
+                  value=""
+                  onValueChange={(value) => {
+                    const yearIndex = yearlyData.findIndex(y => y.year === Number(value));
+                    if (yearIndex !== -1) {
+                      const targetPage = Math.floor(yearIndex / yearsPerPage) + 1;
+                      setCurrentPage(targetPage);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-[140px] h-8">
+                    <SelectValue placeholder="Go to year..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearlyData.map((yearData) => (
+                      <SelectItem key={yearData.year} value={yearData.year.toString()}>
+                        Year {yearData.year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
                 <div className="flex items-center gap-1">
                   <Button
                     variant="outline"
