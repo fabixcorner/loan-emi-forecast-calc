@@ -92,13 +92,23 @@ export const LoanSummary = ({
         setCurrentPage(prev => Math.max(1, prev - 1));
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        setCurrentPage(prev => prev + 1); // Will be clamped later
+        setCurrentPage(prev => {
+          if (!calculation) return prev;
+
+          // Determine total pages based on distinct years in the schedule
+          const years = new Set<number>();
+          calculation.schedule.forEach(row => years.add(row.year));
+          const totalYears = years.size || 1;
+          const maxPage = Math.max(1, Math.ceil(totalYears / yearsPerPage));
+
+          return Math.min(maxPage, prev + 1);
+        });
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSchedule]);
+  }, [showSchedule, calculation, yearsPerPage]);
 
   const handleShare = async () => {
     const params = new URLSearchParams({
@@ -221,12 +231,6 @@ export const LoanSummary = ({
   const endIndex = startIndex + yearsPerPage;
   const paginatedYearlyData = yearlyData.slice(startIndex, endIndex);
 
-  // Clamp current page if it exceeds total pages
-  useEffect(() => {
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
 
   const handleGoToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
