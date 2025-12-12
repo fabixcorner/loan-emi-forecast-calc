@@ -1,9 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight, FileText, Keyboard } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -412,7 +413,7 @@ export const LoanSummary = ({
                       width={80}
                       label={{ value: 'Balance Amount', angle: 90, position: 'outside', offset: 60 }}
                     />
-                    <Tooltip 
+                    <RechartsTooltip 
                       formatter={(value: number, name: string) => {
                         let label = name;
                         if (name === 'Principal') label = 'Principal';
@@ -709,17 +710,37 @@ export const LoanSummary = ({
                   </SelectContent>
                 </Select>
                 
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleGoToPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <div className="flex items-center gap-1">
+                <div className="flex items-center gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleGoToPage(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-popover text-popover-foreground border">
+                        <p className="flex items-center gap-1">
+                          <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded border">←</kbd> Previous page
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  {/* Page indicator */}
+                  <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded-md">
+                    <span className="text-sm font-medium text-foreground">{currentPage}</span>
+                    <span className="text-sm text-muted-foreground">/</span>
+                    <span className="text-sm text-muted-foreground">{totalPages}</span>
+                  </div>
+
+                  {/* Page dots for visual indication */}
+                  <div className="hidden sm:flex items-center gap-1">
                     {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                       let pageNum;
                       if (totalPages <= 5) {
@@ -732,27 +753,55 @@ export const LoanSummary = ({
                         pageNum = currentPage - 2 + i;
                       }
                       return (
-                        <Button
+                        <button
                           key={pageNum}
-                          variant={currentPage === pageNum ? "default" : "outline"}
-                          size="icon"
-                          className="h-8 w-8"
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            currentPage === pageNum 
+                              ? 'bg-primary w-4' 
+                              : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                          }`}
                           onClick={() => handleGoToPage(pageNum)}
-                        >
-                          {pageNum}
-                        </Button>
+                          aria-label={`Go to page ${pageNum}`}
+                        />
                       );
                     })}
                   </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleGoToPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleGoToPage(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-popover text-popover-foreground border">
+                        <p className="flex items-center gap-1">
+                          <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded border">→</kbd> Next page
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  {/* Keyboard shortcut hint */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="hidden md:flex items-center gap-1 px-2 py-1 bg-muted/30 rounded text-xs text-muted-foreground cursor-help">
+                          <Keyboard className="h-3 w-3" />
+                          <span>← →</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-popover text-popover-foreground border">
+                        <p className="text-sm">Use arrow keys to navigate pages</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
             </div>
