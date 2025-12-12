@@ -649,9 +649,7 @@ export const LoanSummary = ({
                   </SelectTrigger>
                   <SelectContent>
                     {yearlyData.map((yearData) => (
-                      <SelectItem key={yearData.year} value={yearData.year.toString()}>
-                        Year {yearData.year}
-                      </SelectItem>
+                      <SelectItem key={yearData.year} value={yearData.year.toString()}>{yearData.year}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
