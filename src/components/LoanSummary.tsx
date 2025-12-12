@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect, useCallback } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { exportToExcel, exportToPDF, exportToJSON, exportToCSV } from "@/utils/exportUtils";
+import { exportToExcel, exportToPDF, exportToJSON, exportToCSV, exportDetailedPDFReport } from "@/utils/exportUtils";
 
 interface LoanCalculation {
   emi: number;
@@ -492,6 +492,28 @@ export const LoanSummary = ({
                 >
                   <Share2 className="h-4 w-4" />
                   Share
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
+                  onClick={() => exportDetailedPDFReport(
+                    calculation.schedule, 
+                    calculation.emi, 
+                    calculation.totalInterest, 
+                    calculation.totalAmount, 
+                    partPayments,
+                    {
+                      loanAmount,
+                      interestRate,
+                      loanTenure,
+                      startMonth,
+                      startYear
+                    }
+                  )}
+                >
+                  <FileText className="h-4 w-4" />
+                  Full Report
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
