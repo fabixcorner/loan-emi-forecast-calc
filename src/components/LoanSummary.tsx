@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight, FileText } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { CalculatorAnimation } from "@/components/CalculatorAnimation";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
@@ -77,6 +77,28 @@ export const LoanSummary = ({
   const [showComparison, setShowComparison] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [yearsPerPage, setYearsPerPage] = useState(5);
+
+  // Keyboard navigation for pagination - must be before any conditional returns
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle if schedule is shown
+      if (!showSchedule) return;
+      
+      // Don't handle if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCurrentPage(prev => Math.max(1, prev - 1));
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setCurrentPage(prev => prev + 1); // Will be clamped later
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSchedule]);
 
   const handleShare = async () => {
     const params = new URLSearchParams({
@@ -199,31 +221,16 @@ export const LoanSummary = ({
   const endIndex = startIndex + yearsPerPage;
   const paginatedYearlyData = yearlyData.slice(startIndex, endIndex);
 
-  const goToPage = useCallback((page: number) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
-  }, [totalPages]);
-
-  // Keyboard navigation for pagination
+  // Clamp current page if it exceeds total pages
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Only handle if schedule is shown and pagination exists
-      if (!showSchedule || totalPages <= 1) return;
-      
-      // Don't handle if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        goToPage(currentPage - 1);
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        goToPage(currentPage + 1);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showSchedule, totalPages, currentPage, goToPage]);
+  const handleGoToPage = (page: number) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  };
 
   return (
     <div className="space-y-6">
@@ -703,7 +710,7 @@ export const LoanSummary = ({
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={() => goToPage(currentPage - 1)}
+                    onClick={() => handleGoToPage(currentPage - 1)}
                     disabled={currentPage === 1}
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -726,7 +733,7 @@ export const LoanSummary = ({
                           variant={currentPage === pageNum ? "default" : "outline"}
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => goToPage(pageNum)}
+                          onClick={() => handleGoToPage(pageNum)}
                         >
                           {pageNum}
                         </Button>
@@ -737,7 +744,7 @@ export const LoanSummary = ({
                     variant="outline"
                     size="icon"
                     className="h-8 w-8"
-                    onClick={() => goToPage(currentPage + 1)}
+                    onClick={() => handleGoToPage(currentPage + 1)}
                     disabled={currentPage === totalPages}
                   >
                     <ChevronRight className="h-4 w-4" />
