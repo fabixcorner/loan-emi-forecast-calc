@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight, FileText, Keyboard } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { CalculatorAnimation } from "@/components/CalculatorAnimation";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
@@ -78,6 +78,11 @@ export const LoanSummary = ({
   const [showComparison, setShowComparison] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [yearsPerPage, setYearsPerPage] = useState(5);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTable = () => {
+    tableContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   // Keyboard navigation for pagination - must be before any conditional returns
   useEffect(() => {
@@ -90,7 +95,11 @@ export const LoanSummary = ({
 
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        setCurrentPage(prev => Math.max(1, prev - 1));
+        setCurrentPage(prev => {
+          const newPage = Math.max(1, prev - 1);
+          if (newPage !== prev) setTimeout(scrollToTable, 50);
+          return newPage;
+        });
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
         setCurrentPage(prev => {
@@ -102,7 +111,9 @@ export const LoanSummary = ({
           const totalYears = years.size || 1;
           const maxPage = Math.max(1, Math.ceil(totalYears / yearsPerPage));
 
-          return Math.min(maxPage, prev + 1);
+          const newPage = Math.min(maxPage, prev + 1);
+          if (newPage !== prev) setTimeout(scrollToTable, 50);
+          return newPage;
         });
       }
     };
@@ -234,7 +245,11 @@ export const LoanSummary = ({
 
 
   const handleGoToPage = (page: number) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+    const newPage = Math.max(1, Math.min(page, totalPages));
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage);
+      setTimeout(scrollToTable, 50);
+    }
   };
 
   return (
@@ -552,7 +567,7 @@ export const LoanSummary = ({
               </div>
         </CardHeader>
         <CardContent>
-          <div className="border rounded-md">
+          <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow className="border-b">
