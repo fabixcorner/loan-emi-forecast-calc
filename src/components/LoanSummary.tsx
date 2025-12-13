@@ -630,7 +630,7 @@ export const LoanSummary = ({
                       const emiReduced = emiChanged && row.emiAmount < previousRow!.emiAmount;
                       
                       return (
-                        <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background">
+                        <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background hover:bg-muted/30 transition-colors">
                           <TableCell></TableCell>
                           <TableCell className="text-muted-foreground pl-4">
                             {getFullMonthName(row.month)}
