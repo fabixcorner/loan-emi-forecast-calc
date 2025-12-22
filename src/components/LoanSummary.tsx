@@ -1,11 +1,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend, ComposedChart, Line } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Minus, BarChart3, CreditCard, Download, Share2, TrendingDown, GitCompare, ChevronLeft, ChevronRight, FileText, Keyboard } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { CalculatorAnimation } from "@/components/CalculatorAnimation";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
@@ -15,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { exportToExcel, exportToPDF, exportToJSON, exportToCSV } from "@/utils/exportUtils";
+import { exportToExcel, exportToPDF, exportToJSON, exportToCSV, exportDetailedPDFReport } from "@/utils/exportUtils";
 
 interface LoanCalculation {
   emi: number;
@@ -77,6 +78,49 @@ export const LoanSummary = ({
   const [showComparison, setShowComparison] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [yearsPerPage, setYearsPerPage] = useState(5);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTable = () => {
+    tableContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // Keyboard navigation for pagination - must be before any conditional returns
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle if schedule is shown
+      if (!showSchedule) return;
+      
+      // Don't handle if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCurrentPage(prev => {
+          const newPage = Math.max(1, prev - 1);
+          if (newPage !== prev) setTimeout(scrollToTable, 50);
+          return newPage;
+        });
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setCurrentPage(prev => {
+          if (!calculation) return prev;
+
+          // Determine total pages based on distinct years in the schedule
+          const years = new Set<number>();
+          calculation.schedule.forEach(row => years.add(row.year));
+          const totalYears = years.size || 1;
+          const maxPage = Math.max(1, Math.ceil(totalYears / yearsPerPage));
+
+          const newPage = Math.min(maxPage, prev + 1);
+          if (newPage !== prev) setTimeout(scrollToTable, 50);
+          return newPage;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showSchedule, calculation, yearsPerPage]);
 
   const handleShare = async () => {
     const params = new URLSearchParams({
@@ -199,8 +243,13 @@ export const LoanSummary = ({
   const endIndex = startIndex + yearsPerPage;
   const paginatedYearlyData = yearlyData.slice(startIndex, endIndex);
 
-  const goToPage = (page: number) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+
+  const handleGoToPage = (page: number) => {
+    const newPage = Math.max(1, Math.min(page, totalPages));
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage);
+      setTimeout(scrollToTable, 50);
+    }
   };
 
   return (
@@ -365,9 +414,9 @@ export const LoanSummary = ({
                       stroke="hsl(var(--foreground))"
                       fontSize={12}
                       tickFormatter={(value) => `${Math.round(value / 1000)}K`}
-                      tickMargin={10}
-                      width={80}
-                      label={{ value: 'Loan Payment / year', angle: -90, position: 'outside', offset: -60 }}
+                      tickMargin={12}
+                      width={100}
+                      label={{ value: 'Loan Payment / year', angle: -90, position: 'insideLeft', offset: 10, style: { textAnchor: 'middle', fill: 'hsl(var(--foreground))' } }}
                     />
                     <YAxis 
                       yAxisId="right" 
@@ -375,11 +424,11 @@ export const LoanSummary = ({
                       stroke="hsl(var(--muted-foreground))"
                       fontSize={12}
                       tickFormatter={(value) => `${Math.round(value / 100000)}L`}
-                      tickMargin={10}
-                      width={80}
-                      label={{ value: 'Balance Amount', angle: 90, position: 'outside', offset: 60 }}
+                      tickMargin={12}
+                      width={100}
+                      label={{ value: 'Balance Amount', angle: 90, position: 'insideRight', offset: 10, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                     />
-                    <Tooltip 
+                    <RechartsTooltip 
                       formatter={(value: number, name: string) => {
                         let label = name;
                         if (name === 'Principal') label = 'Principal';
@@ -471,6 +520,28 @@ export const LoanSummary = ({
                   <Share2 className="h-4 w-4" />
                   Share
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
+                  onClick={() => exportDetailedPDFReport(
+                    calculation.schedule, 
+                    calculation.emi, 
+                    calculation.totalInterest, 
+                    calculation.totalAmount, 
+                    partPayments,
+                    {
+                      loanAmount,
+                      interestRate,
+                      loanTenure,
+                      startMonth,
+                      startYear
+                    }
+                  )}
+                >
+                  <FileText className="h-4 w-4" />
+                  Full Report
+                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm" className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white">
@@ -496,7 +567,7 @@ export const LoanSummary = ({
               </div>
         </CardHeader>
         <CardContent>
-          <div className="border rounded-md">
+          <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
             <Table>
               <TableHeader className="bg-muted/50">
                 <TableRow className="border-b">
@@ -559,7 +630,7 @@ export const LoanSummary = ({
                       const emiReduced = emiChanged && row.emiAmount < previousRow!.emiAmount;
                       
                       return (
-                        <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background">
+                        <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background hover:bg-muted/30 transition-colors">
                           <TableCell></TableCell>
                           <TableCell className="text-muted-foreground pl-4">
                             {getFullMonthName(row.month)}
@@ -632,17 +703,59 @@ export const LoanSummary = ({
                 <span className="text-sm text-muted-foreground">
                   {startIndex + 1}-{Math.min(endIndex, yearlyData.length)} of {yearlyData.length} years
                 </span>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => goToPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <div className="flex items-center gap-1">
+                
+                {/* Go to specific year dropdown */}
+                <Select
+                  value=""
+                  onValueChange={(value) => {
+                    const yearIndex = yearlyData.findIndex(y => y.year === Number(value));
+                    if (yearIndex !== -1) {
+                      const targetPage = Math.floor(yearIndex / yearsPerPage) + 1;
+                      setCurrentPage(targetPage);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-[140px] h-8">
+                    <SelectValue placeholder="Go to year..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearlyData.map((yearData) => (
+                      <SelectItem key={yearData.year} value={yearData.year.toString()}>{yearData.year}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <div className="flex items-center gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleGoToPage(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-popover text-popover-foreground border">
+                        <p className="flex items-center gap-1">
+                          <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded border">←</kbd> Previous page
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  {/* Page indicator */}
+                  <div className="flex items-center gap-1 px-2 py-1 bg-muted/50 rounded-md">
+                    <span className="text-sm font-medium text-foreground">{currentPage}</span>
+                    <span className="text-sm text-muted-foreground">/</span>
+                    <span className="text-sm text-muted-foreground">{totalPages}</span>
+                  </div>
+
+                  {/* Page dots for visual indication */}
+                  <div className="hidden sm:flex items-center gap-1">
                     {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                       let pageNum;
                       if (totalPages <= 5) {
@@ -655,27 +768,55 @@ export const LoanSummary = ({
                         pageNum = currentPage - 2 + i;
                       }
                       return (
-                        <Button
+                        <button
                           key={pageNum}
-                          variant={currentPage === pageNum ? "default" : "outline"}
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => goToPage(pageNum)}
-                        >
-                          {pageNum}
-                        </Button>
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            currentPage === pageNum 
+                              ? 'bg-primary w-4' 
+                              : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                          }`}
+                          onClick={() => handleGoToPage(pageNum)}
+                          aria-label={`Go to page ${pageNum}`}
+                        />
                       );
                     })}
                   </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => goToPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleGoToPage(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-popover text-popover-foreground border">
+                        <p className="flex items-center gap-1">
+                          <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded border">→</kbd> Next page
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  {/* Keyboard shortcut hint */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="hidden md:flex items-center gap-1 px-2 py-1 bg-muted/30 rounded text-xs text-muted-foreground cursor-help">
+                          <Keyboard className="h-3 w-3" />
+                          <span>← →</span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="bg-popover text-popover-foreground border">
+                        <p className="text-sm">Use arrow keys to navigate pages</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
             </div>
