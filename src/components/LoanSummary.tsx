@@ -53,6 +53,7 @@ interface LoanSummaryProps {
   baseAmount?: number;
   baseRate?: number;
   baseTenure?: number;
+  hideActionButtons?: boolean;
 }
 
 export const LoanSummary = ({ 
@@ -69,7 +70,8 @@ export const LoanSummary = ({
   interestRate,
   baseAmount,
   baseRate,
-  baseTenure
+  baseTenure,
+  hideActionButtons = false
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
@@ -254,41 +256,43 @@ export const LoanSummary = ({
 
   return (
     <div className="space-y-6">
-      {/* Action Buttons Row */}
-      <div className="flex justify-center gap-3 flex-wrap">
-        <Button
-          onClick={() => setShowPrepayments(!showPrepayments)}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <CreditCard className="w-4 h-4" />
-          {showPrepayments ? 'Hide Part Payments' : 'Add Part Payments'}
-        </Button>
-        <Button
-          onClick={() => setShowComparison(!showComparison)}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <GitCompare className="w-4 h-4" />
-          {showComparison ? 'Hide Comparison' : 'Compare Loan Scenarios'}
-        </Button>
-        <Button
-          onClick={() => {
-            if (showSchedule) {
-              setShowSchedule(false);
-            } else {
-              setShowAnimation(true);
-            }
-          }}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <BarChart3 className="w-4 h-4" />
-          {showSchedule ? 'Hide EMI Schedule' : 'Show EMI Schedule'}
-        </Button>
-      </div>
+      {/* Action Buttons Row - Only show if not hidden */}
+      {!hideActionButtons && (
+        <div className="flex justify-center gap-3 flex-wrap">
+          <Button
+            onClick={() => setShowPrepayments(!showPrepayments)}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <CreditCard className="w-4 h-4" />
+            {showPrepayments ? 'Hide Part Payments' : 'Add Part Payments'}
+          </Button>
+          <Button
+            onClick={() => setShowComparison(!showComparison)}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <GitCompare className="w-4 h-4" />
+            {showComparison ? 'Hide Comparison' : 'Compare Loan Scenarios'}
+          </Button>
+          <Button
+            onClick={() => {
+              if (showSchedule) {
+                setShowSchedule(false);
+              } else {
+                setShowAnimation(true);
+              }
+            }}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <BarChart3 className="w-4 h-4" />
+            {showSchedule ? 'Hide EMI Schedule' : 'Show EMI Schedule'}
+          </Button>
+        </div>
+      )}
 
-      {showPrepayments && (
+      {!hideActionButtons && showPrepayments && (
         <PartPaymentSection
           partPayments={partPayments}
           setPartPayments={setPartPayments}
@@ -300,7 +304,7 @@ export const LoanSummary = ({
         />
       )}
 
-      {showComparison && (
+      {!hideActionButtons && showComparison && (
         <LoanComparisonSection
           baseAmount={baseAmount || loanAmount}
           baseRate={baseRate || interestRate}
