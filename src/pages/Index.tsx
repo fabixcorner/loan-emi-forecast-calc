@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Calculator, TrendingUp } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -8,6 +6,8 @@ import { LoanSummary } from "@/components/LoanSummary";
 import { LoanSummaryCards } from "@/components/LoanSummaryCards";
 import { LoanBreakdownChart } from "@/components/LoanBreakdownChart";
 import { HowItWorks } from "@/components/HowItWorks";
+import { LoanComparisonSection } from "@/components/LoanComparisonSection";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import confetti from "canvas-confetti";
@@ -25,6 +25,7 @@ const Index = () => {
   const [interestSavings, setInterestSavings] = useState<number>(0);
   const [timeSavings, setTimeSavings] = useState<number>(0);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [activeTab, setActiveTab] = useState("loan-details");
 
   const handlePartPaymentAdded = () => {
     // Explosion confetti around Interest Saved card
@@ -75,6 +76,7 @@ const Index = () => {
     }
     if (view === 'schedule') {
       setShowSchedule(true);
+      setActiveTab("emi-schedule");
     }
   }, []);
 
@@ -163,13 +165,28 @@ const Index = () => {
               onPartPaymentAdded={handlePartPaymentAdded}
               loanAmount={loanAmount}
               interestRate={interestRate}
+              hideActionButtons={true}
             />
           </>
         ) : (
-          /* Full calculator view */
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* Left Section - Loan Inputs */}
+          /* Full calculator view with tabs */
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
+              <TabsTrigger value="loan-details" className="text-sm md:text-base">
+                Loan Details
+              </TabsTrigger>
+              <TabsTrigger value="emi-schedule" className="text-sm md:text-base">
+                EMI Schedule
+              </TabsTrigger>
+              <TabsTrigger value="compare-scenarios" className="text-sm md:text-base">
+                Compare Loan Scenarios
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Tab 1: Loan Details */}
+            <TabsContent value="loan-details" className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Section - Loan Inputs */}
                 <LoanInputSection
                   loanAmount={loanAmount}
                   setLoanAmount={setLoanAmount}
@@ -183,34 +200,67 @@ const Index = () => {
                   setStartYear={setStartYear}
                 />
 
-              {/* Right Section - Loan Breakdown Chart */}
-              <LoanBreakdownChart calculation={calculation} showSchedule={showSchedule} />
-            </div>
+                {/* Right Section - Loan Breakdown Chart */}
+                <LoanBreakdownChart calculation={calculation} showSchedule={showSchedule} />
+              </div>
 
-            {/* Loan Summary Cards */}
-            <div className="mb-8">
+              {/* Loan Summary Cards */}
               <LoanSummaryCards 
                 calculation={calculation} 
                 interestSavings={interestSavings} 
                 timeSavings={timeSavings}
               />
-            </div>
 
-            {/* Loan Summary */}
-          <LoanSummary 
-            calculation={calculation}
-            partPayments={partPayments}
-            setPartPayments={setPartPayments}
-            startMonth={startMonth}
-            startYear={startYear}
-            loanTenure={loanTenure}
-            showSchedule={showSchedule}
-            setShowSchedule={setShowSchedule}
-            onPartPaymentAdded={handlePartPaymentAdded}
-            loanAmount={loanAmount}
-            interestRate={interestRate}
-          />
-          </>
+              {/* Part Payments Section */}
+              <PartPaymentSection
+                partPayments={partPayments}
+                setPartPayments={setPartPayments}
+                startMonth={startMonth}
+                startYear={startYear}
+                loanTenure={loanTenure}
+                loanSchedule={calculation?.schedule || []}
+                onPartPaymentAdded={handlePartPaymentAdded}
+              />
+            </TabsContent>
+
+            {/* Tab 2: EMI Schedule */}
+            <TabsContent value="emi-schedule" className="space-y-8">
+              {/* Loan Summary Cards */}
+              <LoanSummaryCards 
+                calculation={calculation} 
+                interestSavings={interestSavings} 
+                timeSavings={timeSavings}
+              />
+
+              {/* EMI Schedule */}
+              <LoanSummary 
+                calculation={calculation}
+                partPayments={partPayments}
+                setPartPayments={setPartPayments}
+                startMonth={startMonth}
+                startYear={startYear}
+                loanTenure={loanTenure}
+                showSchedule={true}
+                setShowSchedule={setShowSchedule}
+                onPartPaymentAdded={handlePartPaymentAdded}
+                loanAmount={loanAmount}
+                interestRate={interestRate}
+                hideActionButtons={true}
+              />
+            </TabsContent>
+
+            {/* Tab 3: Compare Loan Scenarios */}
+            <TabsContent value="compare-scenarios" className="space-y-8">
+              <LoanComparisonSection
+                baseAmount={loanAmount}
+                baseRate={interestRate}
+                baseTenure={loanTenure}
+                basePartPayments={partPayments}
+                startMonth={startMonth}
+                startYear={startYear}
+              />
+            </TabsContent>
+          </Tabs>
         )}
       </div>
     </div>
