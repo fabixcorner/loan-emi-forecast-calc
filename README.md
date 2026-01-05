@@ -80,7 +80,7 @@ Understanding loan repayments can be complex and overwhelming. This calculator d
 
 Have questions, suggestions, or need help? Feel free to reach out!
 
-- **Email**: [fabixcorner@gmail.com](mailto:fabixcorner@gmail.com)
+- **Email**: [your-email@example.com](mailto:your-email@example.com)
 - **Issues**: Open an issue in this repository for bug reports or feature requests
 
 ---
@@ -88,3 +88,9 @@ Have questions, suggestions, or need help? Feel free to reach out!
 ## 📄 License
 
 This project is open source and available under the MIT License.
+
+---
+
+<p align="center">
+  Made with ❤️ using <a href="https://lovable.dev">Lovable</a>
+</p>
