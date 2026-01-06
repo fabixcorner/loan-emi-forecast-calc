@@ -98,7 +98,7 @@ export const HowItWorks = () => {
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(true)}
-        className="text-white hover:bg-white/10"
+        className="text-foreground hover:bg-muted"
       >
         <HelpCircle className="mr-2 h-4 w-4" />
         How it works?

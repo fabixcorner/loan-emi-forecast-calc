@@ -343,10 +343,10 @@ export const LoanSummary = ({
             const reductionPercentage = ((emiReduction / firstEMI) * 100).toFixed(1);
             
             return (
-              <Card className="shadow-[var(--shadow-card)] mb-6 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
-                <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+              <Card className="bg-card shadow-card border border-border mb-6">
+                <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                    <TrendingDown className="w-5 h-5 text-white" />
+                    <TrendingDown className="w-5 h-5" />
                     EMI Reduction Summary
                   </CardTitle>
                 </CardHeader>
@@ -389,8 +389,8 @@ export const LoanSummary = ({
           })()}
 
           {/* Yearly Payments Chart */}
-          <Card className="shadow-[var(--shadow-card)] mb-6">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+          <Card className="bg-card shadow-card border border-border mb-6">
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
               <CardTitle className="text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
             </CardHeader>
             <CardContent>
@@ -511,14 +511,14 @@ export const LoanSummary = ({
           </Card>
 
           {/* EMI Schedule Table */}
-          <Card className="shadow-[var(--shadow-card)]">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3 flex flex-row items-center justify-between">
+          <Card className="bg-card shadow-card border border-border">
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
+                  className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
                   onClick={handleShare}
                 >
                   <Share2 className="h-4 w-4" />
@@ -527,7 +527,7 @@ export const LoanSummary = ({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
+                  className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
                   onClick={() => exportDetailedPDFReport(
                     calculation.schedule, 
                     calculation.emi, 
@@ -548,7 +548,7 @@ export const LoanSummary = ({
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white">
+                    <Button variant="outline" size="sm" className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground">
                       <Download className="h-4 w-4" />
                       Download
                     </Button>
