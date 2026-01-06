@@ -151,8 +151,8 @@ export const LoanComparisonSection = ({
   const bestTenure = getBestForMetric('tenureMonths');
 
   return (
-    <Card className="glass-card border-financial-border">
-      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+    <Card className="bg-card shadow-card border border-border">
+      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-semibold">Loan Comparison</CardTitle>
           {scenarios.length < 3 && (
@@ -160,7 +160,7 @@ export const LoanComparisonSection = ({
               onClick={addScenario} 
               size="sm"
               variant="outline"
-              className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
+              className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
             >
               <Plus className="w-4 h-4" />
               Add Scenario

@@ -50,8 +50,8 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
   const totalValue = pieChartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <Card className="shadow-[var(--shadow-card)]">
-      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+    <Card className="bg-card shadow-card border border-border">
+      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
         <CardTitle className="text-xl font-semibold">Loan Breakdown</CardTitle>
       </CardHeader>
       <CardContent>
