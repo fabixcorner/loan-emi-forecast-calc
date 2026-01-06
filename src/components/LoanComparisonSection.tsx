@@ -87,7 +87,7 @@ export const LoanComparisonSection = ({
     ));
   }, [baseAmount, baseRate, baseTenure, basePartPayments]);
 
-  // Calculate results for all scenarios
+  // Calculate results for all scenarios - no part payments for fair comparison
   useEffect(() => {
     const newResults: Record<string, ScenarioResult> = {};
     scenarios.forEach(scenario => {
@@ -97,7 +97,7 @@ export const LoanComparisonSection = ({
         scenario.loanTenure,
         startMonth,
         startYear,
-        scenario.id === "base" ? basePartPayments : []
+        [] // No part payments for any scenario in comparison
       );
       newResults[scenario.id] = {
         emi: calc.emi,
