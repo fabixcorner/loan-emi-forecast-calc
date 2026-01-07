@@ -75,42 +75,59 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222 30% 8%;
-    --foreground: 210 40% 98%;
+    --background: 222 35% 8%;
+    --foreground: 210 40% 95%;
 
-    --card: 222 25% 12%;
-    --card-foreground: 210 40% 98%;
+    --card: 222 30% 12%;
+    --card-foreground: 210 40% 95%;
 
-    --popover: 222 25% 12%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 222 30% 12%;
+    --popover-foreground: 210 40% 95%;
 
-    --primary: 220 65% 60%;
+    --primary: 210 60% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 25% 18%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 30% 16%;
+    --secondary-foreground: 210 40% 95%;
 
-    --muted: 220 20% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 220 25% 16%;
+    --muted-foreground: 215 20% 60%;
 
-    --accent: 220 65% 60%;
+    --accent: 210 60% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 45%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 210 40% 95%;
 
-    --border: 220 20% 22%;
-    --input: 220 20% 22%;
-    --ring: 220 65% 60%;
+    --border: 220 25% 20%;
+    --input: 220 25% 18%;
+    --ring: 210 60% 55%;
 
-    --sidebar-background: 222 25% 10%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 220 65% 60%;
+    --financial-primary: 210 60% 55%;
+    --financial-success: 200 55% 45%;
+    --financial-warning: 43 90% 50%;
+    --financial-background: 222 35% 8%;
+    --financial-card: 222 30% 12%;
+    --financial-border: 220 25% 20%;
+
+    --shadow-card: 0 4px 24px -4px hsl(220 50% 10% / 0.4), 0 2px 8px -2px hsl(220 50% 10% / 0.3);
+
+    --glass-background-start: 222 35% 8%;
+    --glass-background-end: 222 30% 10%;
+    --glass-overlay: 222 30% 12% / 0.95;
+    --glass-border: 220 25% 18%;
+
+    --tab-gradient-start: 210 60% 50%;
+    --tab-gradient-end: 200 55% 40%;
+
+    --sidebar-background: 222 30% 10%;
+    --sidebar-foreground: 210 40% 95%;
+    --sidebar-primary: 210 60% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 18%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 220 20% 22%;
-    --sidebar-ring: 220 65% 60%;
+    --sidebar-accent: 220 25% 16%;
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 220 25% 20%;
+    --sidebar-ring: 210 60% 55%;
   }
 }
 
@@ -126,6 +143,12 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Smooth transitions for theme switching */
+  * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
   /* Soft gradient background - darker blue tones */
@@ -139,6 +162,18 @@ All colors MUST be HSL.
       hsl(220 22% 90%) 100%
     );
     min-height: 100vh;
+    transition: background 0.3s ease;
+  }
+
+  .dark .glass-background {
+    background: linear-gradient(
+      135deg, 
+      hsl(222 35% 8%) 0%, 
+      hsl(222 32% 10%) 25%,
+      hsl(222 35% 9%) 50%,
+      hsl(222 30% 11%) 75%,
+      hsl(222 35% 8%) 100%
+    );
   }
 
   /* Glassmorphism card styles */

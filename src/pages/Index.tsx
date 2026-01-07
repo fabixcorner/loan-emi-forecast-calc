@@ -7,6 +7,7 @@ import { LoanSummaryCards } from "@/components/LoanSummaryCards";
 import { LoanBreakdownChart } from "@/components/LoanBreakdownChart";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
@@ -137,7 +138,10 @@ const Index = () => {
                 </p>
               </div>
             </div>
-            <HowItWorks />
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <HowItWorks />
+            </div>
           </div>
         </div>
       </header>
