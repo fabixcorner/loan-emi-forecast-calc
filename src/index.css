@@ -8,63 +8,67 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Soft blue/purple theme inspired by the reference design */
-    --background: 220 30% 96%;
-    --foreground: 220 25% 20%;
+    /* Darker blue theme inspired by the reference design */
+    --background: 220 25% 92%;
+    --foreground: 220 40% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 25% 25%;
+    --card: 220 20% 97%;
+    --card-foreground: 220 40% 18%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 20%;
+    --popover: 220 20% 97%;
+    --popover-foreground: 220 40% 15%;
 
-    --primary: 220 70% 55%;
+    --primary: 220 50% 25%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 25% 94%;
-    --secondary-foreground: 220 25% 25%;
+    --secondary: 220 20% 90%;
+    --secondary-foreground: 220 40% 18%;
 
-    --muted: 220 20% 96%;
-    --muted-foreground: 220 15% 50%;
+    --muted: 220 18% 93%;
+    --muted-foreground: 220 20% 45%;
 
-    --accent: 220 70% 55%;
+    --accent: 220 50% 25%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 20% 88%;
-    --input: 220 20% 92%;
-    --ring: 220 70% 55%;
+    --border: 220 25% 85%;
+    --input: 220 20% 90%;
+    --ring: 220 50% 25%;
 
-    --financial-primary: 220 70% 55%;
-    --financial-success: 200 70% 50%;
+    --financial-primary: 220 50% 25%;
+    --financial-success: 210 55% 35%;
     --financial-warning: 43 96% 56%;
-    --financial-background: 220 30% 96%;
-    --financial-card: 0 0% 100%;
-    --financial-border: 220 20% 88%;
+    --financial-background: 220 25% 92%;
+    --financial-card: 220 20% 97%;
+    --financial-border: 220 25% 85%;
     
     --gradient-financial: linear-gradient(135deg, hsl(var(--financial-primary)), hsl(var(--financial-success)));
     --shadow-financial: 0 4px 20px -4px hsl(var(--financial-primary) / 0.15);
-    --shadow-card: 0 4px 24px -4px hsl(220 50% 50% / 0.08), 0 2px 8px -2px hsl(220 50% 50% / 0.04);
+    --shadow-card: 0 4px 24px -4px hsl(220 40% 40% / 0.08), 0 2px 8px -2px hsl(220 40% 40% / 0.04);
 
     --radius: 0.75rem;
 
-    /* Glassmorphism Background - soft blue/purple gradient */
-    --glass-background-start: 220 40% 94%;
-    --glass-background-end: 250 35% 92%;
-    --glass-overlay: 0 0% 100% / 0.9;
-    --glass-border: 220 30% 85%;
+    /* Glassmorphism Background - soft blue/gray gradient */
+    --glass-background-start: 220 25% 92%;
+    --glass-background-end: 220 20% 90%;
+    --glass-overlay: 220 20% 97% / 0.95;
+    --glass-border: 220 25% 82%;
     --glass-blur: blur(12px);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 220 25% 25%;
-    --sidebar-primary: 220 70% 55%;
+    /* Tab gradient for active state */
+    --tab-gradient-start: 220 50% 25%;
+    --tab-gradient-end: 210 55% 35%;
+
+    --sidebar-background: 220 20% 96%;
+    --sidebar-foreground: 220 40% 18%;
+    --sidebar-primary: 220 50% 25%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 25% 94%;
-    --sidebar-accent-foreground: 220 25% 25%;
-    --sidebar-border: 220 20% 88%;
-    --sidebar-ring: 220 70% 55%;
+    --sidebar-accent: 220 20% 90%;
+    --sidebar-accent-foreground: 220 40% 18%;
+    --sidebar-border: 220 25% 85%;
+    --sidebar-ring: 220 50% 25%;
 
     /* Font family */
     --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
@@ -124,15 +128,15 @@ All colors MUST be HSL.
     font-family: var(--font-sans);
   }
 
-  /* Soft gradient background */
+  /* Soft gradient background - darker blue tones */
   .glass-background {
     background: linear-gradient(
       135deg, 
-      hsl(220 40% 95%) 0%, 
-      hsl(240 35% 93%) 25%,
-      hsl(220 45% 94%) 50%,
-      hsl(250 30% 92%) 75%,
-      hsl(220 40% 95%) 100%
+      hsl(220 22% 90%) 0%, 
+      hsl(220 20% 88%) 25%,
+      hsl(220 24% 89%) 50%,
+      hsl(220 18% 87%) 75%,
+      hsl(220 22% 90%) 100%
     );
     min-height: 100vh;
   }
