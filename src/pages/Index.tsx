@@ -7,6 +7,7 @@ import { LoanSummaryCards } from "@/components/LoanSummaryCards";
 import { LoanBreakdownChart } from "@/components/LoanBreakdownChart";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
+import { LoanAffordabilityCalculator } from "@/components/LoanAffordabilityCalculator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -175,7 +176,7 @@ const Index = () => {
         ) : (
           /* Full calculator view with tabs */
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="loan-details" className="text-sm md:text-base">
                 Loan Details
               </TabsTrigger>
@@ -183,7 +184,10 @@ const Index = () => {
                 EMI Schedule
               </TabsTrigger>
               <TabsTrigger value="compare-scenarios" className="text-sm md:text-base">
-                Compare Loan Scenarios
+                Compare Scenarios
+              </TabsTrigger>
+              <TabsTrigger value="loan-affordability" className="text-sm md:text-base">
+                Loan Affordability
               </TabsTrigger>
             </TabsList>
 
@@ -263,6 +267,11 @@ const Index = () => {
                 startMonth={startMonth}
                 startYear={startYear}
               />
+            </TabsContent>
+
+            {/* Tab 4: Loan Affordability */}
+            <TabsContent value="loan-affordability" className="space-y-8">
+              <LoanAffordabilityCalculator />
             </TabsContent>
           </Tabs>
         )}
