@@ -5,7 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { IndianRupee, Percent, Calendar, CreditCard, TrendingUp, Target, Building, Briefcase, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { IndianRupee, Percent, Calendar, CreditCard, TrendingUp, Target, Building, Briefcase, Star, FileDown } from "lucide-react";
+import { exportAffordabilityPDF } from "@/utils/exportUtils";
 
 const formatCurrency = (amount: number): string => {
   if (amount >= 10000000) {
@@ -341,6 +343,27 @@ export const LoanAffordabilityCalculator = () => {
                 <li>• Does not include processing fees or insurance</li>
               </ul>
             </div>
+
+            {/* Export Button */}
+            <Button
+              onClick={() => exportAffordabilityPDF({
+                grossIncome,
+                tenure,
+                interestRate,
+                otherEMIs,
+                hasCreditScore,
+                creditScore,
+                employmentType,
+                propertyValue,
+                eligibleAmount,
+                maxEMI,
+                ltvLimit,
+              })}
+              className="w-full gap-2 bg-financial-success hover:bg-financial-success/90"
+            >
+              <FileDown className="w-4 h-4" />
+              Export as PDF
+            </Button>
           </CardContent>
         </Card>
       </div>
