@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Plus, ChevronUp } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -28,6 +30,7 @@ const Index = () => {
   const [timeSavings, setTimeSavings] = useState<number>(0);
   const [showSchedule, setShowSchedule] = useState(false);
   const [activeTab, setActiveTab] = useState("loan-details");
+  const [showPartPayments, setShowPartPayments] = useState(false);
 
   const handlePartPaymentAdded = () => {
     // Explosion confetti around Interest Saved card
@@ -219,16 +222,41 @@ const Index = () => {
                 timeSavings={timeSavings}
               />
 
-              {/* Part Payments Section */}
-              <PartPaymentSection
-                partPayments={partPayments}
-                setPartPayments={setPartPayments}
-                startMonth={startMonth}
-                startYear={startYear}
-                loanTenure={loanTenure}
-                loanSchedule={calculation?.schedule || []}
-                onPartPaymentAdded={handlePartPaymentAdded}
-              />
+              {/* Add Part Payments Button */}
+              <div className="flex justify-center">
+                <Button
+                  onClick={() => setShowPartPayments(!showPartPayments)}
+                  variant="outline"
+                  className="gap-2 border-financial-primary text-financial-primary hover:bg-financial-primary hover:text-white transition-all duration-300"
+                >
+                  {showPartPayments ? (
+                    <>
+                      <ChevronUp className="w-4 h-4" />
+                      Hide Part Payments
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      Add Part Payments
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Part Payments Section - Conditional */}
+              {showPartPayments && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                  <PartPaymentSection
+                    partPayments={partPayments}
+                    setPartPayments={setPartPayments}
+                    startMonth={startMonth}
+                    startYear={startYear}
+                    loanTenure={loanTenure}
+                    loanSchedule={calculation?.schedule || []}
+                    onPartPaymentAdded={handlePartPaymentAdded}
+                  />
+                </div>
+              )}
             </TabsContent>
 
             {/* Tab 2: EMI Schedule */}
