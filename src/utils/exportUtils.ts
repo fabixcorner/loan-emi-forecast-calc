@@ -212,6 +212,173 @@ interface DetailedReportOptions {
   startYear: number;
 }
 
+interface AffordabilityData {
+  grossIncome: number;
+  tenure: number;
+  interestRate: number;
+  otherEMIs: number;
+  hasCreditScore: boolean;
+  creditScore: number;
+  employmentType: string;
+  propertyValue: number;
+  eligibleAmount: number;
+  maxEMI: number;
+  ltvLimit: number;
+}
+
+export const exportAffordabilityPDF = (data: AffordabilityData) => {
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+  
+  const centerText = (text: string, y: number, fontSize: number = 12) => {
+    doc.setFontSize(fontSize);
+    const textWidth = doc.getTextWidth(text);
+    doc.text(text, (pageWidth - textWidth) / 2, y);
+  };
+
+  // Header
+  doc.setFillColor(34, 139, 34);
+  doc.rect(0, 0, pageWidth, 40, 'F');
+  doc.setFillColor(22, 163, 74);
+  doc.rect(0, 32, pageWidth, 12, 'F');
+  
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(22);
+  centerText('LOAN AFFORDABILITY REPORT', 22, 22);
+  doc.setFontSize(11);
+  centerText('Eligibility Analysis & Summary', 36, 11);
+  
+  doc.setTextColor(0, 0, 0);
+  
+  // Report date
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  const today = new Date();
+  doc.text(`Generated on: ${today.toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}`, 14, 55);
+  
+  // Eligible Amount Box
+  doc.setFillColor(240, 253, 244);
+  doc.roundedRect(14, 65, pageWidth - 28, 45, 4, 4, 'F');
+  doc.setDrawColor(34, 197, 94);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(14, 65, pageWidth - 28, 45, 4, 4, 'S');
+  
+  doc.setTextColor(22, 101, 52);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'normal');
+  centerText('You are eligible for a loan up to', 80, 12);
+  doc.setFontSize(28);
+  doc.setFont('helvetica', 'bold');
+  centerText(formatCurrencyForPDF(data.eligibleAmount), 98, 28);
+  
+  // Input Parameters Section
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('Input Parameters', 14, 125);
+  
+  doc.setFillColor(248, 250, 252);
+  doc.roundedRect(14, 130, pageWidth - 28, 60, 3, 3, 'F');
+  doc.setDrawColor(200, 200, 200);
+  doc.roundedRect(14, 130, pageWidth - 28, 60, 3, 3, 'S');
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  const col1X = 20;
+  const col2X = 110;
+  let rowY = 142;
+  const rowHeight = 10;
+  
+  doc.text(`Gross Monthly Income:`, col1X, rowY);
+  doc.setFont('helvetica', 'bold');
+  doc.text(formatCurrencyForPDF(data.grossIncome), col1X + 50, rowY);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Property Value:`, col2X, rowY);
+  doc.setFont('helvetica', 'bold');
+  doc.text(formatCurrencyForPDF(data.propertyValue), col2X + 40, rowY);
+  
+  rowY += rowHeight;
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Loan Tenure:`, col1X, rowY);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`${data.tenure} years (${data.tenure * 12} months)`, col1X + 50, rowY);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Interest Rate:`, col2X, rowY);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`${data.interestRate}% p.a.`, col2X + 40, rowY);
+  
+  rowY += rowHeight;
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Other EMIs:`, col1X, rowY);
+  doc.setFont('helvetica', 'bold');
+  doc.text(formatCurrencyForPDF(data.otherEMIs), col1X + 50, rowY);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Employment Type:`, col2X, rowY);
+  doc.setFont('helvetica', 'bold');
+  const empLabel = data.employmentType === 'salaried' ? 'Salaried' : data.employmentType === 'self-employed' ? 'Self-Employed' : 'Business Owner';
+  doc.text(empLabel, col2X + 40, rowY);
+  
+  rowY += rowHeight;
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Credit Score:`, col1X, rowY);
+  doc.setFont('helvetica', 'bold');
+  doc.text(data.hasCreditScore ? `${data.creditScore}` : 'Not provided', col1X + 50, rowY);
+  
+  // Calculation Breakdown Section
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(14);
+  doc.text('Eligibility Breakdown', 14, 205);
+  
+  const breakdownData = [
+    ['Max Allowed EMI (50% FOIR)', formatCurrencyForPDF(data.grossIncome * 0.5)],
+    ['Existing EMI Obligations', formatCurrencyForPDF(data.otherEMIs)],
+    ['Available for New EMI', formatCurrencyForPDF(data.maxEMI)],
+    ['LTV Limit (' + (data.hasCreditScore && data.creditScore >= 750 ? '85%' : '75%') + ' of property)', formatCurrencyForPDF(data.ltvLimit)],
+    ['Employment Factor', (data.employmentType === 'salaried' ? '100%' : data.employmentType === 'business-owner' ? '90%' : '85%')],
+  ];
+  
+  if (data.hasCreditScore) {
+    const creditMultiplier = data.creditScore >= 800 ? 110 : data.creditScore >= 750 ? 100 : data.creditScore >= 700 ? 90 : data.creditScore >= 650 ? 80 : 70;
+    breakdownData.push(['Credit Score Multiplier', `${creditMultiplier}%`]);
+  }
+  
+  autoTable(doc, {
+    startY: 210,
+    head: [['Factor', 'Value']],
+    body: breakdownData,
+    theme: 'striped',
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [34, 139, 34] },
+    columnStyles: {
+      0: { fontStyle: 'normal' },
+      1: { fontStyle: 'bold', halign: 'right' }
+    },
+    margin: { left: 14, right: 14 },
+  });
+  
+  // Assumptions
+  const finalY = (doc as any).lastAutoTable.finalY + 10;
+  doc.setFillColor(254, 243, 199);
+  doc.roundedRect(14, finalY, pageWidth - 28, 35, 3, 3, 'F');
+  
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(146, 64, 14);
+  doc.text('Assumptions & Disclaimer', 20, finalY + 10);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(120, 53, 15);
+  doc.text('• This is an indicative eligibility. Actual loan approval depends on bank policies and document verification.', 20, finalY + 18);
+  doc.text('• Processing fees, insurance, and other charges are not included in this calculation.', 20, finalY + 24);
+  doc.text('• LTV and FOIR ratios may vary based on lender and loan type.', 20, finalY + 30);
+  
+  doc.save('Loan_Affordability_Report.pdf');
+};
+
 export const exportDetailedPDFReport = (
   schedule: ScheduleRow[], 
   emi: number, 
