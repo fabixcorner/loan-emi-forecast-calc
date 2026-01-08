@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -222,8 +222,8 @@ const Index = () => {
                 timeSavings={timeSavings}
               />
 
-              {/* Add Part Payments Button */}
-              <div className="flex justify-center">
+              {/* Action Buttons */}
+              <div className="flex justify-center gap-4">
                 <Button
                   onClick={() => setShowPartPayments(!showPartPayments)}
                   variant="outline"
@@ -240,6 +240,14 @@ const Index = () => {
                       Add Part Payments
                     </>
                   )}
+                </Button>
+                <Button
+                  onClick={() => setActiveTab("emi-schedule")}
+                  variant="outline"
+                  className="gap-2 border-financial-success text-financial-success hover:bg-financial-success hover:text-white transition-all duration-300"
+                >
+                  <CalendarDays className="w-4 h-4" />
+                  Show EMI Schedule
                 </Button>
               </div>
 
