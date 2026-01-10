@@ -42,18 +42,57 @@ const getCreditScoreRating = (score: number): { label: string; color: string } =
   return { label: "Very Poor", color: "text-red-500" };
 };
 
+const STORAGE_KEY = "loan-affordability-values";
+
+interface StoredValues {
+  grossIncome: number;
+  tenure: number;
+  interestRate: number;
+  otherEMIs: number;
+  hasCreditScore: boolean;
+  creditScore: number;
+  employmentType: EmploymentType;
+  propertyValue: number;
+}
+
+const getStoredValues = (): Partial<StoredValues> => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+};
+
 export const LoanAffordabilityCalculator = () => {
-  const [grossIncome, setGrossIncome] = useState(100000);
-  const [tenure, setTenure] = useState(20);
-  const [interestRate, setInterestRate] = useState(8.5);
-  const [otherEMIs, setOtherEMIs] = useState(0);
-  const [hasCreditScore, setHasCreditScore] = useState(false);
-  const [creditScore, setCreditScore] = useState(750);
-  const [employmentType, setEmploymentType] = useState<EmploymentType>("salaried");
-  const [propertyValue, setPropertyValue] = useState(5000000);
+  const storedValues = getStoredValues();
+  
+  const [grossIncome, setGrossIncome] = useState(storedValues.grossIncome ?? 100000);
+  const [tenure, setTenure] = useState(storedValues.tenure ?? 20);
+  const [interestRate, setInterestRate] = useState(storedValues.interestRate ?? 8.5);
+  const [otherEMIs, setOtherEMIs] = useState(storedValues.otherEMIs ?? 0);
+  const [hasCreditScore, setHasCreditScore] = useState(storedValues.hasCreditScore ?? false);
+  const [creditScore, setCreditScore] = useState(storedValues.creditScore ?? 750);
+  const [employmentType, setEmploymentType] = useState<EmploymentType>(storedValues.employmentType ?? "salaried");
+  const [propertyValue, setPropertyValue] = useState(storedValues.propertyValue ?? 5000000);
   const [eligibleAmount, setEligibleAmount] = useState(0);
   const [maxEMI, setMaxEMI] = useState(0);
   const [ltvLimit, setLtvLimit] = useState(0);
+
+  // Persist values to localStorage
+  useEffect(() => {
+    const values: StoredValues = {
+      grossIncome,
+      tenure,
+      interestRate,
+      otherEMIs,
+      hasCreditScore,
+      creditScore,
+      employmentType,
+      propertyValue,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+  }, [grossIncome, tenure, interestRate, otherEMIs, hasCreditScore, creditScore, employmentType, propertyValue]);
 
   useEffect(() => {
     // Banks typically allow 40-50% of gross income for all EMIs
