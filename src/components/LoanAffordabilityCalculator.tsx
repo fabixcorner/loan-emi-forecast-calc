@@ -97,193 +97,238 @@ export const LoanAffordabilityCalculator = () => {
     <div className="space-y-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Section - Inputs */}
-        <Card className="bg-card border-border shadow-card">
-          <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary rounded-t-lg">
-            <CardTitle className="text-white flex items-center gap-2">
-              <Target className="w-5 h-5" />
-              Affordability Inputs
-            </CardTitle>
+        <Card className="h-fit bg-card shadow-card border border-border">
+          <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
+            <CardTitle className="text-xl font-semibold">Affordability Inputs</CardTitle>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
+          <CardContent className="p-5 space-y-5">
             {/* Gross Income */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-foreground flex items-center gap-2">
-                  <IndianRupee className="w-4 h-4 text-financial-primary" />
-                  Gross Income (Monthly)
-                </Label>
-                <span className="text-sm font-medium text-foreground">{formatCurrency(grossIncome)}</span>
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 pt-2 w-36">
+                  <Label className="text-sm font-medium text-foreground">
+                    Gross Income (Monthly)
+                  </Label>
+                </div>
+                <div className="w-4/5 space-y-2.5">
+                  <Input
+                    type="number"
+                    value={grossIncome}
+                    onChange={(e) => setGrossIncome(Math.max(0, Number(e.target.value)))}
+                    className="h-10"
+                  />
+                  <Slider
+                    value={[grossIncome]}
+                    onValueChange={(value) => setGrossIncome(value[0])}
+                    min={10000}
+                    max={1000000}
+                    step={5000}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>₹10K</span>
+                    <span>₹10L</span>
+                  </div>
+                </div>
               </div>
-              <Input
-                type="number"
-                value={grossIncome}
-                onChange={(e) => setGrossIncome(Math.max(0, Number(e.target.value)))}
-                className="bg-background border-border text-foreground"
-              />
-              <Slider
-                value={[grossIncome]}
-                onValueChange={(value) => setGrossIncome(value[0])}
-                min={10000}
-                max={1000000}
-                step={5000}
-                className="w-full"
-              />
             </div>
 
             {/* Employment Type */}
-            <div className="space-y-3">
-              <Label className="text-foreground flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-financial-primary" />
-                Employment Type
-              </Label>
-              <Select value={employmentType} onValueChange={(value: EmploymentType) => setEmploymentType(value)}>
-                <SelectTrigger className="bg-background border-border text-foreground">
-                  <SelectValue placeholder="Select employment type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="salaried">Salaried Employee</SelectItem>
-                  <SelectItem value="self-employed">Self-Employed Professional</SelectItem>
-                  <SelectItem value="business-owner">Business Owner</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 w-36">
+                  <Label className="text-sm font-medium text-foreground">
+                    Employment Type
+                  </Label>
+                </div>
+                <div className="w-4/5">
+                  <Select value={employmentType} onValueChange={(value: EmploymentType) => setEmploymentType(value)}>
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Select employment type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="salaried">Salaried Employee</SelectItem>
+                      <SelectItem value="self-employed">Self-Employed Professional</SelectItem>
+                      <SelectItem value="business-owner">Business Owner</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
 
             {/* Tenure */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-foreground flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-financial-primary" />
-                  Loan Tenure (Years)
-                </Label>
-                <span className="text-sm font-medium text-foreground">{tenure} years</span>
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 pt-2 w-36">
+                  <Label className="text-sm font-medium text-foreground">
+                    Loan Tenure (Years)
+                  </Label>
+                </div>
+                <div className="w-4/5 space-y-2.5">
+                  <Input
+                    type="number"
+                    value={tenure}
+                    onChange={(e) => setTenure(Math.min(30, Math.max(1, Number(e.target.value))))}
+                    className="h-10"
+                  />
+                  <Slider
+                    value={[tenure]}
+                    onValueChange={(value) => setTenure(value[0])}
+                    min={1}
+                    max={30}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>1 year</span>
+                    <span>30 years</span>
+                  </div>
+                </div>
               </div>
-              <Input
-                type="number"
-                value={tenure}
-                onChange={(e) => setTenure(Math.min(30, Math.max(1, Number(e.target.value))))}
-                className="bg-background border-border text-foreground"
-              />
-              <Slider
-                value={[tenure]}
-                onValueChange={(value) => setTenure(value[0])}
-                min={1}
-                max={30}
-                step={1}
-                className="w-full"
-              />
             </div>
 
             {/* Interest Rate */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-foreground flex items-center gap-2">
-                  <Percent className="w-4 h-4 text-financial-primary" />
-                  Interest Rate (% p.a.)
-                </Label>
-                <span className="text-sm font-medium text-foreground">{interestRate}%</span>
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 pt-2 w-36">
+                  <Label className="text-sm font-medium text-foreground">
+                    Interest Rate (% p.a.)
+                  </Label>
+                </div>
+                <div className="w-4/5 space-y-2.5">
+                  <Input
+                    type="number"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(Math.min(20, Math.max(1, Number(e.target.value))))}
+                    step="0.1"
+                    className="h-10"
+                  />
+                  <Slider
+                    value={[interestRate]}
+                    onValueChange={(value) => setInterestRate(value[0])}
+                    min={5}
+                    max={20}
+                    step={0.1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>5%</span>
+                    <span>20%</span>
+                  </div>
+                </div>
               </div>
-              <Input
-                type="number"
-                value={interestRate}
-                onChange={(e) => setInterestRate(Math.min(20, Math.max(1, Number(e.target.value))))}
-                step="0.1"
-                className="bg-background border-border text-foreground"
-              />
-              <Slider
-                value={[interestRate]}
-                onValueChange={(value) => setInterestRate(value[0])}
-                min={5}
-                max={20}
-                step={0.1}
-                className="w-full"
-              />
             </div>
 
             {/* Other EMIs */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-foreground flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-financial-primary" />
-                  Other EMIs (Monthly)
-                </Label>
-                <span className="text-sm font-medium text-foreground">{formatCurrency(otherEMIs)}</span>
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 pt-2 w-36">
+                  <Label className="text-sm font-medium text-foreground">
+                    Other EMIs (Monthly)
+                  </Label>
+                </div>
+                <div className="w-4/5 space-y-2.5">
+                  <Input
+                    type="number"
+                    value={otherEMIs}
+                    onChange={(e) => setOtherEMIs(Math.max(0, Number(e.target.value)))}
+                    className="h-10"
+                  />
+                  <Slider
+                    value={[otherEMIs]}
+                    onValueChange={(value) => setOtherEMIs(value[0])}
+                    min={0}
+                    max={grossIncome * 0.5}
+                    step={1000}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>₹0</span>
+                    <span>{formatCurrency(grossIncome * 0.5)}</span>
+                  </div>
+                </div>
               </div>
-              <Input
-                type="number"
-                value={otherEMIs}
-                onChange={(e) => setOtherEMIs(Math.max(0, Number(e.target.value)))}
-                className="bg-background border-border text-foreground"
-              />
-              <Slider
-                value={[otherEMIs]}
-                onValueChange={(value) => setOtherEMIs(value[0])}
-                min={0}
-                max={grossIncome * 0.5}
-                step={1000}
-                className="w-full"
-              />
             </div>
 
             {/* Property Value */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-foreground flex items-center gap-2">
-                  <Building className="w-4 h-4 text-financial-primary" />
-                  Property Value
-                </Label>
-                <span className="text-sm font-medium text-foreground">{formatCurrency(propertyValue)}</span>
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 pt-2 w-36">
+                  <Label className="text-sm font-medium text-foreground">
+                    Property Value
+                  </Label>
+                </div>
+                <div className="w-4/5 space-y-2.5">
+                  <Input
+                    type="number"
+                    value={propertyValue}
+                    onChange={(e) => setPropertyValue(Math.max(0, Number(e.target.value)))}
+                    className="h-10"
+                  />
+                  <Slider
+                    value={[propertyValue]}
+                    onValueChange={(value) => setPropertyValue(value[0])}
+                    min={500000}
+                    max={50000000}
+                    step={100000}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>₹5L</span>
+                    <span>₹5Cr</span>
+                  </div>
+                </div>
               </div>
-              <Input
-                type="number"
-                value={propertyValue}
-                onChange={(e) => setPropertyValue(Math.max(0, Number(e.target.value)))}
-                className="bg-background border-border text-foreground"
-              />
-              <Slider
-                value={[propertyValue]}
-                onValueChange={(value) => setPropertyValue(value[0])}
-                min={500000}
-                max={50000000}
-                step={100000}
-                className="w-full"
-              />
             </div>
 
             {/* Credit Score Toggle and Input */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="text-foreground flex items-center gap-2">
-                  <Star className="w-4 h-4 text-financial-primary" />
-                  Do you know your Credit Score?
-                </Label>
-                <Switch
-                  checked={hasCreditScore}
-                  onCheckedChange={setHasCreditScore}
-                />
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 w-36">
+                  <Label className="text-sm font-medium text-foreground">
+                    Know Credit Score?
+                  </Label>
+                </div>
+                <div className="w-4/5">
+                  <Switch
+                    checked={hasCreditScore}
+                    onCheckedChange={setHasCreditScore}
+                  />
+                </div>
               </div>
               
               {hasCreditScore && (
-                <div className="space-y-3 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">Credit Score</span>
-                    <span className={`text-sm font-medium ${creditRating.color}`}>
-                      {creditScore} - {creditRating.label}
-                    </span>
+                <div className="flex items-start gap-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex-shrink-0 pt-2 w-36">
+                    <Label className="text-sm font-medium text-foreground">
+                      Credit Score
+                    </Label>
                   </div>
-                  <Input
-                    type="number"
-                    value={creditScore}
-                    onChange={(e) => setCreditScore(Math.min(900, Math.max(300, Number(e.target.value))))}
-                    className="bg-background border-border text-foreground"
-                  />
-                  <Slider
-                    value={[creditScore]}
-                    onValueChange={(value) => setCreditScore(value[0])}
-                    min={300}
-                    max={900}
-                    step={10}
-                    className="w-full"
-                  />
+                  <div className="w-4/5 space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="number"
+                        value={creditScore}
+                        onChange={(e) => setCreditScore(Math.min(900, Math.max(300, Number(e.target.value))))}
+                        className="h-10 flex-1"
+                      />
+                      <span className={`text-sm font-medium ${creditRating.color} whitespace-nowrap`}>
+                        {creditRating.label}
+                      </span>
+                    </div>
+                    <Slider
+                      value={[creditScore]}
+                      onValueChange={(value) => setCreditScore(value[0])}
+                      min={300}
+                      max={900}
+                      step={10}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>300</span>
+                      <span>900</span>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -291,12 +336,9 @@ export const LoanAffordabilityCalculator = () => {
         </Card>
 
         {/* Right Section - Results */}
-        <Card className="bg-card border-border shadow-card">
-          <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary rounded-t-lg">
-            <CardTitle className="text-white flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Loan Eligibility
-            </CardTitle>
+        <Card className="h-fit bg-card shadow-card border border-border">
+          <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
+            <CardTitle className="text-xl font-semibold">Loan Eligibility</CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
             {/* Eligible Loan Amount - Main Result */}
