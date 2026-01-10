@@ -242,7 +242,12 @@ const Index = () => {
                   )}
                 </Button>
                 <Button
-                  onClick={() => setActiveTab("emi-schedule")}
+                  onClick={() => {
+                    setActiveTab("emi-schedule");
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 50);
+                  }}
                   variant="outline"
                   className="gap-2 border-financial-success text-financial-success hover:bg-financial-success hover:text-white transition-all duration-300"
                 >
