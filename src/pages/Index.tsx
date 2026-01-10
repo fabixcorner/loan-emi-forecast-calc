@@ -227,7 +227,7 @@ const Index = () => {
                 <Button
                   onClick={() => setShowPartPayments(!showPartPayments)}
                   variant="outline"
-                  className="gap-2 border-financial-primary text-financial-primary hover:bg-financial-primary hover:text-white transition-all duration-300"
+                  className="gap-2 border-financial-primary text-financial-primary hover:bg-financial-primary hover:text-white transition-all duration-300 relative"
                 >
                   {showPartPayments ? (
                     <>
@@ -239,6 +239,11 @@ const Index = () => {
                       <Plus className="w-4 h-4" />
                       Add Part Payments
                     </>
+                  )}
+                  {partPayments.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-financial-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {partPayments.length}
+                    </span>
                   )}
                 </Button>
                 <Button
