@@ -447,7 +447,7 @@ export const LoanSummary = ({
                     <Bar 
                       yAxisId="left"
                       dataKey="principal" 
-                      fill="hsl(142, 70%, 35%)" 
+                      fill="hsl(var(--financial-primary))" 
                       name="Principal"
                       radius={[2, 2, 0, 0]}
                       onMouseEnter={() => setHoveredElement('principal')}
@@ -476,7 +476,7 @@ export const LoanSummary = ({
                       <Bar 
                         yAxisId="left"
                         dataKey="partPayment" 
-                        fill="hsl(var(--financial-primary))" 
+                        fill="hsl(142, 70%, 35%)" 
                         name="Part Payment"
                         radius={[2, 2, 0, 0]}
                         onMouseEnter={() => setHoveredElement('partPayment')}
@@ -604,11 +604,11 @@ export const LoanSummary = ({
                         )}
                       </TableCell>
                       <TableCell className="font-bold">{yearData.year}</TableCell>
-                      <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                      <TableCell className="text-right font-bold text-financial-primary">
                         {formatCurrency(yearData.totalPrincipal)}
                       </TableCell>
                       {partPayments.length > 0 && (
-                        <TableCell className="text-right font-bold text-financial-primary">
+                        <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
                           {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
                         </TableCell>
                       )}
@@ -639,11 +639,11 @@ export const LoanSummary = ({
                           <TableCell className="text-muted-foreground pl-4">
                             {getFullMonthName(row.month)}
                           </TableCell>
-                          <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                          <TableCell className="text-right text-financial-primary">
                             {formatCurrency(row.principalAmount)}
                           </TableCell>
                           {partPayments.length > 0 && (
-                            <TableCell className="text-right text-financial-primary">
+                            <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
                               {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
                             </TableCell>
                           )}
