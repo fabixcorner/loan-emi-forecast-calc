@@ -393,7 +393,7 @@ export const LoanSummary = ({
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
               <CardTitle className="text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
