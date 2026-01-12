@@ -168,7 +168,10 @@ export const LoanComparisonSection = ({
           )}
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-4">
+        <p className="text-xs text-muted-foreground mb-3 italic">
+          Note: Part payments are excluded from all scenarios for fair comparison.
+        </p>
         <div className={`grid gap-3 ${scenarios.length === 2 ? 'grid-cols-1 md:grid-cols-2' : scenarios.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
           {scenarios.map((scenario, index) => (
             <div 
