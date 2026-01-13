@@ -44,13 +44,13 @@ export const EligibilityBreakdownChart = ({
       color: "hsl(var(--financial-primary))",
       multiplier: null,
     },
-    {
+    ...(hasCreditScore ? [{
       name: "Credit Score",
       value: afterCreditScore,
-      description: hasCreditScore ? `${formatPercent(creditScoreMultiplier)} multiplier` : "Not applied",
+      description: `${formatPercent(creditScoreMultiplier)} multiplier`,
       color: creditScoreMultiplier >= 1 ? "hsl(var(--financial-success))" : "hsl(var(--destructive))",
       multiplier: creditScoreMultiplier,
-    },
+    }] : []),
     {
       name: "Employment",
       value: afterEmployment,
