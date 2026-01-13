@@ -50,8 +50,27 @@ Understanding loan repayments can be complex and overwhelming. This calculator d
 2. Add up to 3 different scenarios
 3. Adjust parameters for each scenario
 4. Compare total interest and EMI differences at a glance
+5. Note: Part payments are excluded from all scenarios for fair comparison
 
 ![Loan Comparison Demo](https://via.placeholder.com/800x400?text=Loan+Comparison+Demo+GIF)
+
+### Checking Loan Affordability
+
+1. Navigate to the **Loan Affordability** section
+2. Enter your **Monthly Gross Income**
+3. Add any **Existing EMIs** you're currently paying
+4. Set your preferred **Interest Rate** and **Tenure**
+5. (Optional) Toggle on **Credit Score** and select your score range
+6. Select your **Employment Type** (Salaried or Self-Employed)
+7. Enter the **Property Value** for LTV calculation
+8. View your **Eligible Loan Amount** based on 50% FOIR (Fixed Obligations to Income Ratio)
+9. Export the detailed affordability report as PDF
+
+The calculator considers:
+- **50% FOIR**: Your EMI commitments shouldn't exceed 50% of gross income
+- **Credit Score Multipliers**: Higher scores increase eligibility
+- **Employment Type Factors**: Salaried borrowers may qualify for higher amounts
+- **Loan-to-Value (LTV) Limits**: Ensures loan doesn't exceed property value limits
 
 ### Exporting Your Schedule
 
@@ -80,7 +99,7 @@ Understanding loan repayments can be complex and overwhelming. This calculator d
 
 Have questions, suggestions, or need help? Feel free to reach out!
 
-- **Email**: [fabixcorner@gmail.com](mailto:fabixcorner@gmail.com)
+- **Email**: [your-email@example.com](mailto:your-email@example.com)
 - **Issues**: Open an issue in this repository for bug reports or feature requests
 
 ---
@@ -88,3 +107,9 @@ Have questions, suggestions, or need help? Feel free to reach out!
 ## 📄 License
 
 This project is open source and available under the MIT License.
+
+---
+
+<p align="center">
+  Made with ❤️ using <a href="https://lovable.dev">Lovable</a>
+</p>

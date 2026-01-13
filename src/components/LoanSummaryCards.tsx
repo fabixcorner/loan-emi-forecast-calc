@@ -54,9 +54,9 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
   const totalPartPayments = calculation.schedule.reduce((sum, row) => sum + row.partPayment, 0);
   
   const pieChartData = [
-    { name: 'Principal', value: totalPrincipal, color: 'hsl(var(--financial-success))' },
+    { name: 'Principal', value: totalPrincipal, color: 'hsl(var(--financial-primary))' },
     { name: 'Interest', value: calculation.totalInterest, color: 'hsl(var(--financial-warning))' },
-    { name: 'Part Payments', value: totalPartPayments, color: 'hsl(var(--financial-primary))' }
+    { name: 'Part Payments', value: totalPartPayments, color: 'hsl(142, 70%, 35%)' }
   ].filter(item => item.value > 0);
 
   // Determine grid columns based on number of cards
@@ -68,7 +68,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
 
   return (
     <div className={`grid gap-4 ${getGridCols()}`}>
-      <Card className="shadow-[var(--shadow-card)]">
+      <Card className="bg-card shadow-card border border-border">
         <CardContent className="p-3">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1 font-bold">
@@ -81,7 +81,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
         </CardContent>
       </Card>
 
-      <Card className="shadow-[var(--shadow-card)]">
+      <Card className="bg-card shadow-card border border-border">
         <CardContent className="p-3">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1 font-bold">Total Interest</p>
@@ -92,7 +92,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
         </CardContent>
       </Card>
 
-      <Card className="shadow-[var(--shadow-card)]">
+      <Card className="bg-card shadow-card border border-border">
         <CardContent className="p-3">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1 font-bold">Total Amount</p>
@@ -106,14 +106,14 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
       {/* Interest Saved Card - only show when part payments exist */}
       {hasPartPayments && (
         <>
-          <Card className="shadow-[var(--shadow-card)] bg-gradient-to-br from-financial-success/10 to-financial-success/5 border-financial-success/30 relative overflow-hidden">
+          <Card className="bg-card shadow-card border-[hsl(142,70%,35%)]/30 relative overflow-hidden">
             <div className="absolute top-2 right-2 animate-pulse">
-              <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
+              <Sparkles className="w-5 h-5 text-[hsl(142,70%,35%)] animate-spin" style={{ animationDuration: '3s' }} />
             </div>
             <CardContent className="p-3">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground mb-1 font-bold">Interest Saved</p>
-                <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">
+                <p className="text-2xl font-bold text-[hsl(142,70%,35%)]">
                   {formatCurrency(interestSavings)}
                 </p>
               </div>
@@ -121,14 +121,14 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
           </Card>
 
           {timeSavings > 0 && (
-            <Card className="shadow-[var(--shadow-card)] bg-gradient-to-br from-financial-primary/10 to-financial-primary/5 border-financial-primary/30 relative overflow-hidden">
+            <Card className="bg-card shadow-card border-[hsl(142,70%,35%)]/30 relative overflow-hidden">
               <div className="absolute top-2 right-2 animate-pulse">
-                <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400 animate-spin" style={{ animationDuration: '3s' }} />
+                <Sparkles className="w-5 h-5 text-[hsl(142,70%,35%)] animate-spin" style={{ animationDuration: '3s' }} />
               </div>
               <CardContent className="p-3">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground mb-1 font-bold">Time Saved</p>
-                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-500">
+                  <p className="text-2xl font-bold text-[hsl(142,70%,35%)]">
                     {timeSavings} {timeSavings === 1 ? 'month' : 'months'}
                   </p>
                 </div>

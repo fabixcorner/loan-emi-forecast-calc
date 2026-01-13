@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { Plus, Trash2, TrendingDown, Clock, IndianRupee, Percent } from "lucide-react";
+import { Plus, Trash2, TrendingDown, Clock, IndianRupee, Percent, Award, Trophy, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { PartPayment } from "./PartPaymentSection";
 
@@ -87,7 +88,7 @@ export const LoanComparisonSection = ({
     ));
   }, [baseAmount, baseRate, baseTenure, basePartPayments]);
 
-  // Calculate results for all scenarios
+  // Calculate results for all scenarios - no part payments for fair comparison
   useEffect(() => {
     const newResults: Record<string, ScenarioResult> = {};
     scenarios.forEach(scenario => {
@@ -97,7 +98,7 @@ export const LoanComparisonSection = ({
         scenario.loanTenure,
         startMonth,
         startYear,
-        scenario.id === "base" ? basePartPayments : []
+        [] // No part payments for any scenario in comparison
       );
       newResults[scenario.id] = {
         emi: calc.emi,
@@ -150,9 +151,61 @@ export const LoanComparisonSection = ({
   const bestInterest = getBestForMetric('totalInterest');
   const bestTenure = getBestForMetric('tenureMonths');
 
+  // Calculate weighted scores for overall winner
+  // Weights: EMI (30%), Interest (50%), Tenure (20%)
+  const calculateWeightedScore = () => {
+    if (scenarios.length <= 1 || Object.keys(results).length === 0) return null;
+
+    // Find min/max for normalization
+    const allResults = scenarios.map(s => results[s.id]).filter(Boolean);
+    if (allResults.length === 0) return null;
+
+    const minEMI = Math.min(...allResults.map(r => r.emi));
+    const maxEMI = Math.max(...allResults.map(r => r.emi));
+    const minInterest = Math.min(...allResults.map(r => r.totalInterest));
+    const maxInterest = Math.max(...allResults.map(r => r.totalInterest));
+    const minTenure = Math.min(...allResults.map(r => r.tenureMonths));
+    const maxTenure = Math.max(...allResults.map(r => r.tenureMonths));
+
+    const scores: Record<string, { score: number; breakdown: { emi: number; interest: number; tenure: number } }> = {};
+
+    scenarios.forEach(scenario => {
+      const result = results[scenario.id];
+      if (!result) return;
+
+      // Normalize scores (0-100, lower is better for all metrics)
+      const emiScore = maxEMI === minEMI ? 100 : 100 - ((result.emi - minEMI) / (maxEMI - minEMI)) * 100;
+      const interestScore = maxInterest === minInterest ? 100 : 100 - ((result.totalInterest - minInterest) / (maxInterest - minInterest)) * 100;
+      const tenureScore = maxTenure === minTenure ? 100 : 100 - ((result.tenureMonths - minTenure) / (maxTenure - minTenure)) * 100;
+
+      // Weighted score
+      const weightedScore = (emiScore * 0.3) + (interestScore * 0.5) + (tenureScore * 0.2);
+
+      scores[scenario.id] = {
+        score: weightedScore,
+        breakdown: { emi: emiScore, interest: interestScore, tenure: tenureScore }
+      };
+    });
+
+    // Find overall winner
+    let winnerId = scenarios[0]?.id;
+    let highestScore = scores[scenarios[0]?.id]?.score || 0;
+    
+    Object.entries(scores).forEach(([id, data]) => {
+      if (data.score > highestScore) {
+        winnerId = id;
+        highestScore = data.score;
+      }
+    });
+
+    return { scores, winnerId, highestScore };
+  };
+
+  const weightedResults = calculateWeightedScore();
+
   return (
-    <Card className="glass-card border-financial-border">
-      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+    <Card className="bg-card shadow-card border border-border">
+      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-semibold">Loan Comparison</CardTitle>
           {scenarios.length < 3 && (
@@ -160,7 +213,7 @@ export const LoanComparisonSection = ({
               onClick={addScenario} 
               size="sm"
               variant="outline"
-              className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
+              className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
             >
               <Plus className="w-4 h-4" />
               Add Scenario
@@ -168,7 +221,10 @@ export const LoanComparisonSection = ({
           )}
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-4">
+        <p className="text-xs text-muted-foreground mb-3 italic">
+          Note: Part payments are excluded from all scenarios for fair comparison.
+        </p>
         <div className={`grid gap-3 ${scenarios.length === 2 ? 'grid-cols-1 md:grid-cols-2' : scenarios.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
           {scenarios.map((scenario, index) => (
             <div 
@@ -198,6 +254,30 @@ export const LoanComparisonSection = ({
                   </Button>
                 )}
               </div>
+
+              {/* Best Scenario Badges */}
+              {scenarios.length > 1 && (
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {bestEMI === scenario.id && (
+                    <Badge className="text-[10px] px-1.5 py-0 h-5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30">
+                      <Zap className="w-3 h-3 mr-0.5" />
+                      Best EMI
+                    </Badge>
+                  )}
+                  {bestInterest === scenario.id && (
+                    <Badge className="text-[10px] px-1.5 py-0 h-5 bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30 hover:bg-blue-500/30">
+                      <Trophy className="w-3 h-3 mr-0.5" />
+                      Lowest Interest
+                    </Badge>
+                  )}
+                  {bestTenure === scenario.id && (
+                    <Badge className="text-[10px] px-1.5 py-0 h-5 bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/30">
+                      <Award className="w-3 h-3 mr-0.5" />
+                      Shortest Tenure
+                    </Badge>
+                  )}
+                </div>
+              )}
 
               {/* Loan Parameters */}
               <div className="space-y-2">
@@ -291,6 +371,57 @@ export const LoanComparisonSection = ({
             </div>
           ))}
         </div>
+
+        {/* Overall Winner Summary */}
+        {weightedResults && scenarios.length > 1 && (
+          <div className="mt-4 p-4 rounded-lg bg-gradient-to-r from-financial-success/10 to-financial-primary/10 border border-financial-success/30">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-full bg-financial-success/20">
+                  <Trophy className="w-5 h-5 text-financial-success" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Overall Winner</p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {scenarios.find(s => s.id === weightedResults.winnerId)?.name || 'Unknown'}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-4">
+                <div className="text-center">
+                  <p className="text-[10px] text-muted-foreground uppercase">Score</p>
+                  <p className="text-xl font-bold text-financial-success">{weightedResults.highestScore.toFixed(0)}</p>
+                </div>
+                <div className="hidden md:block w-px bg-border" />
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase">EMI (30%)</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {weightedResults.scores[weightedResults.winnerId]?.breakdown.emi.toFixed(0)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase">Interest (50%)</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {weightedResults.scores[weightedResults.winnerId]?.breakdown.interest.toFixed(0)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase">Tenure (20%)</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {weightedResults.scores[weightedResults.winnerId]?.breakdown.tenure.toFixed(0)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-xs text-muted-foreground mt-3 italic">
+              Weighted scoring: EMI (30%) + Interest Savings (50%) + Tenure (20%). Higher score = better overall value.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
