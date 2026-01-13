@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { Plus, Trash2, TrendingDown, Clock, IndianRupee, Percent } from "lucide-react";
+import { Plus, Trash2, TrendingDown, Clock, IndianRupee, Percent, Award, Trophy, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { PartPayment } from "./PartPaymentSection";
 
@@ -201,6 +202,30 @@ export const LoanComparisonSection = ({
                   </Button>
                 )}
               </div>
+
+              {/* Best Scenario Badges */}
+              {scenarios.length > 1 && (
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {bestEMI === scenario.id && (
+                    <Badge className="text-[10px] px-1.5 py-0 h-5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/30">
+                      <Zap className="w-3 h-3 mr-0.5" />
+                      Best EMI
+                    </Badge>
+                  )}
+                  {bestInterest === scenario.id && (
+                    <Badge className="text-[10px] px-1.5 py-0 h-5 bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30 hover:bg-blue-500/30">
+                      <Trophy className="w-3 h-3 mr-0.5" />
+                      Lowest Interest
+                    </Badge>
+                  )}
+                  {bestTenure === scenario.id && (
+                    <Badge className="text-[10px] px-1.5 py-0 h-5 bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/30">
+                      <Award className="w-3 h-3 mr-0.5" />
+                      Shortest Tenure
+                    </Badge>
+                  )}
+                </div>
+              )}
 
               {/* Loan Parameters */}
               <div className="space-y-2">
