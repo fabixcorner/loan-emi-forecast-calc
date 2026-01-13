@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Calculator, TrendingUp } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -8,6 +8,10 @@ import { LoanSummary } from "@/components/LoanSummary";
 import { LoanSummaryCards } from "@/components/LoanSummaryCards";
 import { LoanBreakdownChart } from "@/components/LoanBreakdownChart";
 import { HowItWorks } from "@/components/HowItWorks";
+import { LoanComparisonSection } from "@/components/LoanComparisonSection";
+import { LoanAffordabilityCalculator } from "@/components/LoanAffordabilityCalculator";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import confetti from "canvas-confetti";
@@ -25,6 +29,8 @@ const Index = () => {
   const [interestSavings, setInterestSavings] = useState<number>(0);
   const [timeSavings, setTimeSavings] = useState<number>(0);
   const [showSchedule, setShowSchedule] = useState(false);
+  const [activeTab, setActiveTab] = useState("loan-details");
+  const [showPartPayments, setShowPartPayments] = useState(false);
 
   const handlePartPaymentAdded = () => {
     // Explosion confetti around Interest Saved card
@@ -75,6 +81,7 @@ const Index = () => {
     }
     if (view === 'schedule') {
       setShowSchedule(true);
+      setActiveTab("emi-schedule");
     }
   }, []);
 
@@ -119,7 +126,7 @@ const Index = () => {
   return (
     <div className="min-h-screen glass-background">
       {/* Header */}
-      <header className="glass-card shadow-sm border-b border-financial-border">
+      <header className="bg-card/80 backdrop-blur-sm shadow-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start space-x-3">
@@ -127,15 +134,18 @@ const Index = () => {
                 <img src={calculatorIcon} alt="Calculator" className="w-10 h-10" />
               </div>
               <div className="text-left">
-                <h1 className="text-2xl font-bold text-white">
+                <h1 className="text-2xl font-bold text-foreground">
                   {isScheduleView ? 'Shared EMI Schedule' : 'Loan Forecast Calculator'}
                 </h1>
-                <p className="text-sm text-white/80">
+                <p className="text-sm text-muted-foreground">
                   {isScheduleView ? 'View detailed loan repayment schedule' : 'Plan your loan re-payments. Save on interest. Be Smarter than your lender.'}
                 </p>
               </div>
             </div>
-            <HowItWorks />
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <HowItWorks />
+            </div>
           </div>
         </div>
       </header>
@@ -163,13 +173,31 @@ const Index = () => {
               onPartPaymentAdded={handlePartPaymentAdded}
               loanAmount={loanAmount}
               interestRate={interestRate}
+              hideActionButtons={true}
             />
           </>
         ) : (
-          /* Full calculator view */
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* Left Section - Loan Inputs */}
+          /* Full calculator view with tabs */
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
+              <TabsTrigger value="loan-details" className="text-sm md:text-base">
+                Loan Details
+              </TabsTrigger>
+              <TabsTrigger value="emi-schedule" className="text-sm md:text-base">
+                EMI Schedule
+              </TabsTrigger>
+              <TabsTrigger value="compare-scenarios" className="text-sm md:text-base">
+                Compare Scenarios
+              </TabsTrigger>
+              <TabsTrigger value="loan-affordability" className="text-sm md:text-base">
+                Loan Affordability
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Tab 1: Loan Details */}
+            <TabsContent value="loan-details" className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Section - Loan Inputs */}
                 <LoanInputSection
                   loanAmount={loanAmount}
                   setLoanAmount={setLoanAmount}
@@ -183,34 +211,115 @@ const Index = () => {
                   setStartYear={setStartYear}
                 />
 
-              {/* Right Section - Loan Breakdown Chart */}
-              <LoanBreakdownChart calculation={calculation} showSchedule={showSchedule} />
-            </div>
+                {/* Right Section - Loan Breakdown Chart */}
+                <LoanBreakdownChart calculation={calculation} showSchedule={showSchedule} />
+              </div>
 
-            {/* Loan Summary Cards */}
-            <div className="mb-8">
+              {/* Loan Summary Cards */}
               <LoanSummaryCards 
                 calculation={calculation} 
                 interestSavings={interestSavings} 
                 timeSavings={timeSavings}
               />
-            </div>
 
-            {/* Loan Summary */}
-          <LoanSummary 
-            calculation={calculation}
-            partPayments={partPayments}
-            setPartPayments={setPartPayments}
-            startMonth={startMonth}
-            startYear={startYear}
-            loanTenure={loanTenure}
-            showSchedule={showSchedule}
-            setShowSchedule={setShowSchedule}
-            onPartPaymentAdded={handlePartPaymentAdded}
-            loanAmount={loanAmount}
-            interestRate={interestRate}
-          />
-          </>
+              {/* Action Buttons */}
+              <div className="flex justify-center gap-4">
+                <Button
+                  onClick={() => setShowPartPayments(!showPartPayments)}
+                  variant="outline"
+                  className="gap-2 border-financial-primary text-financial-primary hover:bg-financial-primary hover:text-white transition-all duration-300 relative"
+                >
+                  {showPartPayments ? (
+                    <>
+                      <ChevronUp className="w-4 h-4" />
+                      Hide Part Payments
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      Add Part Payments
+                    </>
+                  )}
+                  {partPayments.length > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-financial-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {partPayments.length}
+                    </span>
+                  )}
+                </Button>
+                <Button
+                  onClick={() => {
+                    setActiveTab("emi-schedule");
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 50);
+                  }}
+                  variant="outline"
+                  className="gap-2 border-financial-success text-financial-success hover:bg-financial-success hover:text-white transition-all duration-300"
+                >
+                  <CalendarDays className="w-4 h-4" />
+                  Show EMI Schedule
+                </Button>
+              </div>
+
+              {/* Part Payments Section - Conditional */}
+              {showPartPayments && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+                  <PartPaymentSection
+                    partPayments={partPayments}
+                    setPartPayments={setPartPayments}
+                    startMonth={startMonth}
+                    startYear={startYear}
+                    loanTenure={loanTenure}
+                    loanSchedule={calculation?.schedule || []}
+                    onPartPaymentAdded={handlePartPaymentAdded}
+                  />
+                </div>
+              )}
+            </TabsContent>
+
+            {/* Tab 2: EMI Schedule */}
+            <TabsContent value="emi-schedule" className="space-y-8">
+              {/* Loan Summary Cards */}
+              <LoanSummaryCards 
+                calculation={calculation} 
+                interestSavings={interestSavings} 
+                timeSavings={timeSavings}
+              />
+
+              {/* EMI Schedule */}
+              <LoanSummary 
+                calculation={calculation}
+                partPayments={partPayments}
+                setPartPayments={setPartPayments}
+                startMonth={startMonth}
+                startYear={startYear}
+                loanTenure={loanTenure}
+                showSchedule={true}
+                setShowSchedule={setShowSchedule}
+                onPartPaymentAdded={handlePartPaymentAdded}
+                loanAmount={loanAmount}
+                interestRate={interestRate}
+                hideActionButtons={true}
+              />
+            </TabsContent>
+
+            {/* Tab 3: Compare Loan Scenarios */}
+            <TabsContent value="compare-scenarios" className="space-y-8">
+              <LoanComparisonSection
+                baseAmount={loanAmount}
+                baseRate={interestRate}
+                baseTenure={loanTenure}
+                basePartPayments={partPayments}
+                startMonth={startMonth}
+                startYear={startYear}
+              />
+            </TabsContent>
+
+            {/* Tab 4: Loan Affordability */}
+            <TabsContent value="loan-affordability" className="space-y-8">
+              <LoanAffordabilityCalculator />
+            </TabsContent>
+          </Tabs>
         )}
       </div>
     </div>

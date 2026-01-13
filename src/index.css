@@ -8,106 +8,126 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 215 28% 17%;
+    /* Darker blue theme inspired by the reference design */
+    --background: 220 25% 92%;
+    --foreground: 220 40% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
+    --card: 220 20% 97%;
+    --card-foreground: 220 40% 18%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
+    --popover: 220 20% 97%;
+    --popover-foreground: 220 40% 15%;
 
-    --primary: 217 91% 60%;
+    --primary: 220 50% 25%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 215 28% 17%;
+    --secondary: 220 20% 90%;
+    --secondary-foreground: 220 40% 18%;
 
-    --muted: 215 27% 97%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 220 18% 93%;
+    --muted-foreground: 220 20% 45%;
 
-    --accent: 158 64% 52%;
+    --accent: 220 50% 25%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 16% 92%;
-    --input: 215 16% 92%;
-    --ring: 217 91% 60%;
+    --border: 220 25% 85%;
+    --input: 220 20% 90%;
+    --ring: 220 50% 25%;
 
-    --financial-primary: 217 91% 60%;
-    --financial-success: 158 64% 52%;
+    --financial-primary: 220 50% 25%;
+    --financial-success: 210 55% 35%;
     --financial-warning: 43 96% 56%;
-    --financial-background: 210 40% 98%;
-    --financial-card: 0 0% 100%;
-    --financial-border: 215 16% 92%;
+    --financial-background: 220 25% 92%;
+    --financial-card: 220 20% 97%;
+    --financial-border: 220 25% 85%;
     
     --gradient-financial: linear-gradient(135deg, hsl(var(--financial-primary)), hsl(var(--financial-success)));
     --shadow-financial: 0 4px 20px -4px hsl(var(--financial-primary) / 0.15);
-    --shadow-card: 0 2px 10px -2px hsl(215 16% 47% / 0.1);
+    --shadow-card: 0 4px 24px -4px hsl(220 40% 40% / 0.08), 0 2px 8px -2px hsl(220 40% 40% / 0.04);
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    /* Glassmorphism Background */
-    --glass-background: 220 100% 10%;
-    --glass-overlay: 220 80% 20% / 0.1;
-    --glass-border: 220 50% 50% / 0.2;
-    --glass-blur: blur(20px);
+    /* Glassmorphism Background - soft blue/gray gradient */
+    --glass-background-start: 220 25% 92%;
+    --glass-background-end: 220 20% 90%;
+    --glass-overlay: 220 20% 97% / 0.95;
+    --glass-border: 220 25% 82%;
+    --glass-blur: blur(12px);
 
-    --sidebar-background: 0 0% 98%;
+    /* Tab gradient for active state */
+    --tab-gradient-start: 220 50% 25%;
+    --tab-gradient-end: 210 55% 35%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-background: 220 20% 96%;
+    --sidebar-foreground: 220 40% 18%;
+    --sidebar-primary: 220 50% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 90%;
+    --sidebar-accent-foreground: 220 40% 18%;
+    --sidebar-border: 220 25% 85%;
+    --sidebar-ring: 220 50% 25%;
 
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Font family */
+    --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 222 35% 8%;
+    --foreground: 210 40% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 222 30% 12%;
+    --card-foreground: 210 40% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 222 30% 12%;
+    --popover-foreground: 210 40% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 210 60% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 30% 16%;
+    --secondary-foreground: 210 40% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 25% 16%;
+    --muted-foreground: 215 20% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 210 60% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 210 40% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 220 25% 20%;
+    --input: 220 25% 18%;
+    --ring: 210 60% 55%;
+
+    --financial-primary: 210 60% 55%;
+    --financial-success: 200 55% 45%;
+    --financial-warning: 43 90% 50%;
+    --financial-background: 222 35% 8%;
+    --financial-card: 222 30% 12%;
+    --financial-border: 220 25% 20%;
+
+    --shadow-card: 0 4px 24px -4px hsl(220 50% 10% / 0.4), 0 2px 8px -2px hsl(220 50% 10% / 0.3);
+
+    --glass-background-start: 222 35% 8%;
+    --glass-background-end: 222 30% 10%;
+    --glass-overlay: 222 30% 12% / 0.95;
+    --glass-border: 220 25% 18%;
+
+    --tab-gradient-start: 210 60% 50%;
+    --tab-gradient-end: 200 55% 40%;
+
+    --sidebar-background: 222 30% 10%;
+    --sidebar-foreground: 210 40% 95%;
+    --sidebar-primary: 210 60% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 220 25% 16%;
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 220 25% 20%;
+    --sidebar-ring: 210 60% 55%;
   }
 }
 
@@ -116,38 +136,54 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    font-family: var(--font-sans);
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Glassmorphism styles */
+  /* Smooth transitions for theme switching */
+  * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* Soft gradient background - darker blue tones */
   .glass-background {
-    background: linear-gradient(135deg, hsl(var(--glass-background)), hsl(220 90% 15%));
-    position: relative;
+    background: linear-gradient(
+      135deg, 
+      hsl(220 22% 90%) 0%, 
+      hsl(220 20% 88%) 25%,
+      hsl(220 24% 89%) 50%,
+      hsl(220 18% 87%) 75%,
+      hsl(220 22% 90%) 100%
+    );
+    min-height: 100vh;
+    transition: background 0.3s ease;
   }
 
-  .glass-background::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      radial-gradient(circle at 20% 80%, hsl(217 91% 60% / 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, hsl(158 64% 52% / 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, hsl(43 96% 56% / 0.2) 0%, transparent 50%);
-    pointer-events: none;
+  .dark .glass-background {
+    background: linear-gradient(
+      135deg, 
+      hsl(222 35% 8%) 0%, 
+      hsl(222 32% 10%) 25%,
+      hsl(222 35% 9%) 50%,
+      hsl(222 30% 11%) 75%,
+      hsl(222 35% 8%) 100%
+    );
   }
 
+  /* Glassmorphism card styles */
   .glass-card {
     background: hsl(var(--glass-overlay));
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid hsl(var(--glass-border));
-    box-shadow: 
-      0 8px 32px 0 hsl(220 100% 10% / 0.37),
-      inset 0 1px 0 0 hsl(var(--glass-border));
+    box-shadow: var(--shadow-card);
+    border-radius: var(--radius);
   }
 
   /* Calculator animation styles */

@@ -42,16 +42,16 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
   const totalPartPayments = calculation.schedule.reduce((sum, row) => sum + row.partPayment, 0);
   
   const pieChartData = [
-    { name: 'Principal', value: totalPrincipal, color: 'hsl(142, 70%, 35%)' },
+    { name: 'Principal', value: totalPrincipal, color: 'hsl(var(--financial-primary))' },
     { name: 'Interest', value: calculation.totalInterest, color: 'hsl(var(--destructive))' },
-    { name: 'Part Payments', value: totalPartPayments, color: 'hsl(var(--financial-primary))' }
+    { name: 'Part Payments', value: totalPartPayments, color: 'hsl(142, 70%, 35%)' }
   ].filter(item => item.value > 0);
 
   const totalValue = pieChartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <Card className="shadow-[var(--shadow-card)]">
-      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+    <Card className="bg-card shadow-card border border-border">
+      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
         <CardTitle className="text-xl font-semibold">Loan Breakdown</CardTitle>
       </CardHeader>
       <CardContent>

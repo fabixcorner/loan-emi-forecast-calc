@@ -53,6 +53,7 @@ interface LoanSummaryProps {
   baseAmount?: number;
   baseRate?: number;
   baseTenure?: number;
+  hideActionButtons?: boolean;
 }
 
 export const LoanSummary = ({ 
@@ -69,7 +70,8 @@ export const LoanSummary = ({
   interestRate,
   baseAmount,
   baseRate,
-  baseTenure
+  baseTenure,
+  hideActionButtons = false
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
@@ -254,41 +256,43 @@ export const LoanSummary = ({
 
   return (
     <div className="space-y-6">
-      {/* Action Buttons Row */}
-      <div className="flex justify-center gap-3 flex-wrap">
-        <Button
-          onClick={() => setShowPrepayments(!showPrepayments)}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <CreditCard className="w-4 h-4" />
-          {showPrepayments ? 'Hide Part Payments' : 'Add Part Payments'}
-        </Button>
-        <Button
-          onClick={() => setShowComparison(!showComparison)}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <GitCompare className="w-4 h-4" />
-          {showComparison ? 'Hide Comparison' : 'Compare Loan Scenarios'}
-        </Button>
-        <Button
-          onClick={() => {
-            if (showSchedule) {
-              setShowSchedule(false);
-            } else {
-              setShowAnimation(true);
-            }
-          }}
-          variant="outline"
-          className="flex items-center gap-2"
-        >
-          <BarChart3 className="w-4 h-4" />
-          {showSchedule ? 'Hide EMI Schedule' : 'Show EMI Schedule'}
-        </Button>
-      </div>
+      {/* Action Buttons Row - Only show if not hidden */}
+      {!hideActionButtons && (
+        <div className="flex justify-center gap-3 flex-wrap">
+          <Button
+            onClick={() => setShowPrepayments(!showPrepayments)}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <CreditCard className="w-4 h-4" />
+            {showPrepayments ? 'Hide Part Payments' : 'Add Part Payments'}
+          </Button>
+          <Button
+            onClick={() => setShowComparison(!showComparison)}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <GitCompare className="w-4 h-4" />
+            {showComparison ? 'Hide Comparison' : 'Compare Loan Scenarios'}
+          </Button>
+          <Button
+            onClick={() => {
+              if (showSchedule) {
+                setShowSchedule(false);
+              } else {
+                setShowAnimation(true);
+              }
+            }}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <BarChart3 className="w-4 h-4" />
+            {showSchedule ? 'Hide EMI Schedule' : 'Show EMI Schedule'}
+          </Button>
+        </div>
+      )}
 
-      {showPrepayments && (
+      {!hideActionButtons && showPrepayments && (
         <PartPaymentSection
           partPayments={partPayments}
           setPartPayments={setPartPayments}
@@ -300,7 +304,7 @@ export const LoanSummary = ({
         />
       )}
 
-      {showComparison && (
+      {!hideActionButtons && showComparison && (
         <LoanComparisonSection
           baseAmount={baseAmount || loanAmount}
           baseRate={baseRate || interestRate}
@@ -339,10 +343,10 @@ export const LoanSummary = ({
             const reductionPercentage = ((emiReduction / firstEMI) * 100).toFixed(1);
             
             return (
-              <Card className="shadow-[var(--shadow-card)] mb-6 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20">
-                <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+              <Card className="bg-card shadow-card border border-border mb-6">
+                <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
                   <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                    <TrendingDown className="w-5 h-5 text-white" />
+                    <TrendingDown className="w-5 h-5" />
                     EMI Reduction Summary
                   </CardTitle>
                 </CardHeader>
@@ -385,11 +389,11 @@ export const LoanSummary = ({
           })()}
 
           {/* Yearly Payments Chart */}
-          <Card className="shadow-[var(--shadow-card)] mb-6">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3">
+          <Card className="bg-card shadow-card border border-border mb-6">
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
               <CardTitle className="text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
@@ -443,7 +447,7 @@ export const LoanSummary = ({
                     <Bar 
                       yAxisId="left"
                       dataKey="principal" 
-                      fill="hsl(142, 70%, 35%)" 
+                      fill="hsl(var(--financial-primary))" 
                       name="Principal"
                       radius={[2, 2, 0, 0]}
                       onMouseEnter={() => setHoveredElement('principal')}
@@ -472,7 +476,7 @@ export const LoanSummary = ({
                       <Bar 
                         yAxisId="left"
                         dataKey="partPayment" 
-                        fill="hsl(var(--financial-primary))" 
+                        fill="hsl(142, 70%, 35%)" 
                         name="Part Payment"
                         radius={[2, 2, 0, 0]}
                         onMouseEnter={() => setHoveredElement('partPayment')}
@@ -507,14 +511,14 @@ export const LoanSummary = ({
           </Card>
 
           {/* EMI Schedule Table */}
-          <Card className="shadow-[var(--shadow-card)]">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-white rounded-t-lg py-3 flex flex-row items-center justify-between">
+          <Card className="bg-card shadow-card border border-border">
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
+                  className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
                   onClick={handleShare}
                 >
                   <Share2 className="h-4 w-4" />
@@ -523,7 +527,7 @@ export const LoanSummary = ({
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white"
+                  className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
                   onClick={() => exportDetailedPDFReport(
                     calculation.schedule, 
                     calculation.emi, 
@@ -544,7 +548,7 @@ export const LoanSummary = ({
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2 bg-white/20 border-white/50 text-white hover:bg-white/30 hover:text-white">
+                    <Button variant="outline" size="sm" className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground">
                       <Download className="h-4 w-4" />
                       Download
                     </Button>
@@ -600,11 +604,11 @@ export const LoanSummary = ({
                         )}
                       </TableCell>
                       <TableCell className="font-bold">{yearData.year}</TableCell>
-                      <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                      <TableCell className="text-right font-bold text-financial-primary">
                         {formatCurrency(yearData.totalPrincipal)}
                       </TableCell>
                       {partPayments.length > 0 && (
-                        <TableCell className="text-right font-bold text-financial-primary">
+                        <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
                           {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
                         </TableCell>
                       )}
@@ -635,11 +639,11 @@ export const LoanSummary = ({
                           <TableCell className="text-muted-foreground pl-4">
                             {getFullMonthName(row.month)}
                           </TableCell>
-                          <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                          <TableCell className="text-right text-financial-primary">
                             {formatCurrency(row.principalAmount)}
                           </TableCell>
                           {partPayments.length > 0 && (
-                            <TableCell className="text-right text-financial-primary">
+                            <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
                               {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
                             </TableCell>
                           )}

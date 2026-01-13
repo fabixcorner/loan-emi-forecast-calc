@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { HelpCircle, X, Calendar, TrendingDown, Wallet, ArrowLeft } from "lucide-react";
+import { HelpCircle, X, Calendar, TrendingDown, Wallet, ArrowLeft, Scale, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Question {
@@ -75,6 +75,39 @@ const questions: Question[] = [
       visual: "With 'Reduce EMI' strategy, your loan duration remains the same while monthly payments become lighter. This is ideal if you want to improve monthly cash flow while still saving on interest.",
     },
   },
+  {
+    id: "loan-comparison",
+    title: "How to compare multiple loan scenarios side by side?",
+    icon: Scale,
+    content: {
+      steps: [
+        "Navigate to the 'Loan Comparison' tab at the top of the calculator",
+        "Your current loan details are automatically loaded as the base scenario",
+        "Click 'Add Scenario' to create additional loan scenarios (up to 3 total)",
+        "Adjust the loan amount, interest rate, or tenure for each scenario",
+        "Compare key metrics like EMI, total interest, and total payment side by side",
+        "Use color-coded highlights to identify the best values across scenarios",
+      ],
+      visual: "The comparison view strips all part payments to provide a standardized baseline. Green highlights indicate the best values, while red highlights show higher costs relative to your base scenario.",
+    },
+  },
+  {
+    id: "loan-affordability",
+    title: "How to check loan affordability based on my income?",
+    icon: Calculator,
+    content: {
+      steps: [
+        "Navigate to the 'Loan Affordability' tab at the top of the calculator",
+        "Enter your monthly gross income in the income field",
+        "Set the expected interest rate and preferred loan tenure",
+        "Add any existing monthly EMIs you're currently paying",
+        "Optionally enable credit score input to refine eligibility",
+        "Select your employment type (Salaried/Self-employed) for accurate calculations",
+        "Enter the property value to apply Loan-to-Value (LTV) limits",
+      ],
+      visual: "The calculator uses a 50% Fixed Obligations to Income Ratio (FOIR) to determine your eligible loan amount. Credit score multipliers and employment factors further refine the calculation for realistic eligibility.",
+    },
+  },
 ];
 
 export const HowItWorks = () => {
@@ -98,7 +131,7 @@ export const HowItWorks = () => {
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(true)}
-        className="text-white hover:bg-white/10"
+        className="text-foreground hover:bg-muted"
       >
         <HelpCircle className="mr-2 h-4 w-4" />
         How it works?
@@ -108,7 +141,7 @@ export const HowItWorks = () => {
         <>
           {/* Backdrop blur - covers entire page and prevents interaction */}
           <div 
-            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] animate-in fade-in"
+            className="dark fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] animate-in fade-in"
             onClick={() => {
               setIsOpen(false);
               setIsFlipped(false);
@@ -117,8 +150,8 @@ export const HowItWorks = () => {
             style={{ pointerEvents: 'auto' }}
           />
           
-          {/* Flip card container */}
-          <div className="fixed left-0 right-0 top-24 z-[10000] flex justify-center px-4 pb-4 overflow-y-auto max-h-[calc(100vh-6rem)]" style={{ pointerEvents: 'none' }}>
+          {/* Flip card container - always dark theme */}
+          <div className="dark fixed left-0 right-0 top-24 z-[10000] flex justify-center px-4 pb-4 overflow-y-auto max-h-[calc(100vh-6rem)]" style={{ pointerEvents: 'none' }}>
             <div 
               className="relative max-w-2xl w-full h-[600px]"
               style={{ 
