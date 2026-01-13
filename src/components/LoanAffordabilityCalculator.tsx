@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { IndianRupee, Percent, Calendar, CreditCard, TrendingUp, Target, Building, Briefcase, Star, FileDown } from "lucide-react";
 import { exportAffordabilityPDF } from "@/utils/exportUtils";
-
+import { EligibilityBreakdownChart } from "./EligibilityBreakdownChart";
 const formatCurrency = (amount: number): string => {
   if (amount >= 10000000) {
     return `₹${(amount / 10000000).toFixed(2)} Cr`;
@@ -78,6 +78,7 @@ export const LoanAffordabilityCalculator = () => {
   const [eligibleAmount, setEligibleAmount] = useState(0);
   const [maxEMI, setMaxEMI] = useState(0);
   const [ltvLimit, setLtvLimit] = useState(0);
+  const [incomeBasedAmount, setIncomeBasedAmount] = useState(0);
 
   // Persist values to localStorage
   useEffect(() => {
@@ -116,6 +117,9 @@ export const LoanAffordabilityCalculator = () => {
 
     // Apply employment type multiplier
     const employmentMultiplier = employmentMultipliers[employmentType];
+
+    // Store base income amount for chart
+    setIncomeBasedAmount(baseLoanAmount);
 
     // Calculate income-based eligibility
     const incomeBasedEligibility = baseLoanAmount * creditMultiplier * employmentMultiplier;
@@ -448,6 +452,16 @@ export const LoanAffordabilityCalculator = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Eligibility Breakdown Chart */}
+      <EligibilityBreakdownChart
+        incomeBasedAmount={incomeBasedAmount}
+        creditScoreMultiplier={hasCreditScore ? getCreditScoreMultiplier(creditScore) : 1.0}
+        employmentMultiplier={employmentMultipliers[employmentType]}
+        ltvLimit={ltvLimit}
+        finalEligibility={eligibleAmount}
+        hasCreditScore={hasCreditScore}
+      />
     </div>
   );
 };
