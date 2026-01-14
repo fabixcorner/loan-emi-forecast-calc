@@ -47,7 +47,6 @@ interface LoanSummaryProps {
   loanTenure: number;
   showSchedule: boolean;
   setShowSchedule: (show: boolean) => void;
-  onPartPaymentAdded?: () => void;
   loanAmount: number;
   interestRate: number;
   baseAmount?: number;
@@ -65,7 +64,6 @@ export const LoanSummary = ({
   loanTenure,
   showSchedule,
   setShowSchedule,
-  onPartPaymentAdded,
   loanAmount,
   interestRate,
   baseAmount,
@@ -302,7 +300,6 @@ export const LoanSummary = ({
           startYear={startYear}
           loanTenure={loanTenure}
           loanSchedule={calculation.schedule}
-          onPartPaymentAdded={onPartPaymentAdded}
         />
       )}
 

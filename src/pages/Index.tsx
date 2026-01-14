@@ -165,7 +165,6 @@ const Index = () => {
               loanTenure={loanTenure}
               showSchedule={showSchedule}
               setShowSchedule={setShowSchedule}
-              onPartPaymentAdded={() => {}}
               loanAmount={loanAmount}
               interestRate={interestRate}
               hideActionButtons={true}
@@ -266,7 +265,6 @@ const Index = () => {
                     startYear={startYear}
                     loanTenure={loanTenure}
                     loanSchedule={calculation?.schedule || []}
-                    onPartPaymentAdded={() => {}}
                   />
                 </div>
               )}
@@ -291,7 +289,6 @@ const Index = () => {
                 loanTenure={loanTenure}
                 showSchedule={true}
                 setShowSchedule={setShowSchedule}
-                onPartPaymentAdded={() => {}}
                 loanAmount={loanAmount}
                 interestRate={interestRate}
                 hideActionButtons={true}
