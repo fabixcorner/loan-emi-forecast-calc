@@ -8,7 +8,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect, useRef } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
-import { CalculatorAnimation } from "@/components/CalculatorAnimation";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import {
   DropdownMenu,
@@ -73,7 +72,6 @@ export const LoanSummary = ({
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
-  const [showAnimation, setShowAnimation] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -276,13 +274,7 @@ export const LoanSummary = ({
             {showComparison ? 'Hide Comparison' : 'Compare Loan Scenarios'}
           </Button>
           <Button
-            onClick={() => {
-              if (showSchedule) {
-                setShowSchedule(false);
-              } else {
-                setShowAnimation(true);
-              }
-            }}
+            onClick={() => setShowSchedule(!showSchedule)}
             variant="outline"
             className="flex items-center gap-2"
           >
@@ -314,13 +306,6 @@ export const LoanSummary = ({
         />
       )}
 
-      <CalculatorAnimation 
-        isVisible={showAnimation} 
-        onComplete={() => {
-          setShowAnimation(false);
-          setShowSchedule(true);
-        }} 
-      />
 
       {showSchedule && (
         <>
