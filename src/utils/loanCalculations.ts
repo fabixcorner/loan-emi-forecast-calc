@@ -29,14 +29,52 @@ export const calculateLoanEMI = (
   startYear: number,
   partPayments: PartPayment[] = []
 ): LoanCalculationResult => {
-  const monthlyRate = annualRate / 12 / 100;
-  const totalMonths = tenureYears * 12;
+  // Input validation to prevent invalid calculations
+  if (!isFinite(principal) || principal <= 0) {
+    throw new Error('Principal must be a positive number');
+  }
+  if (!isFinite(annualRate) || annualRate < 0) {
+    throw new Error('Annual rate must be a non-negative number');
+  }
+  if (!isFinite(tenureYears) || tenureYears <= 0) {
+    throw new Error('Tenure must be a positive number');
+  }
+  if (startMonth < 1 || startMonth > 12 || !Number.isInteger(startMonth)) {
+    throw new Error('Start month must be an integer between 1 and 12');
+  }
+  if (!Number.isInteger(startYear) || startYear < 1900 || startYear > 2200) {
+    throw new Error('Start year must be a valid year');
+  }
+
+  // Apply reasonable bounds to prevent overflow
+  const safePrincipal = Math.min(principal, 1e12); // Cap at 1 trillion
+  const safeRate = Math.min(annualRate, 100); // Cap at 100% annual rate
+  const safeTenure = Math.min(tenureYears, 50); // Cap at 50 years
+
+  const monthlyRate = safeRate / 12 / 100;
+  const totalMonths = safeTenure * 12;
   
   // Calculate EMI using the formula: EMI = P × r × (1+r)^n / ((1+r)^n - 1)
-  const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths) / 
-              (Math.pow(1 + monthlyRate, totalMonths) - 1);
+  // Handle zero interest rate special case
+  let emi: number;
+  if (monthlyRate === 0) {
+    // Zero interest: simple division
+    emi = safePrincipal / totalMonths;
+  } else {
+    const factor = Math.pow(1 + monthlyRate, totalMonths);
+    // Validate factor to prevent division by zero or overflow
+    if (!isFinite(factor) || factor <= 1) {
+      throw new Error('Invalid calculation parameters - values cause mathematical overflow');
+    }
+    emi = safePrincipal * monthlyRate * factor / (factor - 1);
+  }
 
-  let remainingBalance = principal;
+  // Validate EMI result
+  if (!isFinite(emi) || emi <= 0) {
+    throw new Error('Invalid EMI calculation result');
+  }
+
+  let remainingBalance = safePrincipal;
   let totalInterestPaid = 0;
   const schedule = [];
   const chartData = [];
@@ -123,9 +161,11 @@ export const calculateLoanEMI = (
     }
     
     // Apply principal payment and part payment to remaining balance
-    remainingBalance -= (principalAmount + partPaymentAmount);
+    // Ensure part payment doesn't exceed remaining balance
+    const effectivePartPayment = Math.min(partPaymentAmount, Math.max(0, remainingBalance - principalAmount));
+    remainingBalance -= (principalAmount + effectivePartPayment);
     totalInterestPaid += interestAmount;
-    principalPaidTotal += (principalAmount + partPaymentAmount);
+    principalPaidTotal += (principalAmount + effectivePartPayment);
     
     // Recalculate EMI only for reduce-emi strategy part payments
     if (partPaymentAmount > 0) {
@@ -189,7 +229,7 @@ export const calculateLoanEMI = (
   return {
     emi,
     totalInterest: totalInterestPaid,
-    totalAmount: principal + totalInterestPaid,
+    totalAmount: safePrincipal + totalInterestPaid,
     schedule,
     chartData,
   };
