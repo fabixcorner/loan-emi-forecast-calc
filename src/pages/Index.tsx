@@ -14,7 +14,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
-import confetti from "canvas-confetti";
 import { z } from "zod";
 
 // Schema for validating URL parameters
@@ -46,29 +45,6 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("loan-details");
   const [showPartPayments, setShowPartPayments] = useState(false);
 
-  const handlePartPaymentAdded = () => {
-    // Explosion confetti around Interest Saved card
-    confetti({
-      particleCount: 150,
-      spread: 180,
-      origin: { x: 0.65, y: 0.35 },
-      startVelocity: 24,
-      ticks: 60,
-      gravity: 1.2,
-      scalar: 1.2,
-    });
-    
-    // Explosion confetti around Time Saved card
-    confetti({
-      particleCount: 150,
-      spread: 180,
-      origin: { x: 0.85, y: 0.35 },
-      startVelocity: 24,
-      ticks: 60,
-      gravity: 1.2,
-      scalar: 1.2,
-    });
-  };
 
   // Load data from URL parameters on mount
   useEffect(() => {
@@ -189,7 +165,7 @@ const Index = () => {
               loanTenure={loanTenure}
               showSchedule={showSchedule}
               setShowSchedule={setShowSchedule}
-              onPartPaymentAdded={handlePartPaymentAdded}
+              onPartPaymentAdded={() => {}}
               loanAmount={loanAmount}
               interestRate={interestRate}
               hideActionButtons={true}
@@ -290,7 +266,7 @@ const Index = () => {
                     startYear={startYear}
                     loanTenure={loanTenure}
                     loanSchedule={calculation?.schedule || []}
-                    onPartPaymentAdded={handlePartPaymentAdded}
+                    onPartPaymentAdded={() => {}}
                   />
                 </div>
               )}
@@ -315,7 +291,7 @@ const Index = () => {
                 loanTenure={loanTenure}
                 showSchedule={true}
                 setShowSchedule={setShowSchedule}
-                onPartPaymentAdded={handlePartPaymentAdded}
+                onPartPaymentAdded={() => {}}
                 loanAmount={loanAmount}
                 interestRate={interestRate}
                 hideActionButtons={true}
