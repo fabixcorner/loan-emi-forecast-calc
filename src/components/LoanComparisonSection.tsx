@@ -81,7 +81,9 @@ export const LoanComparisonSection = ({
           ...nonBaseScenarios,
         ];
       } catch (e) {
-        console.error('Error parsing saved scenarios:', e);
+        if (import.meta.env.DEV) {
+          console.error('Error parsing saved scenarios:', e);
+        }
       }
     }
     // Default scenarios if nothing saved

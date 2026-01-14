@@ -111,7 +111,9 @@ export const calculateLoanEMI = (
     
     if (partPaymentsThisMonth.length > 0) {
       partPaymentAmount = partPaymentsThisMonth.reduce((sum, pp) => sum + pp.amount, 0);
-      console.log(`Part payment found for ${currentMonth}/${currentYear}: ₹${partPaymentAmount}`);
+      if (import.meta.env.DEV) {
+        console.log(`Part payment found for ${currentMonth}/${currentYear}: ₹${partPaymentAmount}`);
+      }
     }
     
     // Ensure we don't pay more principal than remaining balance
@@ -137,7 +139,9 @@ export const calculateLoanEMI = (
         const newTenureMonths = Math.log(currentEMI / (currentEMI - remainingBalance * monthlyRate)) / Math.log(1 + monthlyRate);
         adjustedEndDate = new Date(currentDate);
         adjustedEndDate.setMonth(adjustedEndDate.getMonth() + Math.ceil(newTenureMonths));
-        console.log(`Adjusted end date after reduce-tenure: ${adjustedEndDate.toLocaleDateString()} (${Math.ceil(newTenureMonths)} months remaining)`);
+        if (import.meta.env.DEV) {
+          console.log(`Adjusted end date after reduce-tenure: ${adjustedEndDate.toLocaleDateString()} (${Math.ceil(newTenureMonths)} months remaining)`);
+        }
       }
       
       // Only recalculate EMI if at least one payment uses reduce-emi strategy
@@ -147,10 +151,14 @@ export const calculateLoanEMI = (
         if (remainingMonths > 1 && remainingBalance > 0) {
           currentEMI = remainingBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths) / 
                       (Math.pow(1 + monthlyRate, remainingMonths) - 1);
-          console.log(`EMI recalculated to: ₹${currentEMI.toFixed(2)} for remaining ${remainingMonths} months (reduce-emi strategy, using adjusted end date)`);
+          if (import.meta.env.DEV) {
+            console.log(`EMI recalculated to: ₹${currentEMI.toFixed(2)} for remaining ${remainingMonths} months (reduce-emi strategy, using adjusted end date)`);
+          }
         }
       } else {
-        console.log(`Part payment applied but EMI remains ₹${currentEMI.toFixed(2)} (reduce-tenure strategy)`);
+        if (import.meta.env.DEV) {
+          console.log(`Part payment applied but EMI remains ₹${currentEMI.toFixed(2)} (reduce-tenure strategy)`);
+        }
       }
     }
     

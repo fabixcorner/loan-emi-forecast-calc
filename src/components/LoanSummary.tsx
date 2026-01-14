@@ -152,7 +152,9 @@ export const LoanSummary = ({
         alert('Schedule link copied to clipboard!');
       }
     } catch (error) {
-      console.error('Error sharing:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error sharing:', error);
+      }
     }
   };
 

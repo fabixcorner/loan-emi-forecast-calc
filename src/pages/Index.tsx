@@ -15,6 +15,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import confetti from "canvas-confetti";
+import { z } from "zod";
+
+// Schema for validating URL parameters
+const PartPaymentSchema = z.object({
+  id: z.string(),
+  month: z.number().min(1).max(12),
+  year: z.number().min(2000).max(2100),
+  amount: z.number().positive(),
+  frequency: z.enum(['one-time', 'monthly', 'quarterly', 'half-yearly', 'yearly']),
+  strategy: z.enum(['reduce-tenure', 'reduce-emi']),
+  notes: z.string().optional()
+});
+
+const PartPaymentsArraySchema = z.array(PartPaymentSchema);
 
 const Index = () => {
   // Default values
@@ -74,9 +88,14 @@ const Index = () => {
     if (year) setStartYear(Number(year));
     if (payments) {
       try {
-        setPartPayments(JSON.parse(payments));
+        const parsed = JSON.parse(payments);
+        const validated = PartPaymentsArraySchema.parse(parsed);
+        setPartPayments(validated as PartPayment[]);
       } catch (e) {
-        console.error('Error parsing part payments:', e);
+        // Invalid part payments data in URL - silently ignore and use defaults
+        if (import.meta.env.DEV) {
+          console.error('Error parsing or validating part payments:', e);
+        }
       }
     }
     if (view === 'schedule') {
