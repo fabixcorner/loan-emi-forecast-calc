@@ -6,8 +6,9 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { IndianRupee, Percent, Calendar, CreditCard, TrendingUp, Target, Building, Briefcase, Star, FileDown } from "lucide-react";
+import { IndianRupee, Percent, Calendar, CreditCard, TrendingUp, Target, Building, Briefcase, Star, FileDown, Trash2, Info } from "lucide-react";
 import { exportAffordabilityPDF } from "@/utils/exportUtils";
+import { toast } from "sonner";
 import { EligibilityBreakdownChart } from "./EligibilityBreakdownChart";
 const formatCurrency = (amount: number): string => {
   if (amount >= 10000000) {
@@ -79,6 +80,26 @@ export const LoanAffordabilityCalculator = () => {
   const [maxEMI, setMaxEMI] = useState(0);
   const [ltvLimit, setLtvLimit] = useState(0);
   const [incomeBasedAmount, setIncomeBasedAmount] = useState(0);
+
+  // Clear all stored data function
+  const clearAllData = () => {
+    // Clear affordability data
+    localStorage.removeItem(STORAGE_KEY);
+    // Clear comparison scenarios
+    localStorage.removeItem('loan-comparison-scenarios');
+    
+    // Reset to defaults
+    setGrossIncome(100000);
+    setTenure(20);
+    setInterestRate(8.5);
+    setOtherEMIs(0);
+    setHasCreditScore(false);
+    setCreditScore(750);
+    setEmploymentType("salaried");
+    setPropertyValue(5000000);
+    
+    toast.success("All stored data has been cleared");
+  };
 
   // Persist values to localStorage
   useEffect(() => {
@@ -429,7 +450,25 @@ export const LoanAffordabilityCalculator = () => {
               </ul>
             </div>
 
+            {/* Privacy Notice */}
+            <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3 border border-blue-200 dark:border-blue-800 flex items-start gap-2">
+              <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                Your data is stored locally in your browser for convenience. It never leaves your device and is not transmitted to any server.
+              </p>
+            </div>
+
             {/* Export Button */}
+            {/* Clear Data Button */}
+            <Button
+              onClick={clearAllData}
+              variant="outline"
+              className="w-full gap-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear All Stored Data
+            </Button>
+
             <Button
               onClick={() => exportAffordabilityPDF({
                 grossIncome,
