@@ -361,7 +361,7 @@ export const LoanAffordabilityCalculator = () => {
                 </div>
               </div>
               
-              {hasCreditScore && (
+            {hasCreditScore && (
                 <div className="flex items-start gap-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="flex-shrink-0 pt-2 w-36">
                     <Label className="text-sm font-medium text-foreground">
@@ -396,6 +396,16 @@ export const LoanAffordabilityCalculator = () => {
                 </div>
               )}
             </div>
+
+            {/* Clear Data Button */}
+            <Button
+              onClick={clearAllData}
+              variant="outline"
+              className="w-full gap-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear All Stored Data
+            </Button>
           </CardContent>
         </Card>
 
@@ -459,16 +469,6 @@ export const LoanAffordabilityCalculator = () => {
             </div>
 
             {/* Export Button */}
-            {/* Clear Data Button */}
-            <Button
-              onClick={clearAllData}
-              variant="outline"
-              className="w-full gap-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-            >
-              <Trash2 className="w-4 h-4" />
-              Clear All Stored Data
-            </Button>
-
             <Button
               onClick={() => exportAffordabilityPDF({
                 grossIncome,
