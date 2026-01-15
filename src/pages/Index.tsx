@@ -11,6 +11,7 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import { LoanAffordabilityCalculator } from "@/components/LoanAffordabilityCalculator";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Footer } from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
@@ -119,7 +120,7 @@ const Index = () => {
   const isScheduleView = new URLSearchParams(window.location.search).get('view') === 'schedule';
 
   return (
-    <div className="min-h-screen glass-background">
+    <div className="min-h-screen glass-background flex flex-col">
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm shadow-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -314,6 +315,9 @@ const Index = () => {
           </Tabs>
         )}
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
