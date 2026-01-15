@@ -397,15 +397,6 @@ export const LoanAffordabilityCalculator = () => {
               )}
             </div>
 
-            {/* Clear Data Button */}
-            <Button
-              onClick={clearAllData}
-              variant="outline"
-              className="w-full gap-2 border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
-            >
-              <Trash2 className="w-4 h-4" />
-              Clear All Stored Data
-            </Button>
           </CardContent>
         </Card>
 
@@ -414,44 +405,44 @@ export const LoanAffordabilityCalculator = () => {
           <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
             <CardTitle className="text-xl font-semibold">Loan Eligibility</CardTitle>
           </CardHeader>
-          <CardContent className="p-6 space-y-6">
+          <CardContent className="p-5 space-y-4">
             {/* Eligible Loan Amount - Main Result */}
-            <div className="bg-gradient-to-br from-financial-success/20 to-financial-primary/20 rounded-xl p-6 border border-financial-success/30">
-              <div className="text-center space-y-2">
+            <div className="bg-gradient-to-br from-financial-success/20 to-financial-primary/20 rounded-xl p-5 border border-financial-success/30">
+              <div className="text-center space-y-1.5">
                 <p className="text-sm text-muted-foreground uppercase tracking-wider">You are eligible for</p>
-                <p className="text-4xl font-bold text-financial-success">{formatCurrency(eligibleAmount)}</p>
-                <p className="text-sm text-muted-foreground">based on your income, profile, and property value</p>
+                <p className="text-3xl font-bold text-financial-success">{formatCurrency(eligibleAmount)}</p>
+                <p className="text-xs text-muted-foreground">based on your income, profile, and property value</p>
               </div>
             </div>
 
             {/* Breakdown Cards */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-background/50 rounded-lg p-4 border border-border">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Max Allowed EMI</p>
-                <p className="text-lg font-semibold text-foreground">{formatCurrency(grossIncome * 0.5)}</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-background/50 rounded-lg p-3 border border-border">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Max Allowed EMI</p>
+                <p className="text-base font-semibold text-foreground">{formatCurrency(grossIncome * 0.5)}</p>
                 <p className="text-xs text-muted-foreground">(50% of income)</p>
               </div>
-              <div className="bg-background/50 rounded-lg p-4 border border-border">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Available for New EMI</p>
-                <p className="text-lg font-semibold text-financial-primary">{formatCurrency(maxEMI)}</p>
+              <div className="bg-background/50 rounded-lg p-3 border border-border">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Available for New EMI</p>
+                <p className="text-base font-semibold text-financial-primary">{formatCurrency(maxEMI)}</p>
                 <p className="text-xs text-muted-foreground">(after other EMIs)</p>
               </div>
-              <div className="bg-background/50 rounded-lg p-4 border border-border">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">LTV Limit</p>
-                <p className="text-lg font-semibold text-foreground">{formatCurrency(ltvLimit)}</p>
+              <div className="bg-background/50 rounded-lg p-3 border border-border">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">LTV Limit</p>
+                <p className="text-base font-semibold text-foreground">{formatCurrency(ltvLimit)}</p>
                 <p className="text-xs text-muted-foreground">({hasCreditScore && creditScore >= 750 ? "85%" : "75%"} of property)</p>
               </div>
-              <div className="bg-background/50 rounded-lg p-4 border border-border">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Employment Factor</p>
-                <p className="text-lg font-semibold text-foreground">{(employmentMultipliers[employmentType] * 100).toFixed(0)}%</p>
+              <div className="bg-background/50 rounded-lg p-3 border border-border">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Employment Factor</p>
+                <p className="text-base font-semibold text-foreground">{(employmentMultipliers[employmentType] * 100).toFixed(0)}%</p>
                 <p className="text-xs text-muted-foreground capitalize">({employmentType.replace("-", " ")})</p>
               </div>
             </div>
 
             {/* Assumptions */}
-            <div className="bg-muted/30 rounded-lg p-4 border border-border">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Calculation Assumptions</p>
-              <ul className="text-xs text-muted-foreground space-y-1">
+            <div className="bg-muted/30 rounded-lg p-3 border border-border">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1.5">Calculation Assumptions</p>
+              <ul className="text-xs text-muted-foreground space-y-0.5">
                 <li>• Banks allow up to 50% of gross income for EMIs (FOIR)</li>
                 <li>• LTV ratio: {hasCreditScore && creditScore >= 750 ? "85%" : "75%"} based on {hasCreditScore ? "credit score" : "default assumption"}</li>
                 <li>• Employment type affects eligibility ({employmentType === "salaried" ? "100%" : employmentType === "business-owner" ? "90%" : "85%"} factor)</li>
@@ -461,33 +452,43 @@ export const LoanAffordabilityCalculator = () => {
             </div>
 
             {/* Privacy Notice */}
-            <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3 border border-blue-200 dark:border-blue-800 flex items-start gap-2">
-              <Info className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+            <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-2.5 border border-blue-200 dark:border-blue-800 flex items-start gap-2">
+              <Info className="w-3.5 h-3.5 text-blue-500 mt-0.5 flex-shrink-0" />
               <p className="text-xs text-blue-700 dark:text-blue-300">
                 Your data is stored locally in your browser for convenience. It never leaves your device and is not transmitted to any server.
               </p>
             </div>
 
-            {/* Export Button */}
-            <Button
-              onClick={() => exportAffordabilityPDF({
-                grossIncome,
-                tenure,
-                interestRate,
-                otherEMIs,
-                hasCreditScore,
-                creditScore,
-                employmentType,
-                propertyValue,
-                eligibleAmount,
-                maxEMI,
-                ltvLimit,
-              })}
-              className="w-full gap-2 bg-financial-success hover:bg-financial-success/90"
-            >
-              <FileDown className="w-4 h-4" />
-              Export as PDF
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <Button
+                onClick={clearAllData}
+                variant="outline"
+                className="flex-1 gap-2 h-9 text-sm border-destructive/50 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Clear Data
+              </Button>
+              <Button
+                onClick={() => exportAffordabilityPDF({
+                  grossIncome,
+                  tenure,
+                  interestRate,
+                  otherEMIs,
+                  hasCreditScore,
+                  creditScore,
+                  employmentType,
+                  propertyValue,
+                  eligibleAmount,
+                  maxEMI,
+                  ltvLimit,
+                })}
+                className="flex-1 gap-2 h-9 text-sm bg-financial-success hover:bg-financial-success/90"
+              >
+                <FileDown className="w-3.5 h-3.5" />
+                Export PDF
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
