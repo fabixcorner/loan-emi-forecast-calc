@@ -60,22 +60,56 @@ export const LoanComparisonSection = ({
   startMonth,
   startYear,
 }: LoanComparisonSectionProps) => {
-  const [scenarios, setScenarios] = useState<LoanScenario[]>([
-    {
-      id: "base",
-      name: "Current",
-      loanAmount: baseAmount,
-      interestRate: baseRate,
-      loanTenure: baseTenure,
-    },
-    {
-      id: "scenario-1",
-      name: "Scenario 1",
-      loanAmount: baseAmount,
-      interestRate: baseRate - 0.5,
-      loanTenure: baseTenure,
-    },
-  ]);
+  const STORAGE_KEY = 'loan-comparison-scenarios';
+
+  const [scenarios, setScenarios] = useState<LoanScenario[]>(() => {
+    // Load saved scenarios from localStorage
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved) as LoanScenario[];
+        // Always include base scenario with current values, then add saved non-base scenarios
+        const nonBaseScenarios = parsed.filter(s => s.id !== 'base');
+        return [
+          {
+            id: "base",
+            name: "Current",
+            loanAmount: baseAmount,
+            interestRate: baseRate,
+            loanTenure: baseTenure,
+          },
+          ...nonBaseScenarios,
+        ];
+      } catch (e) {
+        if (import.meta.env.DEV) {
+          console.error('Error parsing saved scenarios:', e);
+        }
+      }
+    }
+    // Default scenarios if nothing saved
+    return [
+      {
+        id: "base",
+        name: "Current",
+        loanAmount: baseAmount,
+        interestRate: baseRate,
+        loanTenure: baseTenure,
+      },
+      {
+        id: "scenario-1",
+        name: "Scenario 1",
+        loanAmount: baseAmount,
+        interestRate: baseRate - 0.5,
+        loanTenure: baseTenure,
+      },
+    ];
+  });
+
+  // Save non-base scenarios to localStorage whenever they change
+  useEffect(() => {
+    const nonBaseScenarios = scenarios.filter(s => s.id !== 'base');
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nonBaseScenarios));
+  }, [scenarios]);
 
   const [results, setResults] = useState<Record<string, ScenarioResult>>({});
 
