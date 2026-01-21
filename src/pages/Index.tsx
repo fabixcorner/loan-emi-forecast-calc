@@ -11,10 +11,24 @@ import { HowItWorks } from "@/components/HowItWorks";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import { LoanAffordabilityCalculator } from "@/components/LoanAffordabilityCalculator";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Footer } from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
-import confetti from "canvas-confetti";
+import { z } from "zod";
+
+// Schema for validating URL parameters
+const PartPaymentSchema = z.object({
+  id: z.string(),
+  month: z.number().min(1).max(12),
+  year: z.number().min(2000).max(2100),
+  amount: z.number().positive(),
+  frequency: z.enum(['one-time', 'monthly', 'quarterly', 'half-yearly', 'yearly']),
+  strategy: z.enum(['reduce-tenure', 'reduce-emi']),
+  notes: z.string().optional()
+});
+
+const PartPaymentsArraySchema = z.array(PartPaymentSchema);
 
 const Index = () => {
   // Default values
@@ -32,29 +46,6 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("loan-details");
   const [showPartPayments, setShowPartPayments] = useState(false);
 
-  const handlePartPaymentAdded = () => {
-    // Explosion confetti around Interest Saved card
-    confetti({
-      particleCount: 150,
-      spread: 180,
-      origin: { x: 0.65, y: 0.35 },
-      startVelocity: 24,
-      ticks: 60,
-      gravity: 1.2,
-      scalar: 1.2,
-    });
-    
-    // Explosion confetti around Time Saved card
-    confetti({
-      particleCount: 150,
-      spread: 180,
-      origin: { x: 0.85, y: 0.35 },
-      startVelocity: 24,
-      ticks: 60,
-      gravity: 1.2,
-      scalar: 1.2,
-    });
-  };
 
   // Load data from URL parameters on mount
   useEffect(() => {
@@ -74,9 +65,14 @@ const Index = () => {
     if (year) setStartYear(Number(year));
     if (payments) {
       try {
-        setPartPayments(JSON.parse(payments));
+        const parsed = JSON.parse(payments);
+        const validated = PartPaymentsArraySchema.parse(parsed);
+        setPartPayments(validated as PartPayment[]);
       } catch (e) {
-        console.error('Error parsing part payments:', e);
+        // Invalid part payments data in URL - silently ignore and use defaults
+        if (import.meta.env.DEV) {
+          console.error('Error parsing or validating part payments:', e);
+        }
       }
     }
     if (view === 'schedule') {
@@ -124,7 +120,7 @@ const Index = () => {
   const isScheduleView = new URLSearchParams(window.location.search).get('view') === 'schedule';
 
   return (
-    <div className="min-h-screen glass-background">
+    <div className="min-h-screen glass-background flex flex-col">
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm shadow-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -170,7 +166,6 @@ const Index = () => {
               loanTenure={loanTenure}
               showSchedule={showSchedule}
               setShowSchedule={setShowSchedule}
-              onPartPaymentAdded={handlePartPaymentAdded}
               loanAmount={loanAmount}
               interestRate={interestRate}
               hideActionButtons={true}
@@ -271,7 +266,6 @@ const Index = () => {
                     startYear={startYear}
                     loanTenure={loanTenure}
                     loanSchedule={calculation?.schedule || []}
-                    onPartPaymentAdded={handlePartPaymentAdded}
                   />
                 </div>
               )}
@@ -296,7 +290,6 @@ const Index = () => {
                 loanTenure={loanTenure}
                 showSchedule={true}
                 setShowSchedule={setShowSchedule}
-                onPartPaymentAdded={handlePartPaymentAdded}
                 loanAmount={loanAmount}
                 interestRate={interestRate}
                 hideActionButtons={true}
@@ -322,6 +315,9 @@ const Index = () => {
           </Tabs>
         )}
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

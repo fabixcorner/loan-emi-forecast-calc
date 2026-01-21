@@ -8,7 +8,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect, useRef } from "react";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
-import { CalculatorAnimation } from "@/components/CalculatorAnimation";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import {
   DropdownMenu,
@@ -47,7 +46,6 @@ interface LoanSummaryProps {
   loanTenure: number;
   showSchedule: boolean;
   setShowSchedule: (show: boolean) => void;
-  onPartPaymentAdded?: () => void;
   loanAmount: number;
   interestRate: number;
   baseAmount?: number;
@@ -65,7 +63,6 @@ export const LoanSummary = ({
   loanTenure,
   showSchedule,
   setShowSchedule,
-  onPartPaymentAdded,
   loanAmount,
   interestRate,
   baseAmount,
@@ -75,7 +72,6 @@ export const LoanSummary = ({
 }: LoanSummaryProps) => {
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
-  const [showAnimation, setShowAnimation] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -152,7 +148,9 @@ export const LoanSummary = ({
         alert('Schedule link copied to clipboard!');
       }
     } catch (error) {
-      console.error('Error sharing:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error sharing:', error);
+      }
     }
   };
 
@@ -276,13 +274,7 @@ export const LoanSummary = ({
             {showComparison ? 'Hide Comparison' : 'Compare Loan Scenarios'}
           </Button>
           <Button
-            onClick={() => {
-              if (showSchedule) {
-                setShowSchedule(false);
-              } else {
-                setShowAnimation(true);
-              }
-            }}
+            onClick={() => setShowSchedule(!showSchedule)}
             variant="outline"
             className="flex items-center gap-2"
           >
@@ -300,7 +292,6 @@ export const LoanSummary = ({
           startYear={startYear}
           loanTenure={loanTenure}
           loanSchedule={calculation.schedule}
-          onPartPaymentAdded={onPartPaymentAdded}
         />
       )}
 
@@ -315,13 +306,6 @@ export const LoanSummary = ({
         />
       )}
 
-      <CalculatorAnimation 
-        isVisible={showAnimation} 
-        onComplete={() => {
-          setShowAnimation(false);
-          setShowSchedule(true);
-        }} 
-      />
 
       {showSchedule && (
         <>
