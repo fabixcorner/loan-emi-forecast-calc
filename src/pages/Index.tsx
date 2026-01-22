@@ -174,7 +174,7 @@ const Index = () => {
         ) : (
           /* Full calculator view with tabs */
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-4 mb-8">
+            <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-2 md:grid-cols-4 mb-8">
               <TabsTrigger value="loan-details" className="text-sm md:text-base">
                 Loan Details
               </TabsTrigger>
