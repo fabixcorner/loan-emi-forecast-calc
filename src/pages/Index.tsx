@@ -190,7 +190,7 @@ const Index = () => {
             </TabsList>
 
             {/* Tab 1: Loan Details */}
-            <TabsContent value="loan-details" className="w-full space-y-8">
+            <TabsContent value="loan-details" className="w-full max-w-4xl mx-auto space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Section - Loan Inputs */}
                 <LoanInputSection
@@ -272,7 +272,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 2: EMI Schedule */}
-            <TabsContent value="emi-schedule" className="w-full space-y-8">
+            <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8">
               {/* Loan Summary Cards */}
               <LoanSummaryCards 
                 calculation={calculation} 
@@ -297,7 +297,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 3: Compare Loan Scenarios */}
-            <TabsContent value="compare-scenarios" className="w-full space-y-8">
+            <TabsContent value="compare-scenarios" className="w-full max-w-4xl mx-auto space-y-8">
               <LoanComparisonSection
                 baseAmount={loanAmount}
                 baseRate={interestRate}
@@ -309,7 +309,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 4: Loan Affordability */}
-            <TabsContent value="loan-affordability" className="w-full space-y-8">
+            <TabsContent value="loan-affordability" className="w-full max-w-4xl mx-auto space-y-8">
               <LoanAffordabilityCalculator />
             </TabsContent>
           </Tabs>
