@@ -37,9 +37,28 @@ export const EligibilityBreakdownChart = ({
   const afterEmployment = afterCreditScore * employmentMultiplier;
   const incomeBasedFinal = afterEmployment;
 
+  // Icon mapping for Y-axis labels
+  const iconMap: Record<string, React.ReactNode> = {
+    "Income Based": <Wallet size={12} />,
+    "Credit Score": <CreditCard size={12} />,
+    "Employment": <Briefcase size={12} />,
+    "LTV Limit": <Home size={12} />,
+    "Final Eligible": <CheckCircle size={12} />,
+  };
+
+  // Padded names for consistent alignment (all same length)
+  const paddedNames: Record<string, string> = {
+    "Income Based": "Income Based",
+    "Credit Score": "Credit Score  ",
+    "Employment": "Employment    ",
+    "LTV Limit": "LTV Limit        ",
+    "Final Eligible": "Final Eligible  ",
+  };
+
   const chartData = [
     {
       name: "Income Based",
+      displayName: "Income Based",
       value: incomeBasedAmount,
       description: "50% FOIR eligibility",
       color: "hsl(var(--financial-primary))",
@@ -47,6 +66,7 @@ export const EligibilityBreakdownChart = ({
     },
     ...(hasCreditScore ? [{
       name: "Credit Score",
+      displayName: "Credit Score",
       value: afterCreditScore,
       description: `${formatPercent(creditScoreMultiplier)} multiplier`,
       color: creditScoreMultiplier >= 1 ? "hsl(var(--financial-success))" : "hsl(var(--destructive))",
@@ -54,6 +74,7 @@ export const EligibilityBreakdownChart = ({
     }] : []),
     {
       name: "Employment",
+      displayName: "Employment",
       value: afterEmployment,
       description: `${formatPercent(employmentMultiplier)} factor`,
       color: employmentMultiplier >= 1 ? "hsl(var(--financial-success))" : "hsl(221 83% 53%)",
@@ -61,6 +82,7 @@ export const EligibilityBreakdownChart = ({
     },
     {
       name: "LTV Limit",
+      displayName: "LTV Limit",
       value: ltvLimit,
       description: "Property value cap",
       color: "hsl(var(--muted-foreground))",
@@ -68,6 +90,7 @@ export const EligibilityBreakdownChart = ({
     },
     {
       name: "Final Eligible",
+      displayName: "Final Eligible",
       value: finalEligibility,
       description: "Min of income & LTV",
       color: "hsl(var(--financial-success))",
@@ -133,7 +156,7 @@ export const EligibilityBreakdownChart = ({
             <BarChart
               data={chartData}
               layout="vertical"
-              margin={{ top: 10, right: 80, left: 85, bottom: 10 }}
+              margin={{ top: 10, right: 80, left: 120, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
               <XAxis
@@ -145,9 +168,22 @@ export const EligibilityBreakdownChart = ({
               <YAxis
                 type="category"
                 dataKey="name"
-                tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+                tick={(props: any) => {
+                  const { x, y, payload } = props;
+                  const name = payload.value;
+                  return (
+                    <g transform={`translate(${x},${y})`}>
+                      <foreignObject x={-115} y={-8} width={110} height={16}>
+                        <div className="flex items-center gap-1.5 justify-end text-[11px] text-foreground" style={{ fontFamily: 'inherit' }}>
+                          <span className="flex-shrink-0">{iconMap[name]}</span>
+                          <span className="whitespace-nowrap">{name}</span>
+                        </div>
+                      </foreignObject>
+                    </g>
+                  );
+                }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
-                width={80}
+                width={120}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" radius={[0, 4, 4, 0]}>
