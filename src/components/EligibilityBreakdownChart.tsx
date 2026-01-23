@@ -204,22 +204,18 @@ export const EligibilityBreakdownChart = ({
         {/* Factor Impact Legend */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="flex items-center gap-2 text-xs bg-muted/40 rounded-md px-2.5 py-1.5 border border-border/50">
-            <Wallet className="w-3.5 h-3.5 text-financial-primary" />
             <div className="w-2 h-2 rounded-sm bg-financial-primary" />
             <span className="text-muted-foreground">Income Based</span>
           </div>
           <div className="flex items-center gap-2 text-xs bg-muted/40 rounded-md px-2.5 py-1.5 border border-border/50">
-            <CheckCircle className="w-3.5 h-3.5 text-financial-success" />
             <div className="w-2 h-2 rounded-sm bg-financial-success" />
             <span className="text-muted-foreground">Positive Impact</span>
           </div>
           <div className="flex items-center gap-2 text-xs bg-muted/40 rounded-md px-2.5 py-1.5 border border-border/50">
-            <Briefcase className="w-3.5 h-3.5 text-[hsl(221,83%,53%)]" />
             <div className="w-2 h-2 rounded-sm bg-[hsl(221,83%,53%)]" />
             <span className="text-muted-foreground">Employment</span>
           </div>
           <div className="flex items-center gap-2 text-xs bg-muted/40 rounded-md px-2.5 py-1.5 border border-border/50">
-            <Home className="w-3.5 h-3.5 text-muted-foreground" />
             <div className="w-2 h-2 rounded-sm bg-muted-foreground" />
             <span className="text-muted-foreground">LTV Cap</span>
           </div>
