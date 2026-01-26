@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -16,6 +16,50 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { z } from "zod";
+
+// Helper to format month/year as readable date
+const formatDebtFreeDate = (month: number, year: number): string => {
+  const date = new Date(year, month - 1);
+  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+};
+
+// Debt-free note component
+interface DebtFreeNoteProps {
+  calculation: any;
+  calculationWithoutPartPayments: any;
+  hasPartPayments: boolean;
+  timeSavings: number;
+}
+
+const DebtFreeNote = ({ calculation, calculationWithoutPartPayments, hasPartPayments, timeSavings }: DebtFreeNoteProps) => {
+  if (!hasPartPayments || !calculation?.schedule?.length) return null;
+
+  const lastEntry = calculation.schedule[calculation.schedule.length - 1];
+  const debtFreeDate = formatDebtFreeDate(lastEntry.month, lastEntry.year);
+
+  const originalLastEntry = calculationWithoutPartPayments?.schedule?.length 
+    ? calculationWithoutPartPayments.schedule[calculationWithoutPartPayments.schedule.length - 1]
+    : null;
+  const originalDate = originalLastEntry 
+    ? formatDebtFreeDate(originalLastEntry.month, originalLastEntry.year) 
+    : null;
+
+  return (
+    <div className="text-center text-sm text-muted-foreground bg-financial-success/10 rounded-lg py-3 px-4 border border-financial-success/30">
+      <div className="flex items-center justify-center gap-2 text-financial-success font-medium">
+        <PartyPopper className="w-4 h-4" />
+        <span>
+          You will be debt-free by <strong>{debtFreeDate}</strong>
+        </span>
+      </div>
+      {timeSavings > 0 && originalDate && (
+        <span className="block text-xs mt-1 opacity-80">
+          ({timeSavings} month{timeSavings > 1 ? 's' : ''} earlier than the original {originalDate})
+        </span>
+      )}
+    </div>
+  );
+};
 
 // Schema for validating URL parameters
 const PartPaymentSchema = z.object({
@@ -156,6 +200,12 @@ const Index = () => {
                 interestSavings={interestSavings}
                 timeSavings={timeSavings}
               />
+              <DebtFreeNote 
+                calculation={calculation}
+                calculationWithoutPartPayments={calculationWithoutPartPayments}
+                hasPartPayments={partPayments.length > 0}
+                timeSavings={timeSavings}
+              />
             </div>
             <LoanSummary 
               calculation={calculation}
@@ -214,6 +264,12 @@ const Index = () => {
               <LoanSummaryCards 
                 calculation={calculation} 
                 interestSavings={interestSavings} 
+                timeSavings={timeSavings}
+              />
+              <DebtFreeNote 
+                calculation={calculation}
+                calculationWithoutPartPayments={calculationWithoutPartPayments}
+                hasPartPayments={partPayments.length > 0}
                 timeSavings={timeSavings}
               />
 
@@ -277,6 +333,12 @@ const Index = () => {
               <LoanSummaryCards 
                 calculation={calculation} 
                 interestSavings={interestSavings} 
+                timeSavings={timeSavings}
+              />
+              <DebtFreeNote 
+                calculation={calculation}
+                calculationWithoutPartPayments={calculationWithoutPartPayments}
+                hasPartPayments={partPayments.length > 0}
                 timeSavings={timeSavings}
               />
 
