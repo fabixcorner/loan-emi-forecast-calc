@@ -201,25 +201,6 @@ export const EligibilityBreakdownChart = ({
           </ResponsiveContainer>
         </div>
 
-        {/* Factor Impact Legend */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="flex items-center gap-2 text-xs bg-muted/40 rounded-md px-2.5 py-1.5 border border-border/50">
-            <div className="w-2 h-2 rounded-sm bg-financial-primary" />
-            <span className="text-muted-foreground">Income Based</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs bg-muted/40 rounded-md px-2.5 py-1.5 border border-border/50">
-            <div className="w-2 h-2 rounded-sm bg-financial-success" />
-            <span className="text-muted-foreground">Positive Impact</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs bg-muted/40 rounded-md px-2.5 py-1.5 border border-border/50">
-            <div className="w-2 h-2 rounded-sm bg-[hsl(221,83%,53%)]" />
-            <span className="text-muted-foreground">Employment</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs bg-muted/40 rounded-md px-2.5 py-1.5 border border-border/50">
-            <div className="w-2 h-2 rounded-sm bg-muted-foreground" />
-            <span className="text-muted-foreground">LTV Cap</span>
-          </div>
-        </div>
 
         {/* Key Insights */}
         <div className="bg-muted/30 rounded-lg p-4 border border-border space-y-2">
