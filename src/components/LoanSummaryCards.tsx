@@ -67,7 +67,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
   };
 
   return (
-    <div className={`grid gap-4 ${getGridCols()}`}>
+    <div className={`w-full grid gap-4 ${getGridCols()}`}>
       <Card className="bg-card shadow-card border border-border">
         <CardContent className="p-3">
           <div className="text-center">

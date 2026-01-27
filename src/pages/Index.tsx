@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -16,6 +16,50 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { z } from "zod";
+
+// Helper to format month/year as readable date
+const formatDebtFreeDate = (month: number, year: number): string => {
+  const date = new Date(year, month - 1);
+  return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+};
+
+// Debt-free note component
+interface DebtFreeNoteProps {
+  calculation: any;
+  calculationWithoutPartPayments: any;
+  hasPartPayments: boolean;
+  timeSavings: number;
+}
+
+const DebtFreeNote = ({ calculation, calculationWithoutPartPayments, hasPartPayments, timeSavings }: DebtFreeNoteProps) => {
+  if (!hasPartPayments || !calculation?.schedule?.length) return null;
+
+  const lastEntry = calculation.schedule[calculation.schedule.length - 1];
+  const debtFreeDate = formatDebtFreeDate(lastEntry.month, lastEntry.year);
+
+  const originalLastEntry = calculationWithoutPartPayments?.schedule?.length 
+    ? calculationWithoutPartPayments.schedule[calculationWithoutPartPayments.schedule.length - 1]
+    : null;
+  const originalDate = originalLastEntry 
+    ? formatDebtFreeDate(originalLastEntry.month, originalLastEntry.year) 
+    : null;
+
+  return (
+    <div className="text-center text-sm text-muted-foreground bg-financial-success/10 rounded-lg py-3 px-4 border border-financial-success/30">
+      <div className="flex items-center justify-center gap-2 text-financial-success font-medium">
+        <PartyPopper className="w-4 h-4" />
+        <span>
+          You will be debt-free by <strong>{debtFreeDate}</strong>
+        </span>
+      </div>
+      {timeSavings > 0 && originalDate && (
+        <span className="block text-xs mt-1 opacity-80">
+          ({timeSavings} month{timeSavings > 1 ? 's' : ''} earlier than the original {originalDate})
+        </span>
+      )}
+    </div>
+  );
+};
 
 // Schema for validating URL parameters
 const PartPaymentSchema = z.object({
@@ -156,6 +200,12 @@ const Index = () => {
                 interestSavings={interestSavings}
                 timeSavings={timeSavings}
               />
+              <DebtFreeNote 
+                calculation={calculation}
+                calculationWithoutPartPayments={calculationWithoutPartPayments}
+                hasPartPayments={partPayments.length > 0}
+                timeSavings={timeSavings}
+              />
             </div>
             <LoanSummary 
               calculation={calculation}
@@ -174,7 +224,7 @@ const Index = () => {
         ) : (
           /* Full calculator view with tabs */
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-2 md:grid-cols-4 mb-8">
               <TabsTrigger value="loan-details" className="text-sm md:text-base">
                 Loan Details
               </TabsTrigger>
@@ -190,7 +240,7 @@ const Index = () => {
             </TabsList>
 
             {/* Tab 1: Loan Details */}
-            <TabsContent value="loan-details" className="space-y-8">
+            <TabsContent value="loan-details" className="w-full max-w-4xl mx-auto space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Section - Loan Inputs */}
                 <LoanInputSection
@@ -214,6 +264,12 @@ const Index = () => {
               <LoanSummaryCards 
                 calculation={calculation} 
                 interestSavings={interestSavings} 
+                timeSavings={timeSavings}
+              />
+              <DebtFreeNote 
+                calculation={calculation}
+                calculationWithoutPartPayments={calculationWithoutPartPayments}
+                hasPartPayments={partPayments.length > 0}
                 timeSavings={timeSavings}
               />
 
@@ -272,11 +328,17 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 2: EMI Schedule */}
-            <TabsContent value="emi-schedule" className="space-y-8">
+            <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8">
               {/* Loan Summary Cards */}
               <LoanSummaryCards 
                 calculation={calculation} 
                 interestSavings={interestSavings} 
+                timeSavings={timeSavings}
+              />
+              <DebtFreeNote 
+                calculation={calculation}
+                calculationWithoutPartPayments={calculationWithoutPartPayments}
+                hasPartPayments={partPayments.length > 0}
                 timeSavings={timeSavings}
               />
 
@@ -297,7 +359,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 3: Compare Loan Scenarios */}
-            <TabsContent value="compare-scenarios" className="space-y-8">
+            <TabsContent value="compare-scenarios" className="w-full max-w-4xl mx-auto space-y-8">
               <LoanComparisonSection
                 baseAmount={loanAmount}
                 baseRate={interestRate}
@@ -309,7 +371,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 4: Loan Affordability */}
-            <TabsContent value="loan-affordability" className="space-y-8">
+            <TabsContent value="loan-affordability" className="w-full max-w-4xl mx-auto space-y-8">
               <LoanAffordabilityCalculator />
             </TabsContent>
           </Tabs>
