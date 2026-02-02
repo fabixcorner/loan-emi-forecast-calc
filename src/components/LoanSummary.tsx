@@ -498,20 +498,20 @@ export const LoanSummary = ({
           <Card className="bg-card shadow-card border border-border">
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between">
               <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
-              <div className="flex gap-2">
+              <div className="flex gap-1 sm:gap-2 flex-wrap">
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
+                  className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
                   onClick={handleShare}
                 >
                   <Share2 className="h-4 w-4" />
-                  Share
+                  <span className="hidden sm:inline">Share</span>
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
+                  className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
                   onClick={() => exportDetailedPDFReport(
                     calculation.schedule, 
                     calculation.emi, 
@@ -528,13 +528,13 @@ export const LoanSummary = ({
                   )}
                 >
                   <FileText className="h-4 w-4" />
-                  Full Report
+                  <span className="hidden sm:inline">Full Report</span>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground">
+                    <Button variant="outline" size="sm" className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground">
                       <Download className="h-4 w-4" />
-                      Download
+                      <span className="hidden sm:inline">Download</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -556,19 +556,19 @@ export const LoanSummary = ({
         </CardHeader>
         <CardContent>
           <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
-            <Table>
+            <Table className="text-xs sm:text-sm">
               <TableHeader className="bg-muted/50">
                 <TableRow className="border-b">
-                  <TableHead className="w-12 font-bold uppercase">×</TableHead>
-                  <TableHead className="w-20 font-bold uppercase">Year</TableHead>
-                  <TableHead className="text-right font-bold uppercase">Principal</TableHead>
+                  <TableHead className="w-12 font-bold uppercase p-2 sm:p-4">×</TableHead>
+                  <TableHead className="w-20 font-bold uppercase p-2 sm:p-4">Year</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Principal</TableHead>
                   {partPayments.length > 0 && (
-                    <TableHead className="text-right font-bold uppercase">Part Payment</TableHead>
+                    <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Part Payment</TableHead>
                   )}
-                  <TableHead className="text-right font-bold uppercase">Interest</TableHead>
-                  <TableHead className="text-right font-bold uppercase">EMI</TableHead>
-                  <TableHead className="text-right font-bold uppercase">Balance</TableHead>
-                  <TableHead className="text-right font-bold uppercase">Paid %</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Interest</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">EMI</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Balance</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Paid %</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -580,32 +580,32 @@ export const LoanSummary = ({
                       className="bg-muted/50 hover:bg-muted/70 cursor-pointer border-b-2"
                       onClick={() => toggleYear(yearData.year)}
                     >
-                      <TableCell className="text-center">
+                      <TableCell className="text-center p-2 sm:p-4">
                         {expandedYears.has(yearData.year) ? (
                           <Minus className="w-4 h-4 text-muted-foreground" />
                         ) : (
                           <Plus className="w-4 h-4 text-muted-foreground" />
                         )}
                       </TableCell>
-                      <TableCell className="font-bold">{yearData.year}</TableCell>
-                      <TableCell className="text-right font-bold text-financial-primary">
+                      <TableCell className="font-bold p-2 sm:p-4">{yearData.year}</TableCell>
+                      <TableCell className="text-right font-bold text-financial-primary p-2 sm:p-4">
                         {formatCurrency(yearData.totalPrincipal)}
                       </TableCell>
                       {partPayments.length > 0 && (
-                        <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                        <TableCell className="text-right font-bold p-2 sm:p-4" style={{ color: 'hsl(142, 70%, 35%)' }}>
                           {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
                         </TableCell>
                       )}
-                      <TableCell className="text-right font-bold text-destructive">
+                      <TableCell className="text-right font-bold text-destructive p-2 sm:p-4">
                         {formatCurrency(yearData.totalInterest)}
                       </TableCell>
-                      <TableCell className="text-right font-bold">
+                      <TableCell className="text-right font-bold p-2 sm:p-4">
                         {formatCurrency(yearData.totalEmi)}
                       </TableCell>
-                      <TableCell className="text-right font-bold" style={{ color: 'hsl(25, 85%, 45%)' }}>
+                      <TableCell className="text-right font-bold p-2 sm:p-4" style={{ color: 'hsl(25, 85%, 45%)' }}>
                         {formatCurrency(yearData.endBalance)}
                       </TableCell>
-                      <TableCell className="text-right font-bold">
+                      <TableCell className="text-right font-bold p-2 sm:p-4">
                         {yearData.loanPaidPercentage.toFixed(1)}%
                       </TableCell>
                     </TableRow>
@@ -619,22 +619,22 @@ export const LoanSummary = ({
                       
                       return (
                         <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background hover:bg-muted/30 transition-colors">
-                          <TableCell></TableCell>
-                          <TableCell className="text-muted-foreground pl-4">
+                          <TableCell className="p-2 sm:p-4"></TableCell>
+                          <TableCell className="text-muted-foreground pl-4 p-2 sm:p-4">
                             {getFullMonthName(row.month)}
                           </TableCell>
-                          <TableCell className="text-right text-financial-primary">
+                          <TableCell className="text-right text-financial-primary p-2 sm:p-4">
                             {formatCurrency(row.principalAmount)}
                           </TableCell>
                           {partPayments.length > 0 && (
-                            <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                            <TableCell className="text-right p-2 sm:p-4" style={{ color: 'hsl(142, 70%, 35%)' }}>
                               {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
                             </TableCell>
                           )}
-                          <TableCell className="text-right text-destructive">
+                          <TableCell className="text-right text-destructive p-2 sm:p-4">
                             {formatCurrency(row.interestAmount)}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right p-2 sm:p-4">
                             <div className="flex items-center justify-end gap-2">
                               {formatCurrency(row.emiAmount)}
                               {emiReduced && (
@@ -647,10 +647,10 @@ export const LoanSummary = ({
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="text-right" style={{ color: 'hsl(25, 85%, 45%)' }}>
+                          <TableCell className="text-right p-2 sm:p-4" style={{ color: 'hsl(25, 85%, 45%)' }}>
                             {formatCurrency(row.remainingBalance)}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right p-2 sm:p-4">
                             {(((totalPrincipal - row.remainingBalance) / totalPrincipal) * 100).toFixed(1)}%
                           </TableCell>
                         </TableRow>
@@ -664,8 +664,8 @@ export const LoanSummary = ({
           
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 px-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-2">
+              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
                 <span>Show</span>
                 <Select
                   value={yearsPerPage.toString()}
