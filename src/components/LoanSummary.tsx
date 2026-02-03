@@ -373,127 +373,123 @@ export const LoanSummary = ({
           })()}
 
           {/* Yearly Payments Chart */}
-          <Card className="bg-card shadow-card border border-border mb-6 overflow-hidden">
+          <Card className="bg-card shadow-card border border-border mb-6">
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
               <CardTitle className="text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
             </CardHeader>
-            <CardContent className="pt-6 px-2 sm:px-6">
-              {/* Horizontal scroll hint for mobile */}
-              <p className="text-xs text-muted-foreground mb-2 sm:hidden text-center">← Scroll horizontally to see full chart →</p>
-              <div className="overflow-x-auto pb-2">
-                <div className="h-80 min-w-[600px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart 
-                      data={yearlyData.map(year => ({
-                        year: year.year,
-                        principal: year.totalPrincipal,
-                        interest: year.totalInterest,
-                        partPayment: year.totalPartPayment,
-                        balance: year.endBalance
-                      }))} 
-                      barCategoryGap="10%"
-                      onMouseLeave={() => setHoveredElement(null)}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis 
-                        dataKey="year" 
-                        stroke="hsl(var(--foreground))"
-                        fontSize={12}
-                      />
-                      <YAxis 
-                        yAxisId="left"
-                        stroke="hsl(var(--foreground))"
-                        fontSize={12}
-                        tickFormatter={(value) => `${Math.round(value / 1000)}K`}
-                        tickMargin={12}
-                        width={100}
-                        label={{ value: 'Loan Payment / year', angle: -90, position: 'insideLeft', offset: 10, style: { textAnchor: 'middle', fill: 'hsl(var(--foreground))' } }}
-                      />
-                      <YAxis 
-                        yAxisId="right" 
-                        orientation="right"
-                        stroke="hsl(var(--muted-foreground))"
-                        fontSize={12}
-                        tickFormatter={(value) => `${Math.round(value / 100000)}L`}
-                        tickMargin={12}
-                        width={100}
-                        label={{ value: 'Balance Amount', angle: 90, position: 'insideRight', offset: 10, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
-                      />
-                      <RechartsTooltip 
-                        formatter={(value: number, name: string) => {
-                          let label = name;
-                          if (name === 'Principal') label = 'Principal';
-                          else if (name === 'Interest') label = 'Interest';
-                          else if (name === 'Part Payment') label = 'Part Payment';
-                          else if (name === 'Remaining Balance') label = 'Remaining Balance';
-                          return [formatCurrency(value), label];
-                        }}
-                        labelFormatter={(year) => `Year ${year}`}
-                      />
-                      <Legend />
+            <CardContent className="pt-6">
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart 
+                    data={yearlyData.map(year => ({
+                      year: year.year,
+                      principal: year.totalPrincipal,
+                      interest: year.totalInterest,
+                      partPayment: year.totalPartPayment,
+                      balance: year.endBalance
+                    }))} 
+                    barCategoryGap="10%"
+                    onMouseLeave={() => setHoveredElement(null)}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis 
+                      dataKey="year" 
+                      stroke="hsl(var(--foreground))"
+                      fontSize={12}
+                    />
+                    <YAxis 
+                      yAxisId="left"
+                      stroke="hsl(var(--foreground))"
+                      fontSize={12}
+                      tickFormatter={(value) => `${Math.round(value / 1000)}K`}
+                      tickMargin={12}
+                      width={100}
+                      label={{ value: 'Loan Payment / year', angle: -90, position: 'insideLeft', offset: 10, style: { textAnchor: 'middle', fill: 'hsl(var(--foreground))' } }}
+                    />
+                    <YAxis 
+                      yAxisId="right" 
+                      orientation="right"
+                      stroke="hsl(var(--muted-foreground))"
+                      fontSize={12}
+                      tickFormatter={(value) => `${Math.round(value / 100000)}L`}
+                      tickMargin={12}
+                      width={100}
+                      label={{ value: 'Balance Amount', angle: 90, position: 'insideRight', offset: 10, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                    />
+                    <RechartsTooltip 
+                      formatter={(value: number, name: string) => {
+                        let label = name;
+                        if (name === 'Principal') label = 'Principal';
+                        else if (name === 'Interest') label = 'Interest';
+                        else if (name === 'Part Payment') label = 'Part Payment';
+                        else if (name === 'Remaining Balance') label = 'Remaining Balance';
+                        return [formatCurrency(value), label];
+                      }}
+                      labelFormatter={(year) => `Year ${year}`}
+                    />
+                    <Legend />
+                    <Bar 
+                      yAxisId="left"
+                      dataKey="principal" 
+                      fill="hsl(var(--financial-primary))" 
+                      name="Principal"
+                      radius={[2, 2, 0, 0]}
+                      onMouseEnter={() => setHoveredElement('principal')}
+                      style={{
+                        opacity: hoveredElement === null || hoveredElement === 'principal' ? 1 : 0.3,
+                        filter: hoveredElement === 'principal' ? 'brightness(1.3)' : 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
+                    />
+                    <Bar 
+                      yAxisId="left"
+                      dataKey="interest" 
+                      fill="hsl(var(--destructive))" 
+                      name="Interest"
+                      radius={[2, 2, 0, 0]}
+                      onMouseEnter={() => setHoveredElement('interest')}
+                      style={{
+                        opacity: hoveredElement === null || hoveredElement === 'interest' ? 1 : 0.3,
+                        filter: hoveredElement === 'interest' ? 'brightness(1.3)' : 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
+                    />
+                    {partPayments.length > 0 && (
                       <Bar 
                         yAxisId="left"
-                        dataKey="principal" 
-                        fill="hsl(var(--financial-primary))" 
-                        name="Principal"
+                        dataKey="partPayment" 
+                        fill="hsl(142, 70%, 35%)" 
+                        name="Part Payment"
                         radius={[2, 2, 0, 0]}
-                        onMouseEnter={() => setHoveredElement('principal')}
+                        onMouseEnter={() => setHoveredElement('partPayment')}
                         style={{
-                          opacity: hoveredElement === null || hoveredElement === 'principal' ? 1 : 0.3,
-                          filter: hoveredElement === 'principal' ? 'brightness(1.3)' : 'none',
+                          opacity: hoveredElement === null || hoveredElement === 'partPayment' ? 1 : 0.3,
+                          filter: hoveredElement === 'partPayment' ? 'brightness(1.3)' : 'none',
                           transition: 'all 0.3s ease',
                           cursor: 'pointer'
                         }}
                       />
-                      <Bar 
-                        yAxisId="left"
-                        dataKey="interest" 
-                        fill="hsl(var(--destructive))" 
-                        name="Interest"
-                        radius={[2, 2, 0, 0]}
-                        onMouseEnter={() => setHoveredElement('interest')}
-                        style={{
-                          opacity: hoveredElement === null || hoveredElement === 'interest' ? 1 : 0.3,
-                          filter: hoveredElement === 'interest' ? 'brightness(1.3)' : 'none',
-                          transition: 'all 0.3s ease',
-                          cursor: 'pointer'
-                        }}
-                      />
-                      {partPayments.length > 0 && (
-                        <Bar 
-                          yAxisId="left"
-                          dataKey="partPayment" 
-                          fill="hsl(142, 70%, 35%)" 
-                          name="Part Payment"
-                          radius={[2, 2, 0, 0]}
-                          onMouseEnter={() => setHoveredElement('partPayment')}
-                          style={{
-                            opacity: hoveredElement === null || hoveredElement === 'partPayment' ? 1 : 0.3,
-                            filter: hoveredElement === 'partPayment' ? 'brightness(1.3)' : 'none',
-                            transition: 'all 0.3s ease',
-                            cursor: 'pointer'
-                          }}
-                        />
-                      )}
-                      <Line
-                        yAxisId="right"
-                        type="monotone"
-                        dataKey="balance"
-                        stroke="hsl(25, 85%, 45%)"
-                        strokeWidth={3}
-                        name="Remaining Balance"
-                        dot={{ fill: 'hsl(25, 85%, 45%)', strokeWidth: 2, r: 4 }}
-                        onMouseEnter={() => setHoveredElement('balance')}
-                        style={{
-                          opacity: hoveredElement === null || hoveredElement === 'balance' ? 1 : 0.3,
-                          filter: hoveredElement === 'balance' ? 'brightness(1.3) drop-shadow(0 0 8px hsl(25, 85%, 45%))' : 'none',
-                          transition: 'all 0.3s ease',
-                          cursor: 'pointer'
-                        }}
-                      />
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </div>
+                    )}
+                    <Line
+                      yAxisId="right"
+                      type="monotone"
+                      dataKey="balance"
+                      stroke="hsl(25, 85%, 45%)"
+                      strokeWidth={3}
+                      name="Remaining Balance"
+                      dot={{ fill: 'hsl(25, 85%, 45%)', strokeWidth: 2, r: 4 }}
+                      onMouseEnter={() => setHoveredElement('balance')}
+                      style={{
+                        opacity: hoveredElement === null || hoveredElement === 'balance' ? 1 : 0.3,
+                        filter: hoveredElement === 'balance' ? 'brightness(1.3) drop-shadow(0 0 8px hsl(25, 85%, 45%))' : 'none',
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer'
+                      }}
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -558,11 +554,9 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent className="px-2 sm:px-6">
-          {/* Horizontal scroll hint for mobile */}
-          <p className="text-xs text-muted-foreground mb-2 sm:hidden text-center">← Scroll horizontally to see full table →</p>
-          <div ref={tableContainerRef} className="border rounded-md scroll-mt-4 overflow-x-auto">
-            <Table className="text-xs sm:text-sm min-w-[700px]">
+        <CardContent>
+          <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
+            <Table className="text-xs sm:text-sm">
               <TableHeader className="bg-muted/50">
                 <TableRow className="border-b">
                   <TableHead className="w-12 font-bold uppercase p-2 sm:p-4">×</TableHead>
