@@ -182,7 +182,7 @@ const Index = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
               <ThemeToggle />
               <HowItWorks />
             </div>
