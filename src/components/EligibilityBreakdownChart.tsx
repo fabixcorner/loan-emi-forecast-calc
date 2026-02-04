@@ -151,8 +151,8 @@ export const EligibilityBreakdownChart = ({
       </CardHeader>
       <CardContent className="p-4 space-y-6">
         {/* Horizontal Bar Chart showing each stage */}
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-64 flex justify-start">
+          <ResponsiveContainer width="90%" height="100%">
             <BarChart
               data={chartData}
               layout="vertical"
