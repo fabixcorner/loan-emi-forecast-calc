@@ -226,19 +226,19 @@ const Index = () => {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Desktop Tab Navigation - Hidden on mobile */}
             <TabsList className="hidden md:grid w-full max-w-4xl mx-auto grid-cols-4 mb-8">
-              <TabsTrigger value="loan-details" className="flex flex-col items-center gap-1.5 py-3">
+              <TabsTrigger value="loan-details" className="flex flex-row items-center gap-2 py-3">
                 <Coins className="w-5 h-5" />
                 <span className="text-sm">Loan Details</span>
               </TabsTrigger>
-              <TabsTrigger value="emi-schedule" className="flex flex-col items-center gap-1.5 py-3">
+              <TabsTrigger value="emi-schedule" className="flex flex-row items-center gap-2 py-3">
                 <CalendarRange className="w-5 h-5" />
                 <span className="text-sm">EMI Schedule</span>
               </TabsTrigger>
-              <TabsTrigger value="compare-scenarios" className="flex flex-col items-center gap-1.5 py-3">
+              <TabsTrigger value="compare-scenarios" className="flex flex-row items-center gap-2 py-3">
                 <Scale className="w-5 h-5" />
                 <span className="text-sm">Compare Scenarios</span>
               </TabsTrigger>
-              <TabsTrigger value="loan-affordability" className="flex flex-col items-center gap-1.5 py-3">
+              <TabsTrigger value="loan-affordability" className="flex flex-row items-center gap-2 py-3">
                 <Wallet className="w-5 h-5" />
                 <span className="text-sm">Loan Affordability</span>
               </TabsTrigger>
@@ -247,21 +247,21 @@ const Index = () => {
             {/* Mobile Bottom Tab Navigation - Fixed at bottom */}
             <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border shadow-lg">
               <TabsList className="grid w-full grid-cols-4 h-auto p-0 bg-transparent">
-                <TabsTrigger value="loan-details" className="flex flex-col items-center gap-1 py-3 px-1 rounded-none border-0 text-xs data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
+                <TabsTrigger value="loan-details" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
                   <Coins className="w-5 h-5" />
-                  <span className="leading-tight text-center">Loan Details</span>
+                  <span className="leading-tight text-center">Loan<br/>Details</span>
                 </TabsTrigger>
-                <TabsTrigger value="emi-schedule" className="flex flex-col items-center gap-1 py-3 px-1 rounded-none border-0 text-xs data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
+                <TabsTrigger value="emi-schedule" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
                   <CalendarRange className="w-5 h-5" />
-                  <span className="leading-tight text-center">EMI Schedule</span>
+                  <span className="leading-tight text-center">EMI<br/>Schedule</span>
                 </TabsTrigger>
-                <TabsTrigger value="compare-scenarios" className="flex flex-col items-center gap-1 py-3 px-1 rounded-none border-0 text-xs data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
+                <TabsTrigger value="compare-scenarios" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
                   <Scale className="w-5 h-5" />
-                  <span className="leading-tight text-center">Compare Scenarios</span>
+                  <span className="leading-tight text-center">Compare<br/>Scenarios</span>
                 </TabsTrigger>
-                <TabsTrigger value="loan-affordability" className="flex flex-col items-center gap-1 py-3 px-1 rounded-none border-0 text-xs data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
+                <TabsTrigger value="loan-affordability" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
                   <Wallet className="w-5 h-5" />
-                  <span className="leading-tight text-center">Loan Affordability</span>
+                  <span className="leading-tight text-center">Loan<br/>Affordability</span>
                 </TabsTrigger>
               </TabsList>
             </div>
