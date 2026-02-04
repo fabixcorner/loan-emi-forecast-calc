@@ -377,8 +377,8 @@ export const LoanSummary = ({
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
               <CardTitle className="text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
             </CardHeader>
-            <CardContent className="pt-6">
-              <div className="h-80">
+            <CardContent className="pt-6 overflow-x-auto">
+              <div className="h-80 min-w-[600px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
                     data={yearlyData.map(year => ({
@@ -555,7 +555,8 @@ export const LoanSummary = ({
               </div>
         </CardHeader>
         <CardContent>
-          <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
+          <div ref={tableContainerRef} className="border rounded-md scroll-mt-4 overflow-x-auto">
+            <div className="min-w-[700px]">
             <Table className="text-xs sm:text-sm">
               <TableHeader className="bg-muted/50">
                 <TableRow className="border-b">
@@ -660,6 +661,7 @@ export const LoanSummary = ({
                 ))}
               </TableBody>
             </Table>
+            </div>
           </div>
           
           {/* Pagination Controls */}
