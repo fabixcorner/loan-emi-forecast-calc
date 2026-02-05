@@ -156,7 +156,7 @@ export const EligibilityBreakdownChart = ({
             <BarChart
               data={chartData}
               layout="vertical"
-              margin={{ top: 10, right: 80, left: 120, bottom: 10 }}
+              margin={{ top: 10, right: 80, left: 10, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
               <XAxis
@@ -173,8 +173,8 @@ export const EligibilityBreakdownChart = ({
                   const name = payload.value;
                   return (
                     <g transform={`translate(${x},${y})`}>
-                      <foreignObject x={-115} y={-8} width={110} height={16}>
-                        <div className="flex items-center gap-1.5 justify-end text-[11px] text-foreground" style={{ fontFamily: 'inherit' }}>
+                      <foreignObject x={-100} y={-8} width={95} height={16}>
+                        <div className="flex items-center gap-1.5 justify-end text-[11px] text-foreground pr-1" style={{ fontFamily: 'inherit' }}>
                           <span className="flex-shrink-0">{iconMap[name]}</span>
                           <span className="whitespace-nowrap">{name}</span>
                         </div>
@@ -183,7 +183,7 @@ export const EligibilityBreakdownChart = ({
                   );
                 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
-                width={120}
+                width={100}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" radius={[0, 4, 4, 0]}>
