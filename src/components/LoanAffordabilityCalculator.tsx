@@ -169,8 +169,8 @@ export const LoanAffordabilityCalculator = () => {
             {/* Gross Income */}
             <div className="space-y-2.5">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 pt-2 w-36">
-                  <Label className="text-sm font-medium text-foreground">
+                <div className="flex-shrink-0 pt-2 w-20 sm:w-36">
+                  <Label className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                     Gross Income (Monthly)
                   </Label>
                 </div>
@@ -200,8 +200,8 @@ export const LoanAffordabilityCalculator = () => {
             {/* Employment Type */}
             <div className="space-y-2.5">
               <div className="flex items-center gap-4">
-                <div className="flex-shrink-0 w-36">
-                  <Label className="text-sm font-medium text-foreground">
+                <div className="flex-shrink-0 w-20 sm:w-36">
+                  <Label className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                     Employment Type
                   </Label>
                 </div>
@@ -223,8 +223,8 @@ export const LoanAffordabilityCalculator = () => {
             {/* Tenure */}
             <div className="space-y-2.5">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 pt-2 w-36">
-                  <Label className="text-sm font-medium text-foreground">
+                <div className="flex-shrink-0 pt-2 w-20 sm:w-36">
+                  <Label className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                     Loan Tenure (Years)
                   </Label>
                 </div>
@@ -254,8 +254,8 @@ export const LoanAffordabilityCalculator = () => {
             {/* Interest Rate */}
             <div className="space-y-2.5">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 pt-2 w-36">
-                  <Label className="text-sm font-medium text-foreground">
+                <div className="flex-shrink-0 pt-2 w-20 sm:w-36">
+                  <Label className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                     Interest Rate (% p.a.)
                   </Label>
                 </div>
@@ -286,8 +286,8 @@ export const LoanAffordabilityCalculator = () => {
             {/* Other EMIs */}
             <div className="space-y-2.5">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 pt-2 w-36">
-                  <Label className="text-sm font-medium text-foreground">
+                <div className="flex-shrink-0 pt-2 w-20 sm:w-36">
+                  <Label className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                     Other EMIs (Monthly)
                   </Label>
                 </div>
@@ -317,8 +317,8 @@ export const LoanAffordabilityCalculator = () => {
             {/* Property Value */}
             <div className="space-y-2.5">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 pt-2 w-36">
-                  <Label className="text-sm font-medium text-foreground">
+                <div className="flex-shrink-0 pt-2 w-20 sm:w-36">
+                  <Label className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                     Property Value
                   </Label>
                 </div>
@@ -348,8 +348,8 @@ export const LoanAffordabilityCalculator = () => {
             {/* Credit Score Toggle and Input */}
             <div className="space-y-2.5">
               <div className="flex items-center gap-4">
-                <div className="flex-shrink-0 w-36">
-                  <Label className="text-sm font-medium text-foreground">
+                <div className="flex-shrink-0 w-20 sm:w-36">
+                  <Label className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                     Know Credit Score?
                   </Label>
                 </div>
