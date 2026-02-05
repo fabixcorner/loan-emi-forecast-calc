@@ -131,10 +131,10 @@ export const HowItWorks = () => {
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(true)}
-        className="text-foreground hover:bg-muted text-center leading-tight sm:leading-normal max-w-[70px] sm:max-w-none h-auto py-1 sm:py-2"
+        className="text-foreground hover:bg-muted text-center leading-tight sm:leading-normal h-auto py-1 sm:py-2"
       >
-        <HelpCircle className="mr-1 sm:mr-2 h-4 w-4 flex-shrink-0" />
-        <span className="whitespace-normal sm:whitespace-nowrap">How it works?</span>
+        <HelpCircle className="sm:mr-2 h-4 w-4 flex-shrink-0" />
+        <span className="hidden sm:inline whitespace-nowrap">How it works?</span>
       </Button>
 
       {isOpen && createPortal(
