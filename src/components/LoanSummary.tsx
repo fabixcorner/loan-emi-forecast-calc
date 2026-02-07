@@ -404,8 +404,8 @@ export const LoanSummary = ({
                       stroke="hsl(var(--foreground))"
                       fontSize={12}
                       tickFormatter={(value) => `${Math.round(value / 1000)}K`}
-                      tickMargin={2}
-                      width={55}
+                      tickMargin={4}
+                      width={70}
                       label={{ value: 'Loan Payment / year', angle: -90, position: 'insideLeft', offset: 2, style: { textAnchor: 'middle', fill: 'hsl(var(--foreground))' } }}
                     />
                     <YAxis 
@@ -414,8 +414,8 @@ export const LoanSummary = ({
                       stroke="hsl(var(--muted-foreground))"
                       fontSize={12}
                       tickFormatter={(value) => `${Math.round(value / 100000)}L`}
-                      tickMargin={2}
-                      width={55}
+                      tickMargin={4}
+                      width={70}
                       label={{ value: 'Balance Amount', angle: 90, position: 'insideRight', offset: 2, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                     />
                     <RechartsTooltip 
