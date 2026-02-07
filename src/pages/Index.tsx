@@ -164,7 +164,7 @@ const Index = () => {
   const isScheduleView = new URLSearchParams(window.location.search).get('view') === 'schedule';
 
   return (
-    <div className="min-h-screen glass-background flex flex-col">
+    <div className="min-h-screen glass-background flex flex-col overflow-x-hidden">
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm shadow-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
