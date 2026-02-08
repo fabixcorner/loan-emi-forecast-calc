@@ -372,14 +372,73 @@ export const LoanSummary = ({
             );
           })()}
 
+          {/* EMI Schedule Section (Chart + Table) */}
+          <Card className="bg-card shadow-card border border-border">
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between flex-wrap gap-2">
+              <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
+              <div className="flex gap-1 sm:gap-2 flex-wrap">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Share</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
+                  onClick={() => exportDetailedPDFReport(
+                    calculation.schedule, 
+                    calculation.emi, 
+                    calculation.totalInterest, 
+                    calculation.totalAmount, 
+                    partPayments,
+                    {
+                      loanAmount,
+                      interestRate,
+                      loanTenure,
+                      startMonth,
+                      startYear
+                    }
+                  )}
+                >
+                  <FileText className="h-4 w-4" />
+                  <span className="hidden sm:inline">Full Report</span>
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground">
+                      <Download className="h-4 w-4" />
+                      <span className="hidden sm:inline">Download</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
+                      Excel (.xlsx)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
+                      PDF (.pdf)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
+                      JSON (.json)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
+                      CSV (.csv)
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
           {/* Yearly Payments Chart */}
-          <Card className="bg-card shadow-card border border-border mb-6">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
-              <CardTitle className="text-base sm:text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6 overflow-x-auto">
+          <div>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-2">Yearly Payments & Remaining Balance</h3>
+            <div className="overflow-x-auto">
               <div className="min-w-[600px] md:min-w-0">
-                <div className="h-80">
+                <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
                     data={yearlyData.map(year => ({
@@ -493,70 +552,11 @@ export const LoanSummary = ({
                   </ResponsiveContainer>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* EMI Schedule Table */}
-          <Card className="bg-card shadow-card border border-border">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between flex-wrap gap-2">
-              <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
-              <div className="flex gap-1 sm:gap-2 flex-wrap">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
-                  onClick={handleShare}
-                >
-                  <Share2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Share</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
-                  onClick={() => exportDetailedPDFReport(
-                    calculation.schedule, 
-                    calculation.emi, 
-                    calculation.totalInterest, 
-                    calculation.totalAmount, 
-                    partPayments,
-                    {
-                      loanAmount,
-                      interestRate,
-                      loanTenure,
-                      startMonth,
-                      startYear
-                    }
-                  )}
-                >
-                  <FileText className="h-4 w-4" />
-                  <span className="hidden sm:inline">Full Report</span>
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground">
-                      <Download className="h-4 w-4" />
-                      <span className="hidden sm:inline">Download</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
-                      Excel (.xlsx)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
-                      PDF (.pdf)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
-                      JSON (.json)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
-                      CSV (.csv)
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
+          <div className="overflow-x-auto">
           <div className="min-w-[600px] md:min-w-0">
           <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
             <Table className="text-xs sm:text-sm">
@@ -812,6 +812,7 @@ export const LoanSummary = ({
               </div>
             </div>
           )}
+          </div>
           </div>
         </CardContent>
       </Card>
