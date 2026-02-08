@@ -497,10 +497,8 @@ export const LoanSummary = ({
           </Card>
 
           {/* EMI Schedule Table */}
-          <div className="overflow-x-auto md:overflow-x-visible -mx-4 px-4 md:mx-0 md:px-0">
-            <div className="min-w-[600px] md:min-w-0">
-              <Card className="bg-card shadow-card border border-border">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between">
+          <Card className="bg-card shadow-card border border-border">
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between flex-wrap gap-2">
               <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
               <div className="flex gap-1 sm:gap-2 flex-wrap">
                 <Button 
@@ -558,7 +556,8 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-x-auto">
+          <div className="min-w-[600px] md:min-w-0">
           <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
             <Table className="text-xs sm:text-sm">
               <TableHeader className="bg-muted/50">
@@ -813,10 +812,9 @@ export const LoanSummary = ({
               </div>
             </div>
           )}
+          </div>
         </CardContent>
       </Card>
-            </div>
-          </div>
         </>
       )}
     </div>
