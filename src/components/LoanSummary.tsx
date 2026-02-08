@@ -373,15 +373,14 @@ export const LoanSummary = ({
           })()}
 
           {/* Yearly Payments Chart */}
-          <div className="overflow-x-auto md:overflow-x-visible -mx-4 px-4 md:mx-0 md:px-0">
-            <div className="min-w-[600px] md:min-w-0">
-              <Card className="bg-card shadow-card border border-border mb-6">
-                <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
-                  <CardTitle className="text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
+          <Card className="bg-card shadow-card border border-border mb-6">
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
+              <CardTitle className="text-base sm:text-xl font-semibold break-words">Yearly Payments & Remaining Balance</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-6 overflow-x-auto">
+              <div className="min-w-[600px] md:min-w-0">
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
                     data={yearlyData.map(year => ({
                       year: year.year,
@@ -491,12 +490,11 @@ export const LoanSummary = ({
                       }}
                     />
                   </ComposedChart>
-                </ResponsiveContainer>
+                  </ResponsiveContainer>
+                </div>
               </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
           {/* EMI Schedule Table */}
           <div className="overflow-x-auto md:overflow-x-visible -mx-4 px-4 md:mx-0 md:px-0">
