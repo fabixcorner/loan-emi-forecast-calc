@@ -375,7 +375,7 @@ export const LoanSummary = ({
           {/* Yearly Payments Chart */}
           <Card className="bg-card shadow-card border border-border mb-6">
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
-              <CardTitle className="text-base sm:text-xl font-semibold break-words">Yearly Payments & Remaining Balance</CardTitle>
+              <CardTitle className="text-base sm:text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
             </CardHeader>
             <CardContent className="pt-6 overflow-x-auto">
               <div className="min-w-[600px] md:min-w-0">
