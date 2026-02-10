@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, CreditCard, Briefcase, Home, CheckCircle } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface EligibilityBreakdownChartProps {
   incomeBasedAmount: number;
@@ -32,6 +33,8 @@ export const EligibilityBreakdownChart = ({
   finalEligibility,
   hasCreditScore,
 }: EligibilityBreakdownChartProps) => {
+  const isMobile = useIsMobile();
+
   // Calculate intermediate values to show the waterfall effect
   const afterCreditScore = incomeBasedAmount * creditScoreMultiplier;
   const afterEmployment = afterCreditScore * employmentMultiplier;
@@ -150,13 +153,13 @@ export const EligibilityBreakdownChart = ({
         <CardTitle className="text-lg font-semibold">Eligibility Factor Breakdown</CardTitle>
       </CardHeader>
       <CardContent className="p-4 space-y-6">
-        {/* Horizontal Bar Chart showing each stage */}
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
+        {/* Horizontal Bar Chart showing each stage - taller on mobile to accommodate 2-line labels */}
+        <div className={`flex justify-start ${isMobile ? 'h-72' : 'h-64'}`}>
+          <ResponsiveContainer width={isMobile ? "100%" : "90%"} height="100%">
             <BarChart
               data={chartData}
               layout="vertical"
-              margin={{ top: 10, right: 80, left: 120, bottom: 10 }}
+              margin={{ top: 10, right: isMobile ? 60 : 80, left: 10, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
               <XAxis
@@ -171,10 +174,33 @@ export const EligibilityBreakdownChart = ({
                 tick={(props: any) => {
                   const { x, y, payload } = props;
                   const name = payload.value;
+                  
+                  // Mobile: Split label into 2 lines
+                  if (isMobile) {
+                    const words = name.split(' ');
+                    const line1 = words[0] || '';
+                    const line2 = words.slice(1).join(' ') || '';
+                    
+                    return (
+                      <g transform={`translate(${x},${y})`}>
+                        <foreignObject x={-70} y={-14} width={65} height={28}>
+                          <div className="flex items-center gap-1 justify-end text-[9px] text-foreground pr-1" style={{ fontFamily: 'inherit' }}>
+                            <span className="flex-shrink-0">{iconMap[name]}</span>
+                            <span className="text-right leading-tight">
+                              {line1}
+                              {line2 && <><br />{line2}</>}
+                            </span>
+                          </div>
+                        </foreignObject>
+                      </g>
+                    );
+                  }
+                  
+                  // Desktop: Single line
                   return (
                     <g transform={`translate(${x},${y})`}>
-                      <foreignObject x={-115} y={-8} width={110} height={16}>
-                        <div className="flex items-center gap-1.5 justify-end text-[11px] text-foreground" style={{ fontFamily: 'inherit' }}>
+                      <foreignObject x={-100} y={-8} width={95} height={16}>
+                        <div className="flex items-center gap-1.5 justify-end text-[11px] text-foreground pr-1" style={{ fontFamily: 'inherit' }}>
                           <span className="flex-shrink-0">{iconMap[name]}</span>
                           <span className="whitespace-nowrap">{name}</span>
                         </div>
@@ -183,7 +209,7 @@ export const EligibilityBreakdownChart = ({
                   );
                 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
-                width={120}
+                width={isMobile ? 70 : 100}
               />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="value" radius={[0, 4, 4, 0]}>

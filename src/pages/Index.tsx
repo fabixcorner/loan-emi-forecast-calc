@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
@@ -164,25 +164,25 @@ const Index = () => {
   const isScheduleView = new URLSearchParams(window.location.search).get('view') === 'schedule';
 
   return (
-    <div className="min-h-screen glass-background flex flex-col">
+    <div className="min-h-screen glass-background flex flex-col overflow-x-hidden">
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm shadow-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center justify-start space-x-3">
-              <div className="p-2 bg-gradient-to-r from-financial-primary to-financial-success rounded-lg">
-                <img src={calculatorIcon} alt="Calculator" className="w-10 h-10" />
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-start gap-2 sm:gap-3 min-w-0">
+              <div className="p-1.5 sm:p-2 bg-gradient-to-r from-financial-primary to-financial-success rounded-lg flex-shrink-0">
+                <img src={calculatorIcon} alt="Calculator" className="w-8 h-8 sm:w-10 sm:h-10" />
               </div>
-              <div className="text-left">
-                <h1 className="text-2xl font-bold text-foreground">
+              <div className="text-left min-w-0">
+                <h1 className="text-base sm:text-2xl font-bold text-foreground truncate">
                   {isScheduleView ? 'Shared EMI Schedule' : 'Loan Forecast Calculator'}
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
                   {isScheduleView ? 'View detailed loan repayment schedule' : 'Plan your loan re-payments. Save on interest. Be Smarter than your lender.'}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
               <ThemeToggle />
               <HowItWorks />
             </div>
@@ -190,7 +190,7 @@ const Index = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
         {isScheduleView ? (
           /* Schedule-only view for shared links */
           <>
@@ -224,20 +224,47 @@ const Index = () => {
         ) : (
           /* Full calculator view with tabs */
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-4xl mx-auto grid-cols-2 md:grid-cols-4 mb-8">
-              <TabsTrigger value="loan-details" className="text-sm md:text-base">
-                Loan Details
+            {/* Desktop Tab Navigation - Hidden on mobile */}
+            <TabsList className="hidden md:grid w-full max-w-4xl mx-auto grid-cols-4 mb-8">
+              <TabsTrigger value="loan-details" className="flex flex-row items-center gap-2 py-3">
+                <Coins className="w-5 h-5" />
+                <span className="text-sm">Loan Details</span>
               </TabsTrigger>
-              <TabsTrigger value="emi-schedule" className="text-sm md:text-base">
-                EMI Schedule
+              <TabsTrigger value="emi-schedule" className="flex flex-row items-center gap-2 py-3">
+                <CalendarRange className="w-5 h-5" />
+                <span className="text-sm">EMI Schedule</span>
               </TabsTrigger>
-              <TabsTrigger value="compare-scenarios" className="text-sm md:text-base">
-                Compare Scenarios
+              <TabsTrigger value="compare-scenarios" className="flex flex-row items-center gap-2 py-3">
+                <Scale className="w-6 h-6" />
+                <span className="text-sm">Compare Scenarios</span>
               </TabsTrigger>
-              <TabsTrigger value="loan-affordability" className="text-sm md:text-base">
-                Loan Affordability
+              <TabsTrigger value="loan-affordability" className="flex flex-row items-center gap-2 py-3">
+                <Wallet className="w-5 h-5" />
+                <span className="text-sm">Loan Affordability</span>
               </TabsTrigger>
             </TabsList>
+
+            {/* Mobile Bottom Tab Navigation - Fixed at bottom */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border shadow-lg">
+              <TabsList className="grid w-full grid-cols-4 h-auto p-0 bg-transparent">
+                <TabsTrigger value="loan-details" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
+                  <Coins className="w-5 h-5" />
+                  <span className="leading-tight text-center">Loan<br/>Details</span>
+                </TabsTrigger>
+                <TabsTrigger value="emi-schedule" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
+                  <CalendarRange className="w-5 h-5" />
+                  <span className="leading-tight text-center">EMI<br/>Schedule</span>
+                </TabsTrigger>
+                <TabsTrigger value="compare-scenarios" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
+                  <Scale className="w-5 h-5" />
+                  <span className="leading-tight text-center">Compare<br/>Scenarios</span>
+                </TabsTrigger>
+                <TabsTrigger value="loan-affordability" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
+                  <Wallet className="w-5 h-5" />
+                  <span className="leading-tight text-center">Loan<br/>Affordability</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Tab 1: Loan Details */}
             <TabsContent value="loan-details" className="w-full max-w-4xl mx-auto space-y-8">

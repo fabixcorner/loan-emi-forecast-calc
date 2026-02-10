@@ -67,8 +67,8 @@ export const LoanInputSection = ({
         {/* Loan Start Date */}
         <div className="space-y-2.5">
           <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 w-32">
-              <Label className="text-sm font-medium text-foreground leading-tight">
+            <div className="flex-shrink-0 w-20 sm:w-32">
+              <Label className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                 Start Month-Year
               </Label>
             </div>
@@ -117,8 +117,8 @@ export const LoanInputSection = ({
         {/* Loan Amount */}
         <div className="space-y-2.5">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 pt-2 w-32">
-              <Label htmlFor="loanAmount" className="text-sm font-medium text-foreground">
+            <div className="flex-shrink-0 pt-2 w-20 sm:w-32">
+              <Label htmlFor="loanAmount" className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                 Loan Amount
               </Label>
             </div>
@@ -152,8 +152,8 @@ export const LoanInputSection = ({
         {/* Interest Rate */}
         <div className="space-y-2.5">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 pt-2 w-32">
-              <Label htmlFor="interestRate" className="text-sm font-medium text-foreground">
+            <div className="flex-shrink-0 pt-2 w-20 sm:w-32">
+              <Label htmlFor="interestRate" className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                 Rate of Interest
               </Label>
             </div>
@@ -187,8 +187,8 @@ export const LoanInputSection = ({
         {/* Loan Tenure */}
         <div className="space-y-2.5">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 pt-2 w-32">
-              <Label htmlFor="loanTenure" className="text-sm font-medium text-foreground">
+            <div className="flex-shrink-0 pt-2 w-20 sm:w-32">
+              <Label htmlFor="loanTenure" className="text-xs sm:text-sm font-medium text-foreground leading-tight">
                 Loan Tenure
               </Label>
             </div>
