@@ -253,7 +253,7 @@ export const LoanSummary = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="w-full space-y-6">
       {/* Action Buttons Row - Only show if not hidden */}
       {!hideActionButtons && (
         <div className="flex justify-center gap-3 flex-wrap">
@@ -372,14 +372,74 @@ export const LoanSummary = ({
             );
           })()}
 
+          {/* EMI Schedule Section (Chart + Table) */}
+          <Card className="bg-card shadow-card border border-border">
+            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between flex-wrap gap-2">
+              <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
+              <div className="flex gap-1 sm:gap-2 flex-wrap">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Share</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
+                  onClick={() => exportDetailedPDFReport(
+                    calculation.schedule, 
+                    calculation.emi, 
+                    calculation.totalInterest, 
+                    calculation.totalAmount, 
+                    partPayments,
+                    {
+                      loanAmount,
+                      interestRate,
+                      loanTenure,
+                      startMonth,
+                      startYear
+                    }
+                  )}
+                >
+                  <FileText className="h-4 w-4" />
+                  <span className="hidden sm:inline">Full Report</span>
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-1 sm:gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground">
+                      <Download className="h-4 w-4" />
+                      <span className="hidden sm:inline">Download</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
+                      Excel (.xlsx)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
+                      PDF (.pdf)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
+                      JSON (.json)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
+                      CSV (.csv)
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
           {/* Yearly Payments Chart */}
-          <Card className="bg-card shadow-card border border-border mb-6">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
-              <CardTitle className="text-xl font-semibold">Yearly Payments & Remaining Balance</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
+          <div>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-2">Yearly Payments & Remaining Balance</h3>
+            <div className="overflow-x-auto">
+              <div className="min-w-[600px] md:min-w-0">
+                <div className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
                     data={yearlyData.map(year => ({
                       year: year.year,
@@ -402,9 +462,9 @@ export const LoanSummary = ({
                       stroke="hsl(var(--foreground))"
                       fontSize={12}
                       tickFormatter={(value) => `${Math.round(value / 1000)}K`}
-                      tickMargin={12}
-                      width={100}
-                      label={{ value: 'Loan Payment / year', angle: -90, position: 'insideLeft', offset: 10, style: { textAnchor: 'middle', fill: 'hsl(var(--foreground))' } }}
+                      tickMargin={4}
+                      width={70}
+                      label={{ value: 'Loan Payment / year', angle: -90, position: 'insideLeft', offset: 2, style: { textAnchor: 'middle', fill: 'hsl(var(--foreground))' } }}
                     />
                     <YAxis 
                       yAxisId="right" 
@@ -412,9 +472,9 @@ export const LoanSummary = ({
                       stroke="hsl(var(--muted-foreground))"
                       fontSize={12}
                       tickFormatter={(value) => `${Math.round(value / 100000)}L`}
-                      tickMargin={12}
-                      width={100}
-                      label={{ value: 'Balance Amount', angle: 90, position: 'insideRight', offset: 10, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
+                      tickMargin={4}
+                      width={70}
+                      label={{ value: 'Balance Amount', angle: 90, position: 'insideRight', offset: 2, style: { textAnchor: 'middle', fill: 'hsl(var(--muted-foreground))' } }}
                     />
                     <RechartsTooltip 
                       formatter={(value: number, name: string) => {
@@ -489,86 +549,29 @@ export const LoanSummary = ({
                       }}
                     />
                   </ComposedChart>
-                </ResponsiveContainer>
+                  </ResponsiveContainer>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* EMI Schedule Table */}
-          <Card className="bg-card shadow-card border border-border">
-            <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between">
-              <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
-                  onClick={handleShare}
-                >
-                  <Share2 className="h-4 w-4" />
-                  Share
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground"
-                  onClick={() => exportDetailedPDFReport(
-                    calculation.schedule, 
-                    calculation.emi, 
-                    calculation.totalInterest, 
-                    calculation.totalAmount, 
-                    partPayments,
-                    {
-                      loanAmount,
-                      interestRate,
-                      loanTenure,
-                      startMonth,
-                      startYear
-                    }
-                  )}
-                >
-                  <FileText className="h-4 w-4" />
-                  Full Report
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2 bg-primary-foreground/20 border-primary-foreground/50 text-primary-foreground hover:bg-primary-foreground/30 hover:text-primary-foreground">
-                      <Download className="h-4 w-4" />
-                      Download
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => exportToExcel(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
-                      Excel (.xlsx)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToPDF(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
-                      PDF (.pdf)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToJSON(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
-                      JSON (.json)
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportToCSV(calculation.schedule, calculation.emi, calculation.totalInterest, calculation.totalAmount, partPayments)}>
-                      CSV (.csv)
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-        </CardHeader>
-        <CardContent>
+          <div className="overflow-x-auto">
+          <div className="min-w-[600px] md:min-w-0">
           <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
-            <Table>
+            <Table className="text-xs sm:text-sm">
               <TableHeader className="bg-muted/50">
                 <TableRow className="border-b">
-                  <TableHead className="w-12 font-bold uppercase">×</TableHead>
-                  <TableHead className="w-20 font-bold uppercase">Year</TableHead>
-                  <TableHead className="text-right font-bold uppercase">Principal</TableHead>
+                  <TableHead className="w-12 font-bold uppercase p-2 sm:p-4">×</TableHead>
+                  <TableHead className="w-20 font-bold uppercase p-2 sm:p-4">Year</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Principal</TableHead>
                   {partPayments.length > 0 && (
-                    <TableHead className="text-right font-bold uppercase">Part Payment</TableHead>
+                    <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Part Payment</TableHead>
                   )}
-                  <TableHead className="text-right font-bold uppercase">Interest</TableHead>
-                  <TableHead className="text-right font-bold uppercase">EMI</TableHead>
-                  <TableHead className="text-right font-bold uppercase">Balance</TableHead>
-                  <TableHead className="text-right font-bold uppercase">Paid %</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Interest</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">EMI</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Balance</TableHead>
+                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Paid %</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -580,32 +583,32 @@ export const LoanSummary = ({
                       className="bg-muted/50 hover:bg-muted/70 cursor-pointer border-b-2"
                       onClick={() => toggleYear(yearData.year)}
                     >
-                      <TableCell className="text-center">
+                      <TableCell className="text-center p-2 sm:p-4">
                         {expandedYears.has(yearData.year) ? (
                           <Minus className="w-4 h-4 text-muted-foreground" />
                         ) : (
                           <Plus className="w-4 h-4 text-muted-foreground" />
                         )}
                       </TableCell>
-                      <TableCell className="font-bold">{yearData.year}</TableCell>
-                      <TableCell className="text-right font-bold text-financial-primary">
+                      <TableCell className="font-bold p-2 sm:p-4">{yearData.year}</TableCell>
+                      <TableCell className="text-right font-bold text-financial-primary p-2 sm:p-4">
                         {formatCurrency(yearData.totalPrincipal)}
                       </TableCell>
                       {partPayments.length > 0 && (
-                        <TableCell className="text-right font-bold" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                        <TableCell className="text-right font-bold p-2 sm:p-4" style={{ color: 'hsl(142, 70%, 35%)' }}>
                           {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
                         </TableCell>
                       )}
-                      <TableCell className="text-right font-bold text-destructive">
+                      <TableCell className="text-right font-bold text-destructive p-2 sm:p-4">
                         {formatCurrency(yearData.totalInterest)}
                       </TableCell>
-                      <TableCell className="text-right font-bold">
+                      <TableCell className="text-right font-bold p-2 sm:p-4">
                         {formatCurrency(yearData.totalEmi)}
                       </TableCell>
-                      <TableCell className="text-right font-bold" style={{ color: 'hsl(25, 85%, 45%)' }}>
+                      <TableCell className="text-right font-bold p-2 sm:p-4" style={{ color: 'hsl(25, 85%, 45%)' }}>
                         {formatCurrency(yearData.endBalance)}
                       </TableCell>
-                      <TableCell className="text-right font-bold">
+                      <TableCell className="text-right font-bold p-2 sm:p-4">
                         {yearData.loanPaidPercentage.toFixed(1)}%
                       </TableCell>
                     </TableRow>
@@ -619,22 +622,22 @@ export const LoanSummary = ({
                       
                       return (
                         <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background hover:bg-muted/30 transition-colors">
-                          <TableCell></TableCell>
-                          <TableCell className="text-muted-foreground pl-4">
+                          <TableCell className="p-2 sm:p-4"></TableCell>
+                          <TableCell className="text-muted-foreground pl-4 p-2 sm:p-4">
                             {getFullMonthName(row.month)}
                           </TableCell>
-                          <TableCell className="text-right text-financial-primary">
+                          <TableCell className="text-right text-financial-primary p-2 sm:p-4">
                             {formatCurrency(row.principalAmount)}
                           </TableCell>
                           {partPayments.length > 0 && (
-                            <TableCell className="text-right" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                            <TableCell className="text-right p-2 sm:p-4" style={{ color: 'hsl(142, 70%, 35%)' }}>
                               {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
                             </TableCell>
                           )}
-                          <TableCell className="text-right text-destructive">
+                          <TableCell className="text-right text-destructive p-2 sm:p-4">
                             {formatCurrency(row.interestAmount)}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right p-2 sm:p-4">
                             <div className="flex items-center justify-end gap-2">
                               {formatCurrency(row.emiAmount)}
                               {emiReduced && (
@@ -647,10 +650,10 @@ export const LoanSummary = ({
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="text-right" style={{ color: 'hsl(25, 85%, 45%)' }}>
+                          <TableCell className="text-right p-2 sm:p-4" style={{ color: 'hsl(25, 85%, 45%)' }}>
                             {formatCurrency(row.remainingBalance)}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right p-2 sm:p-4">
                             {(((totalPrincipal - row.remainingBalance) / totalPrincipal) * 100).toFixed(1)}%
                           </TableCell>
                         </TableRow>
@@ -664,8 +667,8 @@ export const LoanSummary = ({
           
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4 px-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-2">
+              <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
                 <span>Show</span>
                 <Select
                   value={yearsPerPage.toString()}
@@ -809,6 +812,8 @@ export const LoanSummary = ({
               </div>
             </div>
           )}
+          </div>
+          </div>
         </CardContent>
       </Card>
         </>

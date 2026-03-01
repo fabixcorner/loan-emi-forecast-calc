@@ -238,7 +238,7 @@ export const LoanComparisonSection = ({
   const weightedResults = calculateWeightedScore();
 
   return (
-    <Card className="bg-card shadow-card border border-border">
+    <Card className="w-full bg-card shadow-card border border-border">
       <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-xl font-semibold">Loan Comparison</CardTitle>
