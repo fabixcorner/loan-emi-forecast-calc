@@ -432,7 +432,7 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 pt-6">
           {/* Yearly Payments Chart */}
           <div>
             <div className="overflow-x-auto">
