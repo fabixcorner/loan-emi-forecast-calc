@@ -253,7 +253,7 @@ export const LoanSummary = ({
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full min-w-0 space-y-6">
       {/* Action Buttons Row - Only show if not hidden */}
       {!hideActionButtons && (
         <div className="flex justify-center gap-3 flex-wrap">
@@ -373,7 +373,7 @@ export const LoanSummary = ({
           })()}
 
           {/* EMI Schedule Section (Chart + Table) */}
-          <Card className="bg-card shadow-card border border-border overflow-hidden max-w-full">
+          <Card className="bg-card shadow-card border border-border">
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between flex-wrap gap-2">
               <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
               <div className="flex gap-1 sm:gap-2 flex-wrap">
@@ -432,11 +432,10 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="overflow-x-auto">
-            <div className="min-w-[600px] space-y-6">
+        <CardContent className="pt-6 space-y-6 px-0 sm:px-6 overflow-visible">
           {/* Yearly Payments Chart */}
-          <div>
+          <div className="overflow-x-auto px-2 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div style={{ minWidth: '600px' }}>
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
@@ -550,9 +549,12 @@ export const LoanSummary = ({
                   </ComposedChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
+            </div>
+          </div>
 
           {/* EMI Schedule Table */}
+          <div className="overflow-x-auto px-2 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div style={{ minWidth: '700px' }}>
           <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
             <Table className="text-xs sm:text-sm">
               <TableHeader className="bg-muted/50">
@@ -658,6 +660,8 @@ export const LoanSummary = ({
                 ))}
               </TableBody>
             </Table>
+          </div>
+          </div>
           </div>
           
           {/* Pagination Controls */}
@@ -807,8 +811,6 @@ export const LoanSummary = ({
               </div>
             </div>
           )}
-          </div>
-          </div>
         </CardContent>
       </Card>
         </>
