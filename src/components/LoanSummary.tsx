@@ -432,9 +432,9 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent className="pt-6 space-y-6 px-2 sm:px-6 overflow-x-clip">
+        <CardContent className="pt-6 space-y-6 px-2 sm:px-6">
           {/* Yearly Payments Chart */}
-          <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+          <div>
             <div style={{ minWidth: '600px' }}>
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
