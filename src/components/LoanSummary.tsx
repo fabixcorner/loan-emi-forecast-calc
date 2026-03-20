@@ -373,7 +373,7 @@ export const LoanSummary = ({
           })()}
 
           {/* EMI Schedule Section (Chart + Table) */}
-          <Card className="bg-card shadow-card border border-border">
+          <Card className="bg-card shadow-card border border-border overflow-hidden max-w-full">
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between flex-wrap gap-2">
               <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
               <div className="flex gap-1 sm:gap-2 flex-wrap">
@@ -432,11 +432,11 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent className="space-y-6 pt-6">
+        <CardContent className="pt-6">
+          <div className="overflow-x-auto">
+            <div className="min-w-[600px] space-y-6">
           {/* Yearly Payments Chart */}
           <div>
-            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-              <div className="min-w-[600px] md:min-w-0">
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
@@ -551,12 +551,8 @@ export const LoanSummary = ({
                   </ResponsiveContainer>
                 </div>
               </div>
-            </div>
-          </div>
 
           {/* EMI Schedule Table */}
-          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-          <div className="min-w-[600px] md:min-w-0">
           <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
             <Table className="text-xs sm:text-sm">
               <TableHeader className="bg-muted/50">
@@ -811,6 +807,7 @@ export const LoanSummary = ({
               </div>
             </div>
           )}
+          </div>
           </div>
           </div>
         </CardContent>
