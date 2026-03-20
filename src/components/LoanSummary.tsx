@@ -661,6 +661,8 @@ export const LoanSummary = ({
               </TableBody>
             </Table>
           </div>
+          </div>
+          </div>
           
           {/* Pagination Controls */}
           {totalPages > 1 && (
