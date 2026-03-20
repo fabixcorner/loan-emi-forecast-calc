@@ -809,7 +809,6 @@ export const LoanSummary = ({
           )}
           </div>
           </div>
-          </div>
         </CardContent>
       </Card>
         </>
