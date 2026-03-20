@@ -373,7 +373,7 @@ export const LoanSummary = ({
           })()}
 
           {/* EMI Schedule Section (Chart + Table) */}
-          <Card className="bg-card shadow-card border border-border overflow-hidden">
+          <Card className="bg-card shadow-card border border-border" style={{ overflowX: 'clip' }}>
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between flex-wrap gap-2">
               <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
               <div className="flex gap-1 sm:gap-2 flex-wrap">
