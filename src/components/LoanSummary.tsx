@@ -253,7 +253,7 @@ export const LoanSummary = ({
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full min-w-0 space-y-6">
       {/* Action Buttons Row - Only show if not hidden */}
       {!hideActionButtons && (
         <div className="flex justify-center gap-3 flex-wrap">
