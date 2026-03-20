@@ -549,9 +549,12 @@ export const LoanSummary = ({
                   </ComposedChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
+            </div>
+          </div>
 
           {/* EMI Schedule Table */}
+          <div className="overflow-x-auto -mx-6 px-6">
+            <div className="min-w-[700px]">
           <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
             <Table className="text-xs sm:text-sm">
               <TableHeader className="bg-muted/50">
