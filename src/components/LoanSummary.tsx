@@ -811,9 +811,7 @@ export const LoanSummary = ({
               </div>
             </div>
           )}
-          </div>
-          </div>
-          </div>
+          )}
         </CardContent>
       </Card>
         </>
