@@ -553,7 +553,7 @@ export const LoanSummary = ({
           </div>
 
           {/* EMI Schedule Table */}
-          <div style={{ overflowX: 'auto', maxWidth: '100%' }}>
+          <div>
             <div style={{ minWidth: '700px' }}>
           <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
             <Table className="text-xs sm:text-sm">
