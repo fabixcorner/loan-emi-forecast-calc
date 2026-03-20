@@ -432,11 +432,11 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent className="space-y-6 pt-6">
+        <CardContent className="pt-6">
+          <div className="overflow-x-auto">
+            <div className="min-w-[600px] space-y-6">
           {/* Yearly Payments Chart */}
           <div>
-            <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
-              <div className="min-w-[600px] md:min-w-0">
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
