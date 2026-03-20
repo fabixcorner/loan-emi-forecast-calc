@@ -432,9 +432,9 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent className="pt-6 space-y-6 px-2 sm:px-6">
+        <CardContent className="pt-6 space-y-6 px-0 sm:px-6 overflow-visible">
           {/* Yearly Payments Chart */}
-          <div>
+          <div className="overflow-x-auto px-2 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }}>
             <div style={{ minWidth: '600px' }}>
                 <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
