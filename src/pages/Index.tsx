@@ -282,12 +282,6 @@ const Index = () => {
                 <LoanBreakdownChart calculation={calculation} showSchedule={showSchedule} />
               </div>
 
-              {/* Loan Summary Cards */}
-              <LoanSummaryCards 
-                calculation={calculation} 
-                interestSavings={interestSavings} 
-                timeSavings={timeSavings}
-              />
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
