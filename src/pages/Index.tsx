@@ -345,12 +345,6 @@ const Index = () => {
 
             {/* Tab 2: EMI Schedule */}
             <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8">
-              {/* Loan Summary Cards */}
-              <LoanSummaryCards 
-                calculation={calculation} 
-                interestSavings={interestSavings} 
-                timeSavings={timeSavings}
-              />
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
