@@ -373,7 +373,7 @@ export const LoanSummary = ({
           })()}
 
           {/* EMI Schedule Section (Chart + Table) */}
-          <Card className="bg-card shadow-card border border-border">
+          <Card className="w-full min-w-0 overflow-hidden bg-card shadow-card border border-border">
             <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 flex flex-row items-center justify-between flex-wrap gap-2">
               <CardTitle className="text-xl font-semibold">EMI Schedule</CardTitle>
               <div className="flex gap-1 sm:gap-2 flex-wrap">
@@ -432,11 +432,11 @@ export const LoanSummary = ({
                 </DropdownMenu>
               </div>
         </CardHeader>
-        <CardContent className="pt-6 space-y-6 px-0 sm:px-6 overflow-visible">
-          {/* Yearly Payments Chart */}
+        <CardContent className="w-full min-w-0 overflow-hidden px-0 pt-6 sm:px-6">
           <div className="overflow-x-auto px-2 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <div style={{ minWidth: '600px' }}>
-                <div className="h-72">
+            <div className="min-w-[700px] space-y-6">
+              {/* Yearly Payments Chart */}
+              <div className="h-72">
                   <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart 
                     data={yearlyData.map(year => ({
@@ -549,119 +549,114 @@ export const LoanSummary = ({
                   </ComposedChart>
                   </ResponsiveContainer>
                 </div>
-            </div>
-          </div>
 
-          {/* EMI Schedule Table */}
-          <div className="overflow-x-auto px-2 sm:px-0" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <div style={{ minWidth: '700px' }}>
-          <div ref={tableContainerRef} className="border rounded-md scroll-mt-4">
-            <Table className="text-xs sm:text-sm">
-              <TableHeader className="bg-muted/50">
-                <TableRow className="border-b">
-                  <TableHead className="w-12 font-bold uppercase p-2 sm:p-4">×</TableHead>
-                  <TableHead className="w-20 font-bold uppercase p-2 sm:p-4">Year</TableHead>
-                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Principal</TableHead>
-                  {partPayments.length > 0 && (
-                    <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Part Payment</TableHead>
-                  )}
-                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Interest</TableHead>
-                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">EMI</TableHead>
-                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Balance</TableHead>
-                  <TableHead className="text-right font-bold uppercase p-2 sm:p-4">Paid %</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedYearlyData.map((yearData) => (
-                  <>
-                    {/* Year Summary Row */}
-                    <TableRow 
-                      key={`year-${yearData.year}`}
-                      className="bg-muted/50 hover:bg-muted/70 cursor-pointer border-b-2"
-                      onClick={() => toggleYear(yearData.year)}
-                    >
-                      <TableCell className="text-center p-2 sm:p-4">
-                        {expandedYears.has(yearData.year) ? (
-                          <Minus className="w-4 h-4 text-muted-foreground" />
-                        ) : (
-                          <Plus className="w-4 h-4 text-muted-foreground" />
-                        )}
-                      </TableCell>
-                      <TableCell className="font-bold p-2 sm:p-4">{yearData.year}</TableCell>
-                      <TableCell className="text-right font-bold text-financial-primary p-2 sm:p-4">
-                        {formatCurrency(yearData.totalPrincipal)}
-                      </TableCell>
+              {/* EMI Schedule Table */}
+              <div ref={tableContainerRef} className="scroll-mt-4 rounded-md border">
+                <Table className="text-xs sm:text-sm">
+                  <TableHeader className="bg-muted/50">
+                    <TableRow className="border-b">
+                      <TableHead className="w-12 p-2 font-bold uppercase sm:p-4">×</TableHead>
+                      <TableHead className="w-20 p-2 font-bold uppercase sm:p-4">Year</TableHead>
+                      <TableHead className="p-2 text-right font-bold uppercase sm:p-4">Principal</TableHead>
                       {partPayments.length > 0 && (
-                        <TableCell className="text-right font-bold p-2 sm:p-4" style={{ color: 'hsl(142, 70%, 35%)' }}>
-                          {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
-                        </TableCell>
+                        <TableHead className="p-2 text-right font-bold uppercase sm:p-4">Part Payment</TableHead>
                       )}
-                      <TableCell className="text-right font-bold text-destructive p-2 sm:p-4">
-                        {formatCurrency(yearData.totalInterest)}
-                      </TableCell>
-                      <TableCell className="text-right font-bold p-2 sm:p-4">
-                        {formatCurrency(yearData.totalEmi)}
-                      </TableCell>
-                      <TableCell className="text-right font-bold p-2 sm:p-4" style={{ color: 'hsl(25, 85%, 45%)' }}>
-                        {formatCurrency(yearData.endBalance)}
-                      </TableCell>
-                      <TableCell className="text-right font-bold p-2 sm:p-4">
-                        {yearData.loanPaidPercentage.toFixed(1)}%
-                      </TableCell>
+                      <TableHead className="p-2 text-right font-bold uppercase sm:p-4">Interest</TableHead>
+                      <TableHead className="p-2 text-right font-bold uppercase sm:p-4">EMI</TableHead>
+                      <TableHead className="p-2 text-right font-bold uppercase sm:p-4">Balance</TableHead>
+                      <TableHead className="p-2 text-right font-bold uppercase sm:p-4">Paid %</TableHead>
                     </TableRow>
-                    
-                    {/* Monthly Detail Rows */}
-                    {expandedYears.has(yearData.year) && yearData.months.map((row, monthIndex) => {
-                      // Check if EMI changed (when previous month had reduce-emi part payment)
-                      const previousRow = monthIndex > 0 ? yearData.months[monthIndex - 1] : null;
-                      const emiChanged = previousRow && Math.abs(row.emiAmount - previousRow.emiAmount) > 1;
-                      const emiReduced = emiChanged && row.emiAmount < previousRow!.emiAmount;
-                      
-                      return (
-                        <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background hover:bg-muted/30 transition-colors">
-                          <TableCell className="p-2 sm:p-4"></TableCell>
-                          <TableCell className="text-muted-foreground pl-4 p-2 sm:p-4">
-                            {getFullMonthName(row.month)}
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedYearlyData.map((yearData) => (
+                      <>
+                        {/* Year Summary Row */}
+                        <TableRow 
+                          key={`year-${yearData.year}`}
+                          className="cursor-pointer border-b-2 bg-muted/50 hover:bg-muted/70"
+                          onClick={() => toggleYear(yearData.year)}
+                        >
+                          <TableCell className="p-2 text-center sm:p-4">
+                            {expandedYears.has(yearData.year) ? (
+                              <Minus className="w-4 h-4 text-muted-foreground" />
+                            ) : (
+                              <Plus className="w-4 h-4 text-muted-foreground" />
+                            )}
                           </TableCell>
-                          <TableCell className="text-right text-financial-primary p-2 sm:p-4">
-                            {formatCurrency(row.principalAmount)}
+                          <TableCell className="p-2 font-bold sm:p-4">{yearData.year}</TableCell>
+                          <TableCell className="p-2 text-right font-bold text-financial-primary sm:p-4">
+                            {formatCurrency(yearData.totalPrincipal)}
                           </TableCell>
                           {partPayments.length > 0 && (
-                            <TableCell className="text-right p-2 sm:p-4" style={{ color: 'hsl(142, 70%, 35%)' }}>
-                              {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
+                            <TableCell className="p-2 text-right font-bold sm:p-4" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                              {yearData.totalPartPayment > 0 ? formatCurrency(yearData.totalPartPayment) : '-'}
                             </TableCell>
                           )}
-                          <TableCell className="text-right text-destructive p-2 sm:p-4">
-                            {formatCurrency(row.interestAmount)}
+                          <TableCell className="p-2 text-right font-bold text-destructive sm:p-4">
+                            {formatCurrency(yearData.totalInterest)}
                           </TableCell>
-                          <TableCell className="text-right p-2 sm:p-4">
-                            <div className="flex items-center justify-end gap-2">
-                              {formatCurrency(row.emiAmount)}
-                              {emiReduced && (
-                                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                  <TrendingDown className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                                  <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-                                    EMI ↓
-                                  </span>
-                                </div>
-                              )}
-                            </div>
+                          <TableCell className="p-2 text-right font-bold sm:p-4">
+                            {formatCurrency(yearData.totalEmi)}
                           </TableCell>
-                          <TableCell className="text-right p-2 sm:p-4" style={{ color: 'hsl(25, 85%, 45%)' }}>
-                            {formatCurrency(row.remainingBalance)}
+                          <TableCell className="p-2 text-right font-bold sm:p-4" style={{ color: 'hsl(25, 85%, 45%)' }}>
+                            {formatCurrency(yearData.endBalance)}
                           </TableCell>
-                          <TableCell className="text-right p-2 sm:p-4">
-                            {(((totalPrincipal - row.remainingBalance) / totalPrincipal) * 100).toFixed(1)}%
+                          <TableCell className="p-2 text-right font-bold sm:p-4">
+                            {yearData.loanPaidPercentage.toFixed(1)}%
                           </TableCell>
                         </TableRow>
-                      );
-                    })}
-                  </>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          </div>
+                        
+                        {/* Monthly Detail Rows */}
+                        {expandedYears.has(yearData.year) && yearData.months.map((row, monthIndex) => {
+                          const previousRow = monthIndex > 0 ? yearData.months[monthIndex - 1] : null;
+                          const emiChanged = previousRow && Math.abs(row.emiAmount - previousRow.emiAmount) > 1;
+                          const emiReduced = emiChanged && row.emiAmount < previousRow!.emiAmount;
+                          
+                          return (
+                            <TableRow key={`${yearData.year}-${monthIndex}`} className="bg-background transition-colors hover:bg-muted/30">
+                              <TableCell className="p-2 sm:p-4"></TableCell>
+                              <TableCell className="p-2 pl-4 text-muted-foreground sm:p-4">
+                                {getFullMonthName(row.month)}
+                              </TableCell>
+                              <TableCell className="p-2 text-right text-financial-primary sm:p-4">
+                                {formatCurrency(row.principalAmount)}
+                              </TableCell>
+                              {partPayments.length > 0 && (
+                                <TableCell className="p-2 text-right sm:p-4" style={{ color: 'hsl(142, 70%, 35%)' }}>
+                                  {row.partPayment > 0 ? formatCurrency(row.partPayment) : '-'}
+                                </TableCell>
+                              )}
+                              <TableCell className="p-2 text-right text-destructive sm:p-4">
+                                {formatCurrency(row.interestAmount)}
+                              </TableCell>
+                              <TableCell className="p-2 text-right sm:p-4">
+                                <div className="flex items-center justify-end gap-2">
+                                  {formatCurrency(row.emiAmount)}
+                                  {emiReduced && (
+                                    <div className="flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5">
+                                      <TrendingDown className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                                      <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                        EMI ↓
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell className="p-2 text-right sm:p-4" style={{ color: 'hsl(25, 85%, 45%)' }}>
+                                {formatCurrency(row.remainingBalance)}
+                              </TableCell>
+                              <TableCell className="p-2 text-right sm:p-4">
+                                {(((totalPrincipal - row.remainingBalance) / totalPrincipal) * 100).toFixed(1)}%
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           </div>
           
           {/* Pagination Controls */}
