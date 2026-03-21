@@ -195,11 +195,6 @@ const Index = () => {
           /* Schedule-only view for shared links */
           <>
             <div className="mb-8">
-              <LoanSummaryCards 
-                calculation={calculation} 
-                interestSavings={interestSavings}
-                timeSavings={timeSavings}
-              />
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
