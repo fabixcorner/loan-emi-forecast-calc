@@ -61,9 +61,9 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
 
   // Determine grid columns based on number of cards
   const getGridCols = () => {
-    if (hasPartPayments && timeSavings > 0) return 'grid-cols-2 sm:grid-cols-3 md:grid-cols-5'; // 5 cards for reduce tenure
-    if (hasPartPayments) return 'grid-cols-2 sm:grid-cols-2 md:grid-cols-4'; // 4 cards for reduce EMI
-    return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'; // 3 cards, responsive
+    if (hasPartPayments && timeSavings > 0) return 'grid-cols-1 sm:grid-cols-3 md:grid-cols-5';
+    if (hasPartPayments) return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-4';
+    return 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3';
   };
 
   return (
