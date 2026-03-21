@@ -5,7 +5,7 @@ import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { LoanSummary } from "@/components/LoanSummary";
-import { LoanSummaryCards } from "@/components/LoanSummaryCards";
+
 import { LoanBreakdownChart } from "@/components/LoanBreakdownChart";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
@@ -195,11 +195,6 @@ const Index = () => {
           /* Schedule-only view for shared links */
           <>
             <div className="mb-8">
-              <LoanSummaryCards 
-                calculation={calculation} 
-                interestSavings={interestSavings}
-                timeSavings={timeSavings}
-              />
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
@@ -287,12 +282,6 @@ const Index = () => {
                 <LoanBreakdownChart calculation={calculation} showSchedule={showSchedule} />
               </div>
 
-              {/* Loan Summary Cards */}
-              <LoanSummaryCards 
-                calculation={calculation} 
-                interestSavings={interestSavings} 
-                timeSavings={timeSavings}
-              />
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
@@ -356,12 +345,6 @@ const Index = () => {
 
             {/* Tab 2: EMI Schedule */}
             <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8">
-              {/* Loan Summary Cards */}
-              <LoanSummaryCards 
-                calculation={calculation} 
-                interestSavings={interestSavings} 
-                timeSavings={timeSavings}
-              />
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
