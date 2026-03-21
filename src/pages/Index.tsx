@@ -5,7 +5,7 @@ import calculatorIcon from "@/assets/calculator.png";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { LoanSummary } from "@/components/LoanSummary";
-import { LoanSummaryCards } from "@/components/LoanSummaryCards";
+
 import { LoanBreakdownChart } from "@/components/LoanBreakdownChart";
 import { HowItWorks } from "@/components/HowItWorks";
 import { LoanComparisonSection } from "@/components/LoanComparisonSection";
