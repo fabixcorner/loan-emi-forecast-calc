@@ -116,18 +116,19 @@ export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest:
     head: [['#', 'Month', 'EMI', 'Principal', 'Interest', 'Part Pay', 'Balance']],
     body: tableData,
     theme: 'grid',
-    styles: { fontSize: 7, cellPadding: 1.5 },
+    styles: { fontSize: 7, cellPadding: 2, halign: 'center' },
     headStyles: { fillColor: [66, 139, 202], halign: 'center', cellPadding: 2 },
     columnStyles: {
-      0: { halign: 'center', cellWidth: 8 },
-      1: { halign: 'center', cellWidth: 20 },
-      2: { halign: 'center', cellWidth: 24 },
-      3: { halign: 'center', cellWidth: 24 },
-      4: { halign: 'center', cellWidth: 24 },
-      5: { halign: 'center', cellWidth: 24 },
-      6: { halign: 'center', cellWidth: 28 },
+      0: { halign: 'center', cellWidth: 12 },
+      1: { halign: 'center', cellWidth: 'auto' },
+      2: { halign: 'center', cellWidth: 'auto' },
+      3: { halign: 'center', cellWidth: 'auto' },
+      4: { halign: 'center', cellWidth: 'auto' },
+      5: { halign: 'center', cellWidth: 'auto' },
+      6: { halign: 'center', cellWidth: 'auto' },
     },
     margin: { left: 10, right: 10 },
+    tableWidth: 'auto',
   });
 
   doc.save('EMI_Schedule.pdf');
