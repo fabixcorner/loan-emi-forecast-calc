@@ -355,7 +355,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 2: EMI Schedule */}
-            <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8">
+            <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
