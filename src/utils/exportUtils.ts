@@ -358,13 +358,14 @@ export const exportAffordabilityPDF = (data: AffordabilityData) => {
     head: [['Factor', 'Value']],
     body: breakdownData,
     theme: 'striped',
-    styles: { fontSize: 10 },
-    headStyles: { fillColor: [34, 139, 34] },
+    styles: { fontSize: 10, cellPadding: 3 },
+    headStyles: { fillColor: [34, 139, 34], halign: 'center' },
     columnStyles: {
-      0: { fontStyle: 'normal' },
-      1: { fontStyle: 'bold', halign: 'right' }
+      0: { fontStyle: 'normal', halign: 'center', cellWidth: 'auto' },
+      1: { fontStyle: 'bold', halign: 'center', cellWidth: 'auto' }
     },
     margin: { left: 14, right: 14 },
+    tableWidth: 'auto',
   });
   
   // Assumptions
