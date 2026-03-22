@@ -692,18 +692,19 @@ export const exportDetailedPDFReport = (
     head: [['#', 'Month', 'EMI', 'Principal', 'Interest', 'Part Pay', 'Balance']],
     body: tableData,
     theme: 'striped',
-    styles: { fontSize: 7, cellPadding: 1.5 },
+    styles: { fontSize: 7, cellPadding: 2, halign: 'center' },
     headStyles: { fillColor: [34, 139, 34], halign: 'center', cellPadding: 2 },
     columnStyles: {
-      0: { halign: 'center', cellWidth: 10 },
-      1: { halign: 'center', cellWidth: 20 },
-      2: { halign: 'center', cellWidth: 26 },
-      3: { halign: 'center', cellWidth: 26 },
-      4: { halign: 'center', cellWidth: 26 },
-      5: { halign: 'center', cellWidth: 26 },
-      6: { halign: 'center', cellWidth: 30 },
+      0: { halign: 'center', cellWidth: 12 },
+      1: { halign: 'center', cellWidth: 'auto' },
+      2: { halign: 'center', cellWidth: 'auto' },
+      3: { halign: 'center', cellWidth: 'auto' },
+      4: { halign: 'center', cellWidth: 'auto' },
+      5: { halign: 'center', cellWidth: 'auto' },
+      6: { halign: 'center', cellWidth: 'auto' },
     },
     margin: { left: 10, right: 10 },
+    tableWidth: 'auto',
     didDrawPage: (data) => {
       if (data.pageNumber > 1) {
         doc.setFillColor(34, 139, 34);
