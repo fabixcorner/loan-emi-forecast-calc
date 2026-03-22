@@ -654,17 +654,18 @@ export const exportDetailedPDFReport = (
     head: [['Year', 'Principal', 'Interest', 'Part Pay', 'Balance', 'Paid']],
     body: yearlyTableData,
     theme: 'grid',
-    styles: { fontSize: 7, cellPadding: 1.5 },
+    styles: { fontSize: 7, cellPadding: 2, halign: 'center' },
     headStyles: { fillColor: [34, 139, 34], halign: 'center', cellPadding: 2 },
     columnStyles: {
-      0: { halign: 'center', fontStyle: 'bold', cellWidth: 18 },
-      1: { halign: 'center', cellWidth: 28 },
-      2: { halign: 'center', cellWidth: 28 },
-      3: { halign: 'center', cellWidth: 28 },
-      4: { halign: 'center', cellWidth: 28 },
-      5: { halign: 'center', cellWidth: 20 }
+      0: { halign: 'center', fontStyle: 'bold', cellWidth: 20 },
+      1: { halign: 'center', cellWidth: 'auto' },
+      2: { halign: 'center', cellWidth: 'auto' },
+      3: { halign: 'center', cellWidth: 'auto' },
+      4: { halign: 'center', cellWidth: 'auto' },
+      5: { halign: 'center', cellWidth: 'auto' }
     },
     margin: { left: 14, right: 14 },
+    tableWidth: 'auto',
   });
 
   // ============ PAGE 3+: Detailed Schedule ============
