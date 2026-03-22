@@ -116,18 +116,19 @@ export const exportToPDF = (schedule: ScheduleRow[], emi: number, totalInterest:
     head: [['#', 'Month', 'EMI', 'Principal', 'Interest', 'Part Pay', 'Balance']],
     body: tableData,
     theme: 'grid',
-    styles: { fontSize: 7, cellPadding: 1.5 },
+    styles: { fontSize: 7, cellPadding: 2, halign: 'center' },
     headStyles: { fillColor: [66, 139, 202], halign: 'center', cellPadding: 2 },
     columnStyles: {
-      0: { halign: 'center', cellWidth: 8 },
-      1: { halign: 'center', cellWidth: 20 },
-      2: { halign: 'center', cellWidth: 24 },
-      3: { halign: 'center', cellWidth: 24 },
-      4: { halign: 'center', cellWidth: 24 },
-      5: { halign: 'center', cellWidth: 24 },
-      6: { halign: 'center', cellWidth: 28 },
+      0: { halign: 'center', cellWidth: 12 },
+      1: { halign: 'center', cellWidth: 'auto' },
+      2: { halign: 'center', cellWidth: 'auto' },
+      3: { halign: 'center', cellWidth: 'auto' },
+      4: { halign: 'center', cellWidth: 'auto' },
+      5: { halign: 'center', cellWidth: 'auto' },
+      6: { halign: 'center', cellWidth: 'auto' },
     },
     margin: { left: 10, right: 10 },
+    tableWidth: 'auto',
   });
 
   doc.save('EMI_Schedule.pdf');
@@ -357,13 +358,14 @@ export const exportAffordabilityPDF = (data: AffordabilityData) => {
     head: [['Factor', 'Value']],
     body: breakdownData,
     theme: 'striped',
-    styles: { fontSize: 10 },
-    headStyles: { fillColor: [34, 139, 34] },
+    styles: { fontSize: 10, cellPadding: 3 },
+    headStyles: { fillColor: [34, 139, 34], halign: 'center' },
     columnStyles: {
-      0: { fontStyle: 'normal' },
-      1: { fontStyle: 'bold', halign: 'right' }
+      0: { fontStyle: 'normal', halign: 'center', cellWidth: 'auto' },
+      1: { fontStyle: 'bold', halign: 'center', cellWidth: 'auto' }
     },
     margin: { left: 14, right: 14 },
+    tableWidth: 'auto',
   });
   
   // Assumptions
@@ -616,15 +618,16 @@ export const exportDetailedPDFReport = (
       head: [['#', 'Date', 'Amount', 'Strategy']],
       body: ppTableData,
       theme: 'striped',
-      styles: { fontSize: 7, cellPadding: 1.5 },
+      styles: { fontSize: 7, cellPadding: 2, halign: 'center' },
       headStyles: { fillColor: [34, 139, 34], halign: 'center', cellPadding: 2 },
       columnStyles: {
-        0: { halign: 'center', cellWidth: 10 },
-        1: { halign: 'center', cellWidth: 30 },
-        2: { halign: 'center', cellWidth: 35 },
-        3: { halign: 'center', cellWidth: 30 },
+        0: { halign: 'center', cellWidth: 14 },
+        1: { halign: 'center', cellWidth: 'auto' },
+        2: { halign: 'center', cellWidth: 'auto' },
+        3: { halign: 'center', cellWidth: 'auto' },
       },
       margin: { left: 14, right: 14 },
+      tableWidth: 'auto',
     });
   }
 
@@ -651,17 +654,18 @@ export const exportDetailedPDFReport = (
     head: [['Year', 'Principal', 'Interest', 'Part Pay', 'Balance', 'Paid']],
     body: yearlyTableData,
     theme: 'grid',
-    styles: { fontSize: 7, cellPadding: 1.5 },
+    styles: { fontSize: 7, cellPadding: 2, halign: 'center' },
     headStyles: { fillColor: [34, 139, 34], halign: 'center', cellPadding: 2 },
     columnStyles: {
-      0: { halign: 'center', fontStyle: 'bold', cellWidth: 18 },
-      1: { halign: 'center', cellWidth: 28 },
-      2: { halign: 'center', cellWidth: 28 },
-      3: { halign: 'center', cellWidth: 28 },
-      4: { halign: 'center', cellWidth: 28 },
-      5: { halign: 'center', cellWidth: 20 }
+      0: { halign: 'center', fontStyle: 'bold', cellWidth: 20 },
+      1: { halign: 'center', cellWidth: 'auto' },
+      2: { halign: 'center', cellWidth: 'auto' },
+      3: { halign: 'center', cellWidth: 'auto' },
+      4: { halign: 'center', cellWidth: 'auto' },
+      5: { halign: 'center', cellWidth: 'auto' }
     },
     margin: { left: 14, right: 14 },
+    tableWidth: 'auto',
   });
 
   // ============ PAGE 3+: Detailed Schedule ============
@@ -688,18 +692,19 @@ export const exportDetailedPDFReport = (
     head: [['#', 'Month', 'EMI', 'Principal', 'Interest', 'Part Pay', 'Balance']],
     body: tableData,
     theme: 'striped',
-    styles: { fontSize: 7, cellPadding: 1.5 },
+    styles: { fontSize: 7, cellPadding: 2, halign: 'center' },
     headStyles: { fillColor: [34, 139, 34], halign: 'center', cellPadding: 2 },
     columnStyles: {
-      0: { halign: 'center', cellWidth: 10 },
-      1: { halign: 'center', cellWidth: 20 },
-      2: { halign: 'center', cellWidth: 26 },
-      3: { halign: 'center', cellWidth: 26 },
-      4: { halign: 'center', cellWidth: 26 },
-      5: { halign: 'center', cellWidth: 26 },
-      6: { halign: 'center', cellWidth: 30 },
+      0: { halign: 'center', cellWidth: 12 },
+      1: { halign: 'center', cellWidth: 'auto' },
+      2: { halign: 'center', cellWidth: 'auto' },
+      3: { halign: 'center', cellWidth: 'auto' },
+      4: { halign: 'center', cellWidth: 'auto' },
+      5: { halign: 'center', cellWidth: 'auto' },
+      6: { halign: 'center', cellWidth: 'auto' },
     },
     margin: { left: 10, right: 10 },
+    tableWidth: 'auto',
     didDrawPage: (data) => {
       if (data.pageNumber > 1) {
         doc.setFillColor(34, 139, 34);
