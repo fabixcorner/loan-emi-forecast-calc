@@ -618,15 +618,16 @@ export const exportDetailedPDFReport = (
       head: [['#', 'Date', 'Amount', 'Strategy']],
       body: ppTableData,
       theme: 'striped',
-      styles: { fontSize: 7, cellPadding: 1.5 },
+      styles: { fontSize: 7, cellPadding: 2, halign: 'center' },
       headStyles: { fillColor: [34, 139, 34], halign: 'center', cellPadding: 2 },
       columnStyles: {
-        0: { halign: 'center', cellWidth: 10 },
-        1: { halign: 'center', cellWidth: 30 },
-        2: { halign: 'center', cellWidth: 35 },
-        3: { halign: 'center', cellWidth: 30 },
+        0: { halign: 'center', cellWidth: 14 },
+        1: { halign: 'center', cellWidth: 'auto' },
+        2: { halign: 'center', cellWidth: 'auto' },
+        3: { halign: 'center', cellWidth: 'auto' },
       },
       margin: { left: 14, right: 14 },
+      tableWidth: 'auto',
     });
   }
 
