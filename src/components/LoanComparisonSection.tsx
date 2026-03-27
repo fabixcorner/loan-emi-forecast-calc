@@ -118,14 +118,20 @@ export const LoanComparisonSection = ({
   const [interestWeight, setInterestWeight] = useState(50);
   const tenureWeight = 100 - emiWeight - interestWeight;
 
-  // Update base scenario when props change
+  // Update base scenario when props change - only if values actually differ
   useEffect(() => {
-    setScenarios(prev => prev.map(s => 
-      s.id === "base" 
-        ? { ...s, loanAmount: baseAmount, interestRate: baseRate, loanTenure: baseTenure }
-        : s
-    ));
-  }, [baseAmount, baseRate, baseTenure, basePartPayments]);
+    setScenarios(prev => {
+      const base = prev.find(s => s.id === "base");
+      if (base && base.loanAmount === baseAmount && base.interestRate === baseRate && base.loanTenure === baseTenure) {
+        return prev; // No change needed, avoid re-render
+      }
+      return prev.map(s => 
+        s.id === "base" 
+          ? { ...s, loanAmount: baseAmount, interestRate: baseRate, loanTenure: baseTenure }
+          : s
+      );
+    });
+  }, [baseAmount, baseRate, baseTenure]);
 
   // Calculate results for all scenarios - no part payments for fair comparison
   useEffect(() => {

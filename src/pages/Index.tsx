@@ -380,7 +380,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 3: Compare Loan Scenarios */}
-            <TabsContent value="compare-scenarios" className="w-full max-w-4xl mx-auto space-y-8">
+            <TabsContent value="compare-scenarios" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
               <LoanComparisonSection
                 baseAmount={loanAmount}
                 baseRate={interestRate}
@@ -392,7 +392,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 4: Loan Affordability */}
-            <TabsContent value="loan-affordability" className="w-full max-w-4xl mx-auto space-y-8">
+            <TabsContent value="loan-affordability" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
               <LoanAffordabilityCalculator />
             </TabsContent>
           </Tabs>
