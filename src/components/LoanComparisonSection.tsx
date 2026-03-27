@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { Plus, Trash2, TrendingDown, Clock, IndianRupee, Percent, Award, Trophy, Zap } from "lucide-react";
+import { Plus, Trash2, TrendingDown, Clock, IndianRupee, Percent, Award, Trophy, Zap, SlidersHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { PartPayment } from "./PartPaymentSection";
 
@@ -112,6 +113,10 @@ export const LoanComparisonSection = ({
   }, [scenarios]);
 
   const [results, setResults] = useState<Record<string, ScenarioResult>>({});
+  const [showWeights, setShowWeights] = useState(false);
+  const [emiWeight, setEmiWeight] = useState(30);
+  const [interestWeight, setInterestWeight] = useState(50);
+  const tenureWeight = 100 - emiWeight - interestWeight;
 
   // Update base scenario when props change
   useEffect(() => {
@@ -186,11 +191,9 @@ export const LoanComparisonSection = ({
   const bestTenure = getBestForMetric('tenureMonths');
 
   // Calculate weighted scores for overall winner
-  // Weights: EMI (30%), Interest (50%), Tenure (20%)
   const calculateWeightedScore = () => {
     if (scenarios.length <= 1 || Object.keys(results).length === 0) return null;
 
-    // Find min/max for normalization
     const allResults = scenarios.map(s => results[s.id]).filter(Boolean);
     if (allResults.length === 0) return null;
 
@@ -203,17 +206,19 @@ export const LoanComparisonSection = ({
 
     const scores: Record<string, { score: number; breakdown: { emi: number; interest: number; tenure: number } }> = {};
 
+    const emiW = emiWeight / 100;
+    const intW = interestWeight / 100;
+    const tenW = tenureWeight / 100;
+
     scenarios.forEach(scenario => {
       const result = results[scenario.id];
       if (!result) return;
 
-      // Normalize scores (0-100, lower is better for all metrics)
       const emiScore = maxEMI === minEMI ? 100 : 100 - ((result.emi - minEMI) / (maxEMI - minEMI)) * 100;
       const interestScore = maxInterest === minInterest ? 100 : 100 - ((result.totalInterest - minInterest) / (maxInterest - minInterest)) * 100;
       const tenureScore = maxTenure === minTenure ? 100 : 100 - ((result.tenureMonths - minTenure) / (maxTenure - minTenure)) * 100;
 
-      // Weighted score
-      const weightedScore = (emiScore * 0.3) + (interestScore * 0.5) + (tenureScore * 0.2);
+      const weightedScore = (emiScore * emiW) + (interestScore * intW) + (tenureScore * tenW);
 
       scores[scenario.id] = {
         score: weightedScore,
@@ -259,6 +264,71 @@ export const LoanComparisonSection = ({
         <p className="text-xs text-muted-foreground mb-3 italic">
           Note: Part payments are excluded from all scenarios for fair comparison.
         </p>
+
+        {/* Customizable Weights */}
+        {scenarios.length > 1 && (
+          <div className="mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowWeights(!showWeights)}
+              className="gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-2"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              {showWeights ? 'Hide' : 'Customize'} Scoring Weights
+            </Button>
+            {showWeights && (
+              <div className="p-3 rounded-lg border border-border bg-muted/20 space-y-3 animate-fade-in">
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-xs text-muted-foreground">EMI Weight</Label>
+                    <span className="text-xs font-medium text-foreground">{emiWeight}%</span>
+                  </div>
+                  <Slider
+                    value={[emiWeight]}
+                    onValueChange={([v]) => {
+                      const maxAllowed = 100 - interestWeight;
+                      setEmiWeight(Math.min(v, maxAllowed));
+                    }}
+                    max={100 - interestWeight}
+                    min={0}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <Label className="text-xs text-muted-foreground">Interest Weight</Label>
+                    <span className="text-xs font-medium text-foreground">{interestWeight}%</span>
+                  </div>
+                  <Slider
+                    value={[interestWeight]}
+                    onValueChange={([v]) => {
+                      const maxAllowed = 100 - emiWeight;
+                      setInterestWeight(Math.min(v, maxAllowed));
+                    }}
+                    max={100 - emiWeight}
+                    min={0}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-between items-center pt-1 border-t border-border">
+                  <Label className="text-xs text-muted-foreground">Tenure Weight</Label>
+                  <span className={`text-xs font-medium ${tenureWeight < 0 ? 'text-destructive' : 'text-foreground'}`}>{tenureWeight}%</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setEmiWeight(30); setInterestWeight(50); }}
+                  className="text-xs h-7"
+                >
+                  Reset to Defaults
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
         <div className={`grid gap-3 ${scenarios.length === 2 ? 'grid-cols-1 md:grid-cols-2' : scenarios.length === 3 ? 'grid-cols-1 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4'}`}>
           {scenarios.map((scenario, index) => (
             <div 
@@ -430,19 +500,19 @@ export const LoanComparisonSection = ({
                 <div className="hidden md:block w-px bg-border" />
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div>
-                    <p className="text-[10px] text-muted-foreground uppercase">EMI (30%)</p>
+                    <p className="text-[10px] text-muted-foreground uppercase">EMI ({emiWeight}%)</p>
                     <p className="text-sm font-medium text-foreground">
                       {weightedResults.scores[weightedResults.winnerId]?.breakdown.emi.toFixed(0)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-muted-foreground uppercase">Interest (50%)</p>
+                    <p className="text-[10px] text-muted-foreground uppercase">Interest ({interestWeight}%)</p>
                     <p className="text-sm font-medium text-foreground">
                       {weightedResults.scores[weightedResults.winnerId]?.breakdown.interest.toFixed(0)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-muted-foreground uppercase">Tenure (20%)</p>
+                    <p className="text-[10px] text-muted-foreground uppercase">Tenure ({tenureWeight}%)</p>
                     <p className="text-sm font-medium text-foreground">
                       {weightedResults.scores[weightedResults.winnerId]?.breakdown.tenure.toFixed(0)}
                     </p>
@@ -452,7 +522,7 @@ export const LoanComparisonSection = ({
             </div>
             
             <p className="text-xs text-muted-foreground mt-3 italic">
-              Weighted scoring: EMI (30%) + Interest Savings (50%) + Tenure (20%). Higher score = better overall value.
+              Weighted scoring: EMI ({emiWeight}%) + Interest Savings ({interestWeight}%) + Tenure ({tenureWeight}%). Higher score = better overall value.
             </p>
           </div>
         )}
