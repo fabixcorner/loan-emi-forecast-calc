@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
+import { UserMenu } from "@/components/UserMenu";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { LoanSummary } from "@/components/LoanSummary";
@@ -89,6 +90,57 @@ const Index = () => {
   const [showSchedule, setShowSchedule] = useState(false);
   const [activeTab, setActiveTab] = useState("loan-details");
   const [showPartPayments, setShowPartPayments] = useState(false);
+
+  // Get current data for saving
+  const getCurrentData = useCallback(() => {
+    // Read comparison scenarios from localStorage
+    const savedScenarios = localStorage.getItem('loan-comparison-scenarios');
+    let comparisonScenarios: any[] = [];
+    try {
+      if (savedScenarios) comparisonScenarios = JSON.parse(savedScenarios);
+    } catch {}
+
+    // Read affordability inputs from localStorage
+    const savedAffordability = localStorage.getItem('loan-affordability-values');
+    let affordabilityInputs = {};
+    try {
+      if (savedAffordability) affordabilityInputs = JSON.parse(savedAffordability);
+    } catch {}
+
+    return {
+      loanAmount,
+      interestRate,
+      loanTenure,
+      startMonth,
+      startYear,
+      partPayments,
+      comparisonScenarios,
+      scoringWeights: { emiWeight: 30, interestWeight: 50 }, // default, will be overridden by component state
+      affordabilityInputs,
+    };
+  }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
+
+  // Load saved calculation
+  const handleLoadCalculation = useCallback((data: any) => {
+    setLoanAmount(data.loanAmount);
+    setInterestRate(data.interestRate);
+    setLoanTenure(data.loanTenure);
+    setStartMonth(data.startMonth);
+    setStartYear(data.startYear);
+    setPartPayments(data.partPayments || []);
+
+    // Save comparison scenarios to localStorage for the component to pick up
+    if (data.comparisonScenarios && Array.isArray(data.comparisonScenarios)) {
+      localStorage.setItem('loan-comparison-scenarios', JSON.stringify(data.comparisonScenarios));
+    }
+
+    // Save affordability inputs to localStorage
+    if (data.affordabilityInputs && typeof data.affordabilityInputs === 'object' && Object.keys(data.affordabilityInputs).length > 0) {
+      localStorage.setItem('loan-affordability-values', JSON.stringify(data.affordabilityInputs));
+    }
+
+    setActiveTab("loan-details");
+  }, []);
 
 
   // Load data from URL parameters on mount
@@ -183,6 +235,10 @@ const Index = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
+              <UserMenu
+                onLoadCalculation={handleLoadCalculation}
+                getCurrentData={getCurrentData}
+              />
               <ThemeToggle />
               <HowItWorks />
             </div>
