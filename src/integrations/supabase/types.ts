@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_calculations: {
+        Row: {
+          affordability_inputs: Json | null
+          comparison_scenarios: Json | null
+          created_at: string
+          id: string
+          interest_rate: number
+          loan_amount: number
+          loan_tenure: number
+          name: string
+          part_payments: Json | null
+          scoring_weights: Json | null
+          start_month: number
+          start_year: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          affordability_inputs?: Json | null
+          comparison_scenarios?: Json | null
+          created_at?: string
+          id?: string
+          interest_rate: number
+          loan_amount: number
+          loan_tenure: number
+          name: string
+          part_payments?: Json | null
+          scoring_weights?: Json | null
+          start_month: number
+          start_year: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          affordability_inputs?: Json | null
+          comparison_scenarios?: Json | null
+          created_at?: string
+          id?: string
+          interest_rate?: number
+          loan_amount?: number
+          loan_tenure?: number
+          name?: string
+          part_payments?: Json | null
+          scoring_weights?: Json | null
+          start_month?: number
+          start_year?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
