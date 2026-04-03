@@ -1,20 +1,37 @@
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
-    <Button
-      variant="outline"
-      size="icon"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="relative h-10 w-10 rounded-full border-2 border-border bg-card/80 backdrop-blur-sm hover:bg-muted transition-all duration-300"
+    <button
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      className="relative h-9 w-[4.5rem] rounded-full bg-muted/80 border border-border shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)] transition-all duration-300 flex items-center px-1"
+      aria-label="Toggle theme"
     >
-      <Sun className="h-5 w-5 rotate-0 scale-100 transition-all duration-300 dark:-rotate-90 dark:scale-0 text-amber-500" />
-      <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all duration-300 dark:rotate-0 dark:scale-100 text-blue-400" />
-      <span className="sr-only">Toggle theme</span>
-    </Button>
+      {/* Sliding knob */}
+      <span
+        className={`absolute top-0.5 h-7 w-7 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.25)] transition-all duration-300 flex items-center justify-center ${
+          isDark
+            ? "translate-x-[calc(100%+0.5rem)] bg-slate-700"
+            : "translate-x-0 bg-white"
+        }`}
+      >
+        {isDark ? (
+          <Moon className="h-4 w-4 text-blue-300" />
+        ) : (
+          <Sun className="h-4 w-4 text-amber-500" />
+        )}
+      </span>
+      {/* Background icons */}
+      <span className="absolute left-2 top-1/2 -translate-y-1/2">
+        <Sun className={`h-3.5 w-3.5 transition-opacity ${isDark ? "opacity-30 text-muted-foreground" : "opacity-0"}`} />
+      </span>
+      <span className="absolute right-2 top-1/2 -translate-y-1/2">
+        <Moon className={`h-3.5 w-3.5 transition-opacity ${isDark ? "opacity-0" : "opacity-30 text-muted-foreground"}`} />
+      </span>
+    </button>
   );
 }

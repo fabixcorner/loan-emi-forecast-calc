@@ -235,12 +235,12 @@ const Index = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
+              <HowItWorks />
+              <ThemeToggle />
               <UserMenu
                 onLoadCalculation={handleLoadCalculation}
                 getCurrentData={getCurrentData}
               />
-              <ThemeToggle />
-              <HowItWorks />
             </div>
           </div>
         </div>

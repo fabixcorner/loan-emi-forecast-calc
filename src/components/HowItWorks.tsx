@@ -129,12 +129,11 @@ export const HowItWorks = () => {
     <>
       <Button
         variant="ghost"
-        size="sm"
+        size="icon"
         onClick={() => setIsOpen(true)}
-        className="text-foreground hover:bg-muted text-center leading-tight sm:leading-normal h-auto py-1 sm:py-2"
+        className="text-foreground hover:bg-muted h-9 w-9 rounded-full"
       >
-        <HelpCircle className="sm:mr-2 h-5 w-5 sm:h-4 sm:w-4 flex-shrink-0" />
-        <span className="hidden sm:inline whitespace-nowrap">How it works?</span>
+        <HelpCircle className="h-7 w-7 flex-shrink-0" />
       </Button>
 
       {isOpen && createPortal(
