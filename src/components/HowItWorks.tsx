@@ -129,9 +129,9 @@ export const HowItWorks = () => {
     <>
       <Button
         variant="ghost"
-        size="sm"
+        size="icon"
         onClick={() => setIsOpen(true)}
-        className="text-foreground hover:bg-muted text-center leading-tight sm:leading-normal h-auto py-1 sm:py-2"
+        className="text-foreground hover:bg-muted h-9 w-9 rounded-full"
       >
         <HelpCircle className="h-7 w-7 flex-shrink-0" />
       </Button>
