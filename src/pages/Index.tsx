@@ -456,6 +456,9 @@ const Index = () => {
         )}
       </div>
 
+      {/* Feedback Section */}
+      <FeedbackSection />
+
       {/* Footer */}
       <Footer />
     </div>
