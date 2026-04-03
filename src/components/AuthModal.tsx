@@ -212,6 +212,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
           )}
         </CardContent>
       </Card>
-    </div>
+    </div>,
+    document.body
   );
 };
