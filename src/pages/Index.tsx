@@ -13,6 +13,7 @@ import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import { LoanAffordabilityCalculator } from "@/components/LoanAffordabilityCalculator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Footer } from "@/components/Footer";
+import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
