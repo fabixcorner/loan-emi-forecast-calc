@@ -80,7 +80,6 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
   };
 
-  return (
   return createPortal(
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4" onClick={onClose}>
       <Card className="w-full max-w-md bg-card border-border shadow-2xl animate-fade-in relative" onClick={(e) => e.stopPropagation()}>
