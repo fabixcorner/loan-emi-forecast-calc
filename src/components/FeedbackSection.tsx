@@ -116,7 +116,6 @@ export const FeedbackSection = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="fb-name">Name <span className="text-destructive">*</span></Label>
                 <Input
                   id="fb-name"
                   placeholder="Your name"
@@ -127,7 +126,6 @@ export const FeedbackSection = () => {
                 {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="fb-email">Email <span className="text-destructive">*</span></Label>
                 <Input
                   id="fb-email"
                   type="email"
@@ -140,7 +138,6 @@ export const FeedbackSection = () => {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="fb-feedback">Feedback <span className="text-destructive">*</span></Label>
               <Textarea
                 id="fb-feedback"
                 placeholder="Share your experience, suggestions, or report any issues..."
