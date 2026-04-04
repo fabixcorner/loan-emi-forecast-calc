@@ -55,15 +55,15 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
         <CardTitle className="text-xl font-semibold">Loan Breakdown</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-80">
+        <div className="h-96">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={pieChartData}
                 cx="50%"
-                cy="45%"
-                innerRadius={55}
-                outerRadius={110}
+                cy="42%"
+                innerRadius={60}
+                outerRadius={120}
                 paddingAngle={5}
                 dataKey="value"
                 onMouseEnter={(_, index) => setHoveredIndex(index)}
@@ -98,6 +98,7 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
                 layout="vertical"
                 align="center"
                 verticalAlign="bottom"
+                wrapperStyle={{ paddingTop: 16 }}
                 formatter={(value, entry) => (
                   <span style={{ color: entry.color }}>
                     {value}: {formatCurrency(entry.payload.value)}
