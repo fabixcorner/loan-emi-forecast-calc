@@ -95,6 +95,9 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
                 }}
               />
               <Legend 
+                layout="vertical"
+                align="center"
+                verticalAlign="bottom"
                 formatter={(value, entry) => (
                   <span style={{ color: entry.color }}>
                     {value}: {formatCurrency(entry.payload.value)}
