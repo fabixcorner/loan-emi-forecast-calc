@@ -61,9 +61,9 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
               <Pie
                 data={pieChartData}
                 cx="50%"
-                cy="42%"
-                innerRadius={60}
-                outerRadius={120}
+                cy="38%"
+                innerRadius={55}
+                outerRadius={105}
                 paddingAngle={5}
                 dataKey="value"
                 onMouseEnter={(_, index) => setHoveredIndex(index)}
