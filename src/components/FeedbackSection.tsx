@@ -138,7 +138,6 @@ export const FeedbackSection = () => {
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="fb-feedback">Feedback <span className="text-destructive">*</span></Label>
               <Textarea
                 id="fb-feedback"
                 placeholder="Share your experience, suggestions, or report any issues..."
