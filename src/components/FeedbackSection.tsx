@@ -126,7 +126,6 @@ export const FeedbackSection = () => {
                 {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="fb-email">Email <span className="text-destructive">*</span></Label>
                 <Input
                   id="fb-email"
                   type="email"
