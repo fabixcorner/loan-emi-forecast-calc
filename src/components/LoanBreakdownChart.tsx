@@ -54,8 +54,8 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
       <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
         <CardTitle className="text-xl font-semibold">Loan Breakdown</CardTitle>
       </CardHeader>
-      <CardContent className="pt-8">
-        <div className="h-80">
+      <CardContent className="pt-4">
+        <div className="h-[340px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
