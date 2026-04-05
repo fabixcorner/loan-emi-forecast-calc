@@ -55,7 +55,7 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
         <CardTitle className="text-xl font-semibold">Loan Breakdown</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-80 pt-4">
+        <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
