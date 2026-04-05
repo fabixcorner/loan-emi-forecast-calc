@@ -61,7 +61,7 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
               <Pie
                 data={pieChartData}
                 cx="50%"
-                cy="42%"
+                cy="48%"
                 innerRadius={60}
                 outerRadius={120}
                 paddingAngle={5}
