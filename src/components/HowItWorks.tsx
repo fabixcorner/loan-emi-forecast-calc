@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { HelpCircle, X, Calendar, TrendingDown, Wallet, ArrowLeft, Scale, Calculator } from "lucide-react";
+import { CircleHelp, X, Calendar, TrendingDown, Wallet, ArrowLeft, Scale, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Question {
