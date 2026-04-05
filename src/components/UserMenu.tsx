@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Save, FolderOpen, LogIn } from "lucide-react";
+import { User, LogOut, Save, FolderOpen } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "./AuthModal";
 import { SaveLoadModal } from "./SaveLoadModal";
