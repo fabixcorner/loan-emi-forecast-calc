@@ -131,9 +131,9 @@ export const HowItWorks = () => {
         variant="ghost"
         size="icon"
         onClick={() => setIsOpen(true)}
-        className="text-foreground hover:bg-muted h-9 w-9 rounded-full"
+        className="h-9 w-9 rounded-full p-0 hover:bg-transparent"
       >
-        <span className="h-7 w-7 rounded-full bg-foreground flex items-center justify-center text-background font-bold text-lg leading-none">?</span>
+        <span className="h-7 w-7 rounded-full bg-financial-primary flex items-center justify-center text-white font-bold text-lg leading-none shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)]">?</span>
       </Button>
 
       {isOpen && createPortal(
