@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { HelpCircle, X, Calendar, TrendingDown, Wallet, ArrowLeft, Scale, Calculator } from "lucide-react";
+import { CircleHelp, X, Calendar, TrendingDown, Wallet, ArrowLeft, Scale, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Question {
@@ -133,7 +133,7 @@ export const HowItWorks = () => {
         onClick={() => setIsOpen(true)}
         className="text-foreground hover:bg-muted h-9 w-9 rounded-full"
       >
-        <HelpCircle className="h-7 w-7 flex-shrink-0" />
+        <CircleHelp className="h-7 w-7 flex-shrink-0" fill="currentColor" stroke="hsl(var(--background))" />
       </Button>
 
       {isOpen && createPortal(
