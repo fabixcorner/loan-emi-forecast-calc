@@ -30,10 +30,9 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData }: UserMenuProps) =
       <>
         <Button
           onClick={() => setShowAuthModal(true)}
-          className="gap-1.5 text-sm font-semibold rounded-full px-5 py-2 h-9 bg-gradient-to-b from-financial-primary to-financial-primary/80 text-white shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:brightness-110 transition-all duration-200 border-0"
+          className="text-sm font-semibold rounded-full px-5 py-2 h-9 bg-gradient-to-b from-financial-primary to-financial-primary/80 text-white shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:brightness-110 transition-all duration-200 border-0"
         >
-          <LogIn className="w-4 h-4" />
-          <span>Sign-in</span>
+          <span>Login</span>
         </Button>
         <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
       </>
