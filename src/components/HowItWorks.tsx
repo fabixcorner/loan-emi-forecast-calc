@@ -133,7 +133,7 @@ export const HowItWorks = () => {
         onClick={() => setIsOpen(true)}
         className="text-foreground hover:bg-muted h-9 w-9 rounded-full"
       >
-        <span className="h-7 w-7 rounded-full bg-current flex items-center justify-center text-background font-bold text-lg leading-none">?</span>
+        <span className="h-7 w-7 rounded-full bg-foreground flex items-center justify-center text-background font-bold text-lg leading-none">?</span>
       </Button>
 
       {isOpen && createPortal(
