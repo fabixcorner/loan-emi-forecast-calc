@@ -133,7 +133,7 @@ export const HowItWorks = () => {
         onClick={() => setIsOpen(true)}
         className="text-foreground hover:bg-muted h-9 w-9 rounded-full"
       >
-        <CircleHelp className="h-7 w-7 flex-shrink-0" fill="currentColor" stroke="hsl(var(--background))" />
+        <CircleHelp className="h-7 w-7 flex-shrink-0" fill="currentColor" stroke="hsl(var(--background))" strokeWidth={2.5} />
       </Button>
 
       {isOpen && createPortal(
