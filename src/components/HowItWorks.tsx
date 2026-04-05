@@ -127,14 +127,13 @@ export const HowItWorks = () => {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
+      <button
         onClick={() => setIsOpen(true)}
-        className="h-9 w-9 rounded-full p-0 hover:bg-transparent"
+        className="h-9 w-9 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
+        aria-label="How It Works"
       >
-        <span className="h-7 w-7 rounded-full bg-financial-primary flex items-center justify-center text-white font-bold text-lg leading-none shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)]">?</span>
-      </Button>
+        <span className="h-7 w-7 rounded-full flex items-center justify-center text-white font-bold text-lg leading-none shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)]" style={{ backgroundColor: 'hsl(220, 50%, 25%)' }}>?</span>
+      </button>
 
       {isOpen && createPortal(
         <>
