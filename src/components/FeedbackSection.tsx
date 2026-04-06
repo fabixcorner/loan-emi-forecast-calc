@@ -141,10 +141,15 @@ export const FeedbackSection = () => {
                   placeholder="Feedback / Suggestions / Report any issues"
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
-                  maxLength={2000}
+                  maxLength={1000}
                   className="flex-1 resize-none"
                 />
-                {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
+                <div className="flex justify-between items-center">
+                  {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
+                  <p className={`text-xs ml-auto ${feedback.length > 900 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                    {1000 - feedback.length} characters remaining
+                  </p>
+                </div>
               </div>
             </div>
             <div className="flex justify-start">
