@@ -141,18 +141,16 @@ export const Footer = () => {
                   >
                     {openItem.content}
                   </a>
+                ) : Array.isArray(openItem.content) ? (
+                  <ul className="list-disc list-outside pl-5 space-y-2">
+                    {openItem.content.map((item, i) => (
+                      <li key={i} className="text-sm text-white/80 leading-relaxed">{item}</li>
+                    ))}
+                  </ul>
                 ) : (
-                  {Array.isArray(openItem.content) ? (
-                    <ul className="list-disc list-outside pl-5 space-y-2">
-                      {openItem.content.map((item, i) => (
-                        <li key={i} className="text-sm text-white/80 leading-relaxed">{item}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-sm text-white/80 leading-relaxed">
-                      {openItem.content}
-                    </p>
-                  )}
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    {openItem.content}
+                  </p>
                 )}
               </div>
             </div>
