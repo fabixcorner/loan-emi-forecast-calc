@@ -109,10 +109,10 @@ export const FeedbackSection = () => {
         <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
           <CardTitle className="text-xl font-semibold">Share Your Feedback</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-4">
+              <div className="flex flex-col gap-4">
                 <div className="space-y-1.5">
                   <Input
                     id="fb-name"
@@ -135,14 +135,14 @@ export const FeedbackSection = () => {
                   {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
                 </div>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 flex flex-col">
                 <Textarea
                   id="fb-feedback"
                   placeholder="Feedback / Suggestions / Report any issues"
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   maxLength={2000}
-                  className="min-h-[88px] max-h-[88px] resize-none"
+                  className="flex-1 resize-none"
                 />
                 {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
               </div>
@@ -162,7 +162,7 @@ export const FeedbackSection = () => {
         <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
           <CardTitle className="text-xl font-semibold">Recent Feedback</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5">
           {loading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
