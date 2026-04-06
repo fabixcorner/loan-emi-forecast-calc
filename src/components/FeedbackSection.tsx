@@ -115,40 +115,42 @@ export const FeedbackSection = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Input
-                  id="fb-name"
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  maxLength={100}
-                />
-                {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Input
+                    id="fb-name"
+                    placeholder="Your Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    maxLength={100}
+                  />
+                  {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+                </div>
+                <div className="space-y-1.5">
+                  <Input
+                    id="fb-email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    maxLength={255}
+                  />
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                </div>
               </div>
               <div className="space-y-1.5">
-                <Input
-                  id="fb-email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  maxLength={255}
+                <Textarea
+                  id="fb-feedback"
+                  placeholder="Feedback / Suggestions / Report any issues"
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  maxLength={2000}
+                  className="h-full min-h-[120px]"
                 />
-                {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+                {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
               </div>
             </div>
-            <div className="space-y-1.5">
-              <Textarea
-                id="fb-feedback"
-                placeholder="Share your experience, suggestions, or report any issues..."
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-                maxLength={2000}
-                rows={3}
-              />
-              {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
-            </div>
-            <div className="flex justify-end">
+            <div className="flex justify-start">
               <Button type="submit" disabled={submitting} className="gap-2">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 Submit Feedback
