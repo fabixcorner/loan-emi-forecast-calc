@@ -105,12 +105,9 @@ export const FeedbackSection = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 py-8">
-      <Card className="border-border/50 shadow-lg">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <MessageSquare className="h-5 w-5 text-primary" />
-            Share Your Feedback
-          </CardTitle>
+      <Card className="border-border shadow-card">
+        <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
+          <CardTitle className="text-xl font-semibold">Share Your Feedback</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -145,7 +142,7 @@ export const FeedbackSection = () => {
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   maxLength={2000}
-                  className="h-full min-h-[120px]"
+                  className="min-h-[88px] max-h-[88px] resize-none"
                 />
                 {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
               </div>
@@ -161,9 +158,9 @@ export const FeedbackSection = () => {
       </Card>
 
       {/* Feedback List */}
-      <Card className="border-border/50 shadow-lg">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold">Recent Feedback</CardTitle>
+      <Card className="border-border shadow-card">
+        <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
+          <CardTitle className="text-xl font-semibold">Recent Feedback</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
