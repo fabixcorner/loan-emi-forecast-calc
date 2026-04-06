@@ -162,7 +162,7 @@ export const FeedbackSection = () => {
         <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
           <CardTitle className="text-xl font-semibold">Recent Feedback</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5">
           {loading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
