@@ -112,7 +112,7 @@ export const FeedbackSection = () => {
         <CardContent className="pt-5">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 <div className="space-y-1.5">
                   <Input
                     id="fb-name"
