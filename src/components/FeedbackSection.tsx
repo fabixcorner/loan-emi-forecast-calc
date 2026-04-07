@@ -135,22 +135,22 @@ export const FeedbackSection = () => {
                   {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
                 </div>
               </div>
-              <div className="space-y-1.5 flex flex-col">
+              <div className="space-y-1.5">
                 <Textarea
                   id="fb-feedback"
                   placeholder="Feedback / Suggestions / Report any issues"
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   maxLength={1000}
-                  className="flex-1 resize-none"
+                  className="min-h-[88px] max-h-[88px] resize-none"
                 />
-                <div className="flex justify-between items-center">
-                  {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
-                  <p className={`text-xs ml-auto ${feedback.length > 900 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                    {1000 - feedback.length} characters remaining
-                  </p>
-                </div>
+                {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
               </div>
+            </div>
+            <div className="flex justify-end">
+              <p className={`text-xs ${feedback.length > 900 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {1000 - feedback.length} characters remaining
+              </p>
             </div>
             <div className="flex justify-start">
               <Button type="submit" disabled={submitting} className="gap-2">
