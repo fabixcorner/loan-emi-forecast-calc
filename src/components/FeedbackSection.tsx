@@ -109,8 +109,8 @@ export const FeedbackSection = () => {
         <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
           <CardTitle className="text-xl font-semibold">Share Your Feedback</CardTitle>
         </CardHeader>
-        <CardContent className="pt-5">
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <CardContent className="pt-4 pb-4">
+          <form onSubmit={handleSubmit} className="space-y-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
                 <div className="space-y-1.5">
@@ -147,16 +147,14 @@ export const FeedbackSection = () => {
                 {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
               </div>
             </div>
-            <div className="flex justify-end">
-              <p className={`text-xs ${feedback.length > 900 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                {1000 - feedback.length} characters remaining
-              </p>
-            </div>
-            <div className="flex justify-start">
+            <div className="flex justify-between items-center">
               <Button type="submit" disabled={submitting} className="gap-2">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 Submit Feedback
               </Button>
+              <p className={`text-xs ${feedback.length > 900 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {1000 - feedback.length} characters remaining
+              </p>
             </div>
           </form>
         </CardContent>
