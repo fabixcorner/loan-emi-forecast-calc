@@ -176,19 +176,21 @@ export const FeedbackSection = () => {
             </p>
           ) : (
             <div className="space-y-3">
+              <div className="grid grid-cols-[140px_1fr] gap-x-4 text-xs font-semibold text-muted-foreground uppercase tracking-wide px-3 pb-1">
+                <span>User</span>
+                <span>Feedback</span>
+              </div>
               {feedbackList.map((entry, idx) => (
                 <div
                   key={entry.id}
-                  className="p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in"
+                  className="grid grid-cols-[140px_1fr] gap-x-4 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start"
                   style={{ animationDelay: `${idx * 60}ms` }}
                 >
-                  <div className="flex gap-4">
-                    <div className="shrink-0">
-                      <span className="font-medium text-sm">{entry.name}</span>
-                      <div className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</div>
-                    </div>
-                    <p className="text-sm text-foreground/80 flex-1">{entry.feedback}</p>
+                  <div className="shrink-0">
+                    <span className="font-medium text-sm">{entry.name}</span>
+                    <div className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</div>
                   </div>
+                  <p className="text-sm text-foreground/80">{entry.feedback}</p>
                 </div>
               ))}
             </div>
