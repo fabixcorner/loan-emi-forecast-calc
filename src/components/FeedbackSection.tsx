@@ -47,7 +47,7 @@ export const FeedbackSection = () => {
       supabase.from("user_feedback").select("*", { count: "exact", head: true }),
       supabase
         .from("user_feedback")
-        .select("*")
+        .select("id, name, feedback, created_at")
         .order("created_at", { ascending: false })
         .range(from, to),
     ]);
