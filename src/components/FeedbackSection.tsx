@@ -182,11 +182,13 @@ export const FeedbackSection = () => {
                   className="p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in"
                   style={{ animationDelay: `${idx * 60}ms` }}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="font-medium text-sm">{entry.name}</span>
-                    <span className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</span>
+                  <div className="flex gap-4">
+                    <div className="shrink-0">
+                      <span className="font-medium text-sm">{entry.name}</span>
+                      <div className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</div>
+                    </div>
+                    <p className="text-sm text-foreground/80 flex-1">{entry.feedback}</p>
                   </div>
-                  <p className="text-sm text-foreground/80">{entry.feedback}</p>
                 </div>
               ))}
             </div>
