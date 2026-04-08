@@ -80,6 +80,8 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
   };
 
+  const activeTab = mode === "magic-link" ? "signin" : mode === "forgot-password" ? "signin" : mode;
+
   return createPortal(
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-center justify-center p-4" onClick={onClose}>
       <Card className="w-full max-w-md bg-card border-border shadow-2xl animate-fade-in relative" onClick={(e) => e.stopPropagation()}>
@@ -128,37 +130,61 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               </Button>
             </form>
           ) : (
-            <Tabs value={mode === "magic-link" ? "magic-link" : mode} onValueChange={(v) => setMode(v as any)}>
-              <TabsList className="grid w-full grid-cols-3 mb-4">
+            <Tabs value={activeTab} onValueChange={(v) => setMode(v as any)}>
+              <TabsList className="grid w-full grid-cols-2 mb-4">
                 <TabsTrigger value="signin" className="text-xs">Sign In</TabsTrigger>
                 <TabsTrigger value="signup" className="text-xs">Sign Up</TabsTrigger>
-                <TabsTrigger value="magic-link" className="text-xs">Magic Link</TabsTrigger>
               </TabsList>
 
               <TabsContent value="signin">
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email" className="text-sm text-foreground">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10" required />
+                {mode === "magic-link" ? (
+                  <form onSubmit={handleMagicLink} className="space-y-4">
+                    <p className="text-sm text-muted-foreground">We'll send you a magic link to sign in — no password needed.</p>
+                    <div className="space-y-2">
+                      <Label htmlFor="magic-email" className="text-sm text-foreground">Email</Label>
+                      <div className="relative">
+                        <Wand2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input id="magic-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10" required />
+                      </div>
                     </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password" className="text-sm text-foreground">Password</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input id="signin-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-10" required />
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                      Send Magic Link
+                    </Button>
+                    <Button type="button" variant="link" className="w-full text-xs text-muted-foreground" onClick={() => setMode("signin")}>
+                      Sign in with password instead
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-email" className="text-sm text-foreground">Email</Label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10" required />
+                      </div>
                     </div>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                    Sign In
-                  </Button>
-                  <Button type="button" variant="link" className="w-full text-xs text-muted-foreground" onClick={() => setMode("forgot-password")}>
-                    Forgot password?
-                  </Button>
-                </form>
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-password" className="text-sm text-foreground">Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Input id="signin-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className="pl-10" required />
+                      </div>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                      Sign In
+                    </Button>
+                    <div className="flex items-center justify-between">
+                      <Button type="button" variant="link" className="text-xs text-muted-foreground p-0 h-auto" onClick={() => setMode("forgot-password")}>
+                        Forgot password?
+                      </Button>
+                      <Button type="button" variant="link" className="text-xs text-muted-foreground p-0 h-auto" onClick={() => setMode("magic-link")}>
+                        Use Magic Link instead
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </TabsContent>
 
               <TabsContent value="signup">
@@ -187,23 +213,6 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                     Create Account
-                  </Button>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="magic-link">
-                <form onSubmit={handleMagicLink} className="space-y-4">
-                  <p className="text-sm text-muted-foreground">We'll send you a magic link to sign in — no password needed.</p>
-                  <div className="space-y-2">
-                    <Label htmlFor="magic-email" className="text-sm text-foreground">Email</Label>
-                    <div className="relative">
-                      <Wand2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input id="magic-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10" required />
-                    </div>
-                  </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                    Send Magic Link
                   </Button>
                 </form>
               </TabsContent>
