@@ -106,7 +106,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         <CardContent className="pt-6 pb-4">
           {mode === "forgot-password" ? (
             <form onSubmit={handleForgotPassword} className="space-y-4">
-              <div className="space-y-2">
+              <div className="grid grid-cols-[100px_1fr] items-center gap-3">
                 <Label htmlFor="reset-email" className="text-sm text-foreground">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -140,7 +140,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                 {mode === "magic-link" ? (
                   <form onSubmit={handleMagicLink} className="space-y-4">
                     <p className="text-sm text-muted-foreground">We'll send you a magic link to sign in — no password needed.</p>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-[100px_1fr] items-center gap-3">
                       <Label htmlFor="magic-email" className="text-sm text-foreground">Email</Label>
                       <div className="relative">
                         <Wand2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -157,14 +157,14 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                   </form>
                 ) : (
                   <form onSubmit={handleSignIn} className="space-y-4">
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-[100px_1fr] items-center gap-3">
                       <Label htmlFor="signin-email" className="text-sm text-foreground">Email</Label>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <Input id="signin-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10" required />
                       </div>
                     </div>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-[100px_1fr] items-center gap-3">
                       <Label htmlFor="signin-password" className="text-sm text-foreground">Password</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -189,21 +189,21 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
               <TabsContent value="signup">
                 <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-[100px_1fr] items-center gap-3">
                     <Label htmlFor="signup-name" className="text-sm text-foreground">Display Name</Label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input id="signup-name" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="John Doe" className="pl-10" />
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-[100px_1fr] items-center gap-3">
                     <Label htmlFor="signup-email" className="text-sm text-foreground">Email</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input id="signup-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10" required />
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="grid grid-cols-[100px_1fr] items-center gap-3">
                     <Label htmlFor="signup-password" className="text-sm text-foreground">Password</Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
