@@ -111,12 +111,13 @@ export const Footer = () => {
           />
           
           {/* Modal Card */}
-          <div className="dark fixed left-0 right-0 top-1/4 z-[10000] flex justify-center px-4" style={{ pointerEvents: 'none' }}>
+          <div className="dark fixed inset-0 z-[10000] flex justify-center items-start sm:items-center px-4 py-8 overflow-y-auto" style={{ pointerEvents: 'none' }} onClick={handleClose}>
             <div 
-              className="relative max-w-lg w-full glass-card p-6 animate-in slide-in-from-top fade-in duration-300"
+              className="relative max-w-lg w-full glass-card p-6 animate-in slide-in-from-top fade-in duration-300 max-h-[85vh] flex flex-col"
               style={{ pointerEvents: 'auto' }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-4 shrink-0">
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-lg bg-gradient-to-br from-financial-primary to-financial-success">
                     <openItem.icon className="h-5 w-5 text-white" />
@@ -133,7 +134,7 @@ export const Footer = () => {
                 </Button>
               </div>
               
-              <div className="p-4 rounded-lg bg-white/5 border border-financial-border">
+              <div className="p-4 rounded-lg bg-white/5 border border-financial-border overflow-y-auto flex-1">
                 {openItem.isLink ? (
                   <a 
                     href={openItem.href}
