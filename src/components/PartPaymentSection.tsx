@@ -396,7 +396,7 @@ export const PartPaymentSection = ({
                 {partPayments.map((payment) => (
                   <div 
                     key={payment.id}
-                    className="flex items-center justify-between p-3 bg-financial-card border border-financial-border rounded-lg"
+                    className="flex items-center justify-between p-3 bg-financial-card border border-financial-border rounded-lg animate-fade-in"
                   >
                      <div className="flex-1">
                       <div className="text-sm font-medium text-foreground">

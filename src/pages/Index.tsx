@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
+import { UserMenu } from "@/components/UserMenu";
 import { LoanInputSection } from "@/components/LoanInputSection";
 import { PartPaymentSection, PartPayment } from "@/components/PartPaymentSection";
 import { LoanSummary } from "@/components/LoanSummary";
@@ -12,6 +13,7 @@ import { LoanComparisonSection } from "@/components/LoanComparisonSection";
 import { LoanAffordabilityCalculator } from "@/components/LoanAffordabilityCalculator";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Footer } from "@/components/Footer";
+import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { calculateLoanEMI } from "@/utils/loanCalculations";
@@ -89,6 +91,57 @@ const Index = () => {
   const [showSchedule, setShowSchedule] = useState(false);
   const [activeTab, setActiveTab] = useState("loan-details");
   const [showPartPayments, setShowPartPayments] = useState(false);
+
+  // Get current data for saving
+  const getCurrentData = useCallback(() => {
+    // Read comparison scenarios from localStorage
+    const savedScenarios = localStorage.getItem('loan-comparison-scenarios');
+    let comparisonScenarios: any[] = [];
+    try {
+      if (savedScenarios) comparisonScenarios = JSON.parse(savedScenarios);
+    } catch {}
+
+    // Read affordability inputs from localStorage
+    const savedAffordability = localStorage.getItem('loan-affordability-values');
+    let affordabilityInputs = {};
+    try {
+      if (savedAffordability) affordabilityInputs = JSON.parse(savedAffordability);
+    } catch {}
+
+    return {
+      loanAmount,
+      interestRate,
+      loanTenure,
+      startMonth,
+      startYear,
+      partPayments,
+      comparisonScenarios,
+      scoringWeights: { emiWeight: 30, interestWeight: 50 }, // default, will be overridden by component state
+      affordabilityInputs,
+    };
+  }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
+
+  // Load saved calculation
+  const handleLoadCalculation = useCallback((data: any) => {
+    setLoanAmount(data.loanAmount);
+    setInterestRate(data.interestRate);
+    setLoanTenure(data.loanTenure);
+    setStartMonth(data.startMonth);
+    setStartYear(data.startYear);
+    setPartPayments(data.partPayments || []);
+
+    // Save comparison scenarios to localStorage for the component to pick up
+    if (data.comparisonScenarios && Array.isArray(data.comparisonScenarios)) {
+      localStorage.setItem('loan-comparison-scenarios', JSON.stringify(data.comparisonScenarios));
+    }
+
+    // Save affordability inputs to localStorage
+    if (data.affordabilityInputs && typeof data.affordabilityInputs === 'object' && Object.keys(data.affordabilityInputs).length > 0) {
+      localStorage.setItem('loan-affordability-values', JSON.stringify(data.affordabilityInputs));
+    }
+
+    setActiveTab("loan-details");
+  }, []);
 
 
   // Load data from URL parameters on mount
@@ -183,8 +236,12 @@ const Index = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
-              <ThemeToggle />
               <HowItWorks />
+              <ThemeToggle />
+              <UserMenu
+                onLoadCalculation={handleLoadCalculation}
+                getCurrentData={getCurrentData}
+              />
             </div>
           </div>
         </div>
@@ -235,7 +292,7 @@ const Index = () => {
                 <span className="text-sm">EMI Schedule</span>
               </TabsTrigger>
               <TabsTrigger value="compare-scenarios" className="flex flex-row items-center gap-2 py-3">
-                <Scale className="w-6 h-6" />
+                <Scale className="w-5 h-5" />
                 <span className="text-sm">Compare Scenarios</span>
               </TabsTrigger>
               <TabsTrigger value="loan-affordability" className="flex flex-row items-center gap-2 py-3">
@@ -355,13 +412,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 2: EMI Schedule */}
-            <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8">
-              {/* Loan Summary Cards */}
-              <LoanSummaryCards 
-                calculation={calculation} 
-                interestSavings={interestSavings} 
-                timeSavings={timeSavings}
-              />
+            <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
@@ -386,7 +437,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 3: Compare Loan Scenarios */}
-            <TabsContent value="compare-scenarios" className="w-full max-w-4xl mx-auto space-y-8">
+            <TabsContent value="compare-scenarios" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
               <LoanComparisonSection
                 baseAmount={loanAmount}
                 baseRate={interestRate}
@@ -398,12 +449,15 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 4: Loan Affordability */}
-            <TabsContent value="loan-affordability" className="w-full max-w-4xl mx-auto space-y-8">
+            <TabsContent value="loan-affordability" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
               <LoanAffordabilityCalculator />
             </TabsContent>
           </Tabs>
         )}
       </div>
+
+      {/* Feedback Section */}
+      <FeedbackSection />
 
       {/* Footer */}
       <Footer />
