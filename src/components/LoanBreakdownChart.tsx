@@ -54,14 +54,14 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
       <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
         <CardTitle className="text-xl font-semibold">Loan Breakdown</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-80">
+      <CardContent className="pt-4">
+        <div className="h-[340px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={pieChartData}
                 cx="50%"
-                cy="50%"
+                cy="48%"
                 innerRadius={60}
                 outerRadius={120}
                 paddingAngle={5}
@@ -95,6 +95,10 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
                 }}
               />
               <Legend 
+                layout="vertical"
+                align="center"
+                verticalAlign="bottom"
+                wrapperStyle={{ paddingTop: 16 }}
                 formatter={(value, entry) => (
                   <span style={{ color: entry.color }}>
                     {value}: {formatCurrency(entry.payload.value)}
