@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -128,8 +129,9 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/60 backdrop-blur-md" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-lg">
       <Card className="w-full max-w-lg bg-card border-border shadow-xl animate-fade-in max-h-[80vh] flex flex-col">
         <CardHeader className="relative bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-4">
           <Button
@@ -212,6 +214,8 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </div>,
+    document.body
   );
 };
