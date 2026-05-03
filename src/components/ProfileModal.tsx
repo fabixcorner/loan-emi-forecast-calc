@@ -25,7 +25,7 @@ const passwordSchema = z
   .regex(/[0-9]/, "Must include at least one number");
 
 export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [displayName, setDisplayName] = useState("");
@@ -39,6 +39,9 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const [savingPassword, setSavingPassword] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirm?: string }>({});
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !user) return;
@@ -47,6 +50,8 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     setNewPassword("");
     setConfirmPassword("");
     setErrors({});
+    setConfirmingDelete(false);
+    setDeleteConfirmText("");
     (async () => {
       const { data } = await supabase
         .from("profiles")
@@ -170,6 +175,28 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
       toast.error(err.message || "Failed to update password");
     } finally {
       setSavingPassword(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") return;
+    setDeletingAccount(true);
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) throw new Error("You must be signed in");
+
+      const { error } = await supabase.functions.invoke("delete-account", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (error) throw error;
+
+      toast.success("Your account has been deleted");
+      await signOut();
+      onClose();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete account");
+      setDeletingAccount(false);
     }
   };
 
@@ -325,6 +352,63 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
               {savingPassword && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Update Password
             </Button>
+          </div>
+
+          {/* Delete account */}
+          <div className="border-t border-destructive/30 pt-4 space-y-3">
+            <div>
+              <h3 className="text-sm font-semibold text-destructive">Danger Zone</h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Permanently delete your account and all associated data (saved loans, profile, avatar). This cannot be undone.
+              </p>
+            </div>
+            {!confirmingDelete ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setConfirmingDelete(true)}
+                className="w-full border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete My Account
+              </Button>
+            ) : (
+              <div className="space-y-2 rounded-md border border-destructive/40 bg-destructive/5 p-3">
+                <p className="text-xs text-foreground">
+                  Type <span className="font-mono font-semibold">DELETE</span> to confirm permanent account deletion.
+                </p>
+                <Input
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  placeholder="Type DELETE here"
+                  className="h-9"
+                  autoFocus
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { setConfirmingDelete(false); setDeleteConfirmText(""); }}
+                    disabled={deletingAccount}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDeleteAccount}
+                    disabled={deleteConfirmText !== "DELETE" || deletingAccount}
+                    className="flex-1"
+                  >
+                    {deletingAccount && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                    Permanently Delete
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
