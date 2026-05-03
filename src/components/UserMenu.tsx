@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Save, FolderOpen } from "lucide-react";
+import { User, LogOut, Save, FolderOpen, UserCog } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "./AuthModal";
 import { SaveLoadModal } from "./SaveLoadModal";
+import { ProfileModal } from "./ProfileModal";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface UserMenuProps {
@@ -17,6 +19,31 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData }: UserMenuProps) =
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showLoadModal, setShowLoadModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [profileName, setProfileName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) {
+      setAvatarUrl(null);
+      setProfileName(null);
+      return;
+    }
+    let cancelled = false;
+    const load = async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url, display_name")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (!cancelled && data) {
+        setAvatarUrl(data.avatar_url ?? null);
+        setProfileName(data.display_name ?? null);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [user, showProfileModal]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -39,15 +66,19 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData }: UserMenuProps) =
     );
   }
 
-  const displayName = user.user_metadata?.display_name || user.email?.split("@")[0] || "User";
+  const displayName = profileName || user.user_metadata?.display_name || user.email?.split("@")[0] || "User";
 
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="gap-1.5 text-xs border-financial-primary/50">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-financial-primary to-financial-success flex items-center justify-center">
-              <User className="w-3 h-3 text-white" />
+            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-financial-primary to-financial-success flex items-center justify-center overflow-hidden">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-3 h-3 text-white" />
+              )}
             </div>
             <span className="hidden sm:inline max-w-[80px] truncate">{displayName}</span>
           </Button>
@@ -57,6 +88,10 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData }: UserMenuProps) =
             {user.email}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setShowProfileModal(true)} className="gap-2 cursor-pointer">
+            <UserCog className="w-4 h-4" />
+            Profile
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowSaveModal(true)} className="gap-2 cursor-pointer">
             <Save className="w-4 h-4" />
             Save Current
@@ -85,6 +120,7 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData }: UserMenuProps) =
         mode="load"
         onLoadCalculation={onLoadCalculation}
       />
+      <ProfileModal isOpen={showProfileModal} onClose={() => setShowProfileModal(false)} />
     </>
   );
 };
