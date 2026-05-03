@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X, Mail, User as UserIcon, Lock, Loader2, Camera, Trash2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -39,6 +40,9 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const [savingPassword, setSavingPassword] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirm?: string }>({});
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !user) return;
@@ -47,6 +51,8 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     setNewPassword("");
     setConfirmPassword("");
     setErrors({});
+    setConfirmingDelete(false);
+    setDeleteConfirmText("");
     (async () => {
       const { data } = await supabase
         .from("profiles")
