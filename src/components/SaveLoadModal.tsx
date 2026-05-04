@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Save, Trash2, FolderOpen, Loader2, Clock } from "lucide-react";
+import { X, Save, Trash2, FolderOpen, Loader2, Clock, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -12,9 +12,10 @@ import { Json } from "@/integrations/supabase/types";
 interface SaveLoadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  mode: "save" | "load";
+  mode: "save-new" | "load";
   getCurrentData?: () => any;
   onLoadCalculation?: (data: any) => void;
+  onSaved?: (id: string, name: string) => void;
 }
 
 interface SavedCalc {
@@ -39,15 +40,20 @@ const formatCurrency = (amount: number): string => {
   return `₹${amount.toLocaleString("en-IN")}`;
 };
 
-export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCalculation }: SaveLoadModalProps) => {
+export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCalculation, onSaved }: SaveLoadModalProps) => {
   const { user } = useAuth();
   const [saveName, setSaveName] = useState("");
   const [savedCalcs, setSavedCalcs] = useState<SavedCalc[]>([]);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [duplicateCalc, setDuplicateCalc] = useState<SavedCalc | null>(null);
 
   useEffect(() => {
     if (isOpen && user) fetchSavedCalcs();
+    if (!isOpen) {
+      setSaveName("");
+      setDuplicateCalc(null);
+    }
   }, [isOpen, user]);
 
   const fetchSavedCalcs = async () => {
@@ -66,17 +72,18 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
     setLoading(false);
   };
 
-  const handleSave = async () => {
+  const performSave = async (replaceId?: string) => {
     if (!user || !getCurrentData) return;
-    if (!saveName.trim()) {
+    const trimmed = saveName.trim();
+    if (!trimmed) {
       toast.error("Please enter a name for this calculation");
       return;
     }
     setLoading(true);
     const currentData = getCurrentData();
-    const { error } = await supabase.from("saved_calculations").insert({
+    const payload = {
       user_id: user.id,
-      name: saveName.trim(),
+      name: trimmed,
       loan_amount: currentData.loanAmount,
       interest_rate: currentData.interestRate,
       loan_tenure: currentData.loanTenure,
@@ -86,21 +93,62 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
       comparison_scenarios: currentData.comparisonScenarios as unknown as Json,
       scoring_weights: currentData.scoringWeights as unknown as Json,
       affordability_inputs: currentData.affordabilityInputs as unknown as Json,
-    });
+    };
+
+    let savedId: string | null = null;
+    let error: any = null;
+    if (replaceId) {
+      const { data, error: updErr } = await supabase
+        .from("saved_calculations")
+        .update({ ...payload, updated_at: new Date().toISOString() })
+        .eq("id", replaceId)
+        .select("id")
+        .maybeSingle();
+      error = updErr;
+      savedId = data?.id ?? replaceId;
+    } else {
+      const { data, error: insErr } = await supabase
+        .from("saved_calculations")
+        .insert(payload)
+        .select("id")
+        .maybeSingle();
+      error = insErr;
+      savedId = data?.id ?? null;
+    }
 
     setLoading(false);
-    if (error) {
+    if (error || !savedId) {
       toast.error("Failed to save calculation");
     } else {
-      toast.success(`"${saveName}" saved successfully!`);
+      toast.success(`"${trimmed}" saved successfully!`);
+      onSaved?.(savedId, trimmed);
       setSaveName("");
+      setDuplicateCalc(null);
       onClose();
     }
+  };
+
+  const handleSaveNew = () => {
+    const trimmed = saveName.trim();
+    if (!trimmed) {
+      toast.error("Please enter a name for this calculation");
+      return;
+    }
+    const existing = savedCalcs.find(
+      (c) => c.name.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (existing) {
+      setDuplicateCalc(existing);
+      return;
+    }
+    performSave();
   };
 
   const handleLoad = (calc: SavedCalc) => {
     if (!onLoadCalculation) return;
     onLoadCalculation({
+      id: calc.id,
+      name: calc.name,
       loanAmount: calc.loan_amount,
       interestRate: calc.interest_rate,
       loanTenure: calc.loan_tenure,
@@ -143,12 +191,44 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
             <X className="w-4 h-4" />
           </Button>
           <CardTitle className="text-xl flex items-center gap-2">
-            {mode === "save" ? <Save className="w-5 h-5" /> : <FolderOpen className="w-5 h-5" />}
-            {mode === "save" ? "Save Calculation" : "My Saved Loans"}
+            {mode === "save-new" ? <Save className="w-5 h-5" /> : <FolderOpen className="w-5 h-5" />}
+            {mode === "save-new" ? "Save as New Loan" : "My Saved Loans"}
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-4 pb-4 overflow-y-auto flex-1">
-          {mode === "save" ? (
+          {mode === "save-new" ? (
+            duplicateCalc ? (
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 border border-destructive/30">
+                  <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-medium text-foreground">A loan named "{duplicateCalc.name}" already exists.</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Do you want to replace it with the current loan session, or go back and choose a different name?
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setDuplicateCalc(null)}
+                    className="flex-1"
+                    disabled={loading}
+                  >
+                    Go Back
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => performSave(duplicateCalc.id)}
+                    className="flex-1"
+                    disabled={loading}
+                  >
+                    {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                    Replace
+                  </Button>
+                </div>
+              </div>
+            ) : (
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Name</label>
@@ -162,11 +242,12 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
               <p className="text-xs text-muted-foreground">
                 This will save your current loan details, part payments, comparison scenarios, scoring weights, and affordability inputs.
               </p>
-              <Button onClick={handleSave} className="w-full" disabled={loading}>
+              <Button onClick={handleSaveNew} className="w-full" disabled={loading}>
                 {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                 Save
               </Button>
             </div>
+            )
           ) : (
             <div className="space-y-3">
               {loading ? (
