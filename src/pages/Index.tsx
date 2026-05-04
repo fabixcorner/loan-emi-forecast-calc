@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet, FileText } from "lucide-react";
 import calculatorIcon from "@/assets/calculator.png";
 import { UserMenu } from "@/components/UserMenu";
 import { LoanInputSection } from "@/components/LoanInputSection";
@@ -16,6 +16,7 @@ import { Footer } from "@/components/Footer";
 import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { useAuth } from "@/hooks/useAuth";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { z } from "zod";
 
@@ -91,6 +92,18 @@ const Index = () => {
   const [showSchedule, setShowSchedule] = useState(false);
   const [activeTab, setActiveTab] = useState("loan-details");
   const [showPartPayments, setShowPartPayments] = useState(false);
+  const [currentLoanId, setCurrentLoanId] = useState<string | null>(null);
+  const [currentLoanName, setCurrentLoanName] = useState<string | null>(null);
+  const openLoadOnLoginRef = useRef<boolean>(false);
+  const { user } = useAuth();
+
+  // Clear active loan session when user signs out
+  useEffect(() => {
+    if (!user) {
+      setCurrentLoanId(null);
+      setCurrentLoanName(null);
+    }
+  }, [user]);
 
   // Get current data for saving
   const getCurrentData = useCallback(() => {
@@ -140,7 +153,17 @@ const Index = () => {
       localStorage.setItem('loan-affordability-values', JSON.stringify(data.affordabilityInputs));
     }
 
+    if (data.id && data.name) {
+      setCurrentLoanId(data.id);
+      setCurrentLoanName(data.name);
+    }
+
     setActiveTab("loan-details");
+  }, []);
+
+  const handleSavedAs = useCallback((id: string, name: string) => {
+    setCurrentLoanId(id);
+    setCurrentLoanName(name);
   }, []);
 
 
@@ -236,11 +259,23 @@ const Index = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
+              {currentLoanName && (
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30 max-w-[180px]">
+                  <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
+                  <span className="text-xs font-medium text-foreground truncate" title={currentLoanName}>
+                    {currentLoanName}
+                  </span>
+                </div>
+              )}
               <HowItWorks />
               <ThemeToggle />
               <UserMenu
                 onLoadCalculation={handleLoadCalculation}
                 getCurrentData={getCurrentData}
+                currentLoanId={currentLoanId}
+                currentLoanName={currentLoanName}
+                onSavedAs={handleSavedAs}
+                openLoadOnLoginRef={openLoadOnLoginRef}
               />
             </div>
           </div>
