@@ -47,8 +47,10 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
 
   useEffect(() => {
     if (!isOpen || !user) return;
-    setEmail(user.email ?? "");
-    setDisplayName(user.user_metadata?.display_name ?? "");
+    const userEmail = user.email ?? "";
+    setEmail(userEmail);
+    const fallbackName = userEmail.includes("@") ? userEmail.split("@")[0] : "";
+    setDisplayName(user.user_metadata?.display_name ?? fallbackName);
     setNewPassword("");
     setConfirmPassword("");
     setErrors({});
@@ -63,6 +65,8 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
       if (data) {
         if (data.display_name) setDisplayName(data.display_name);
         setAvatarUrl(data.avatar_url ?? null);
+      } else if (fallbackName) {
+        setDisplayName(fallbackName);
       }
     })();
   }, [isOpen, user]);
