@@ -9,6 +9,7 @@ import { X, Mail, User as UserIcon, Lock, Loader2, Camera, Trash2, Eye, EyeOff }
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AvatarCropModal } from "./AvatarCropModal";
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string; confirm?: string }>({});
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
@@ -69,26 +71,30 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
 
   const initials = (displayName || email || "U").trim().charAt(0).toUpperCase();
 
-  const handleAvatarUpload = async (file: File) => {
+  const handleAvatarFileSelected = (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Please select an image file");
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Image must be smaller than 2MB");
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be smaller than 8MB");
       return;
     }
+    setPendingFile(file);
+  };
+
+  const handleCroppedUpload = async (blob: Blob) => {
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop() || "png";
-      const path = `${user.id}/avatar-${Date.now()}.${ext}`;
+      const path = `${user.id}/avatar-${Date.now()}.jpg`;
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
       if (uploadError) throw uploadError;
 
       const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
-      const publicUrl = pub.publicUrl;
+      // Cache-bust so the new image appears immediately
+      const publicUrl = `${pub.publicUrl}?t=${Date.now()}`;
 
       const { error: updateError } = await supabase
         .from("profiles")
@@ -98,6 +104,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
 
       setAvatarUrl(publicUrl);
       toast.success("Avatar updated");
+      setPendingFile(null);
     } catch (err: any) {
       toast.error(err.message || "Failed to upload avatar");
     } finally {
@@ -224,7 +231,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
             className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) handleAvatarUpload(file);
+              if (file) handleAvatarFileSelected(file);
               e.target.value = "";
             }}
           />
