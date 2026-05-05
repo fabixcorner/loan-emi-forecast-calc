@@ -216,85 +216,90 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
           <p className="text-sm text-primary-foreground/80">Update your display name, email, password, and avatar</p>
         </CardHeader>
         <CardContent className="pt-6 pb-4 space-y-6">
-          {/* Avatar */}
-          <div className="flex items-center gap-4">
-            <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-financial-primary to-financial-success flex items-center justify-center text-primary-foreground text-2xl font-semibold ring-2 ring-border">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <span>{initials}</span>
-              )}
-              {uploading && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-white" />
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleAvatarUpload(file);
-                  e.target.value = "";
-                }}
-              />
-              <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="gap-2">
-                <Camera className="w-4 h-4" />
-                {avatarUrl ? "Change avatar" : "Upload avatar"}
-              </Button>
-              {avatarUrl && (
-                <Button type="button" size="sm" variant="ghost" onClick={handleAvatarRemove} disabled={uploading} className="gap-2 text-destructive hover:text-destructive">
-                  <Trash2 className="w-4 h-4" />
-                  Remove
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Profile fields */}
+          {/* Avatar + Profile fields */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleAvatarUpload(file);
+              e.target.value = "";
+            }}
+          />
           <div className="space-y-3">
-            <div className="grid grid-cols-[100px_1fr] items-start gap-3">
-              <Label htmlFor="profile-name" className="text-sm text-foreground pt-2">Display Name</Label>
-              <div>
-                <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="profile-name"
-                    value={displayName}
-                    onChange={(e) => { setDisplayName(e.target.value); if (errors.name) setErrors({ ...errors, name: undefined }); }}
-                    placeholder="John Doe"
-                    className="pl-10"
-                    aria-invalid={!!errors.name}
-                  />
-                </div>
-                {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
-              </div>
-            </div>
-            <div className="grid grid-cols-[100px_1fr] items-start gap-3">
-              <Label htmlFor="profile-email" className="text-sm text-foreground pt-2">Email</Label>
-              <div>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="profile-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors({ ...errors, email: undefined }); }}
-                    placeholder="you@example.com"
-                    className="pl-10"
-                    aria-invalid={!!errors.email}
-                  />
-                </div>
-                {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
-                {email !== user.email && !errors.email && (
-                  <p className="text-xs text-muted-foreground mt-1">You'll receive a confirmation link at the new address.</p>
+            <div className="flex items-start gap-4">
+              <button
+                type="button"
+                onClick={() => !uploading && fileInputRef.current?.click()}
+                disabled={uploading}
+                aria-label={avatarUrl ? "Change avatar" : "Upload avatar"}
+                className="group relative w-20 h-20 shrink-0 rounded-full overflow-hidden bg-gradient-to-br from-financial-primary to-financial-success flex items-center justify-center text-primary-foreground text-2xl font-semibold ring-2 ring-border focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span>{initials}</span>
                 )}
+                <span className="absolute inset-0 bg-black/55 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity flex flex-col items-center justify-center text-white text-[10px] font-medium gap-0.5">
+                  <Camera className="w-5 h-5" />
+                  {avatarUrl ? "Change" : "Upload"}
+                </span>
+                {uploading && (
+                  <span className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <Loader2 className="w-5 h-5 animate-spin text-white" />
+                  </span>
+                )}
+              </button>
+              <div className="flex-1 min-w-0 space-y-2">
+                <div>
+                  <Label htmlFor="profile-name" className="text-xs text-muted-foreground">Display Name</Label>
+                  <div className="relative mt-1">
+                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="profile-name"
+                      value={displayName}
+                      onChange={(e) => { setDisplayName(e.target.value); if (errors.name) setErrors({ ...errors, name: undefined }); }}
+                      placeholder="John Doe"
+                      className="pl-10 h-9"
+                      aria-invalid={!!errors.name}
+                    />
+                  </div>
+                  {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="profile-email" className="text-xs text-muted-foreground">Email</Label>
+                  <div className="relative mt-1">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="profile-email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors({ ...errors, email: undefined }); }}
+                      placeholder="you@example.com"
+                      className="pl-10 h-9"
+                      aria-invalid={!!errors.email}
+                    />
+                  </div>
+                  {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+                  {email !== user.email && !errors.email && (
+                    <p className="text-xs text-muted-foreground mt-1">You'll receive a confirmation link at the new address.</p>
+                  )}
+                </div>
               </div>
             </div>
+            {avatarUrl && (
+              <button
+                type="button"
+                onClick={handleAvatarRemove}
+                disabled={uploading}
+                className="text-xs text-destructive hover:underline inline-flex items-center gap-1"
+              >
+                <Trash2 className="w-3 h-3" />
+                Remove avatar
+              </button>
+            )}
             <Button onClick={handleProfileSave} disabled={savingProfile} className="w-full">
               {savingProfile && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Save Profile
