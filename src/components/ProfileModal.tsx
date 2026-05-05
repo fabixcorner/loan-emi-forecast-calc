@@ -424,6 +424,12 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
           </div>
         </CardContent>
       </Card>
+      <AvatarCropModal
+        isOpen={!!pendingFile}
+        file={pendingFile}
+        onClose={() => setPendingFile(null)}
+        onConfirm={handleCroppedUpload}
+      />
     </div>,
     document.body
   );
