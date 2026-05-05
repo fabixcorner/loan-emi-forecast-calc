@@ -214,7 +214,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   return createPortal(
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-start sm:items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
       <Card className="w-full max-w-lg bg-card border-border shadow-2xl animate-fade-in relative my-8" onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="relative bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-4">
+        <CardHeader className="relative bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
           <Button
             variant="ghost"
             size="icon"
@@ -224,9 +224,8 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
             <X className="w-4 h-4" />
           </Button>
           <CardTitle className="text-xl">Your Profile</CardTitle>
-          <p className="text-sm text-primary-foreground/80">Update your display name, email, password, and avatar</p>
         </CardHeader>
-        <CardContent className="pt-6 pb-4 space-y-6">
+        <CardContent className="pt-4 pb-4 space-y-5">
           {/* Avatar + Profile fields */}
           <input
             ref={fileInputRef}
@@ -240,7 +239,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
             }}
           />
           <div className="space-y-3">
-            <div className="flex items-start gap-4">
+            <div className="flex items-center gap-4">
               <button
                 type="button"
                 onClick={() => !uploading && fileInputRef.current?.click()}
@@ -265,14 +264,13 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
               </button>
               <div className="flex-1 min-w-0 space-y-2">
                 <div>
-                  <Label htmlFor="profile-name" className="text-xs text-muted-foreground">Display Name</Label>
-                  <div className="relative mt-1">
+                  <div className="relative">
                     <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="profile-name"
                       value={displayName}
                       onChange={(e) => { setDisplayName(e.target.value); if (errors.name) setErrors({ ...errors, name: undefined }); }}
-                      placeholder="John Doe"
+                      placeholder="Display name"
                       className="pl-10 h-9"
                       aria-invalid={!!errors.name}
                     />
@@ -280,15 +278,14 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                   {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="profile-email" className="text-xs text-muted-foreground">Email</Label>
-                  <div className="relative mt-1">
+                  <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="profile-email"
                       type="email"
                       value={email}
                       onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors({ ...errors, email: undefined }); }}
-                      placeholder="you@example.com"
+                      placeholder="Email"
                       className="pl-10 h-9"
                       aria-invalid={!!errors.email}
                     />
