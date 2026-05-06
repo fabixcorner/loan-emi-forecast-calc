@@ -17,6 +17,7 @@ import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useAuth } from "@/hooks/useAuth";
+import { LOCAL_STORAGE_KEYS, DEFAULT_SCORING_WEIGHTS } from "@/config";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { z } from "zod";
 

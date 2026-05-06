@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { PartPayment } from "./PartPaymentSection";
+import { LOCAL_STORAGE_KEYS } from "@/config";
 
 interface LoanScenario {
   id: string;
