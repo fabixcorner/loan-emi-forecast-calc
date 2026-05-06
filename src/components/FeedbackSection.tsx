@@ -8,11 +8,27 @@ import { MessageSquare, Send, ChevronLeft, ChevronRight, Loader2 } from "lucide-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { z } from "zod";
+import { DB_TABLES, FEEDBACK_FIELD_LIMITS } from "@/config";
 
 const feedbackSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
-  email: z.string().trim().email("Please enter a valid email address").max(255, "Email must be less than 255 characters"),
-  feedback: z.string().trim().min(1, "Feedback is required").max(2000, "Feedback must be less than 2000 characters"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(FEEDBACK_FIELD_LIMITS.NAME_MAX_LENGTH, `Name must be less than ${FEEDBACK_FIELD_LIMITS.NAME_MAX_LENGTH} characters`),
+  email: z
+    .string()
+    .trim()
+    .email("Please enter a valid email address")
+    .max(FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH, `Email must be less than ${FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH} characters`),
+  feedback: z
+    .string()
+    .trim()
+    .min(1, "Feedback is required")
+    .max(
+      FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH,
+      `Feedback must be less than ${FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH} characters`,
+    ),
 });
 
 interface FeedbackEntry {
@@ -44,9 +60,9 @@ export const FeedbackSection = () => {
     const to = from + PAGE_SIZE - 1;
 
     const [{ count }, { data }] = await Promise.all([
-      supabase.from("user_feedback").select("*", { count: "exact", head: true }),
+      supabase.from(DB_TABLES.USER_FEEDBACK).select("*", { count: "exact", head: true }),
       supabase
-        .from("user_feedback")
+        .from(DB_TABLES.USER_FEEDBACK)
         .select("id, name, feedback, created_at")
         .order("created_at", { ascending: false })
         .range(from, to),
@@ -76,7 +92,7 @@ export const FeedbackSection = () => {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.from("user_feedback").insert({
+    const { error } = await supabase.from(DB_TABLES.USER_FEEDBACK).insert({
       name: result.data.name,
       email: result.data.email,
       feedback: result.data.feedback,
@@ -119,7 +135,7 @@ export const FeedbackSection = () => {
                     placeholder="Your Name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    maxLength={100}
+                    maxLength={FEEDBACK_FIELD_LIMITS.NAME_MAX_LENGTH}
                   />
                   {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
                 </div>
@@ -130,7 +146,7 @@ export const FeedbackSection = () => {
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    maxLength={255}
+                    maxLength={FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH}
                   />
                   {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
                 </div>
@@ -141,7 +157,7 @@ export const FeedbackSection = () => {
                   placeholder="Feedback / Suggestions / Report any issues"
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
-                  maxLength={1000}
+                  maxLength={FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH}
                   className="min-h-[88px] max-h-[88px] resize-none"
                 />
                 {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
@@ -152,8 +168,8 @@ export const FeedbackSection = () => {
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                 Submit Feedback
               </Button>
-              <p className={`text-xs ${feedback.length > 900 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                {1000 - feedback.length} characters remaining
+              <p className={`text-xs ${feedback.length > FEEDBACK_FIELD_LIMITS.FEEDBACK_WARNING_THRESHOLD ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH - feedback.length} characters remaining
               </p>
             </div>
           </form>
