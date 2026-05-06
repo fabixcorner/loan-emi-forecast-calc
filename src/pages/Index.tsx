@@ -109,14 +109,14 @@ const Index = () => {
   // Get current data for saving
   const getCurrentData = useCallback(() => {
     // Read comparison scenarios from localStorage
-    const savedScenarios = localStorage.getItem('loan-comparison-scenarios');
+    const savedScenarios = localStorage.getItem(LOCAL_STORAGE_KEYS.COMPARISON_SCENARIOS);
     let comparisonScenarios: any[] = [];
     try {
       if (savedScenarios) comparisonScenarios = JSON.parse(savedScenarios);
     } catch {}
 
     // Read affordability inputs from localStorage
-    const savedAffordability = localStorage.getItem('loan-affordability-values');
+    const savedAffordability = localStorage.getItem(LOCAL_STORAGE_KEYS.AFFORDABILITY_VALUES);
     let affordabilityInputs = {};
     try {
       if (savedAffordability) affordabilityInputs = JSON.parse(savedAffordability);
@@ -130,7 +130,7 @@ const Index = () => {
       startYear,
       partPayments,
       comparisonScenarios,
-      scoringWeights: { emiWeight: 30, interestWeight: 50 }, // default, will be overridden by component state
+      scoringWeights: { ...DEFAULT_SCORING_WEIGHTS }, // default, will be overridden by component state
       affordabilityInputs,
     };
   }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
@@ -146,12 +146,12 @@ const Index = () => {
 
     // Save comparison scenarios to localStorage for the component to pick up
     if (data.comparisonScenarios && Array.isArray(data.comparisonScenarios)) {
-      localStorage.setItem('loan-comparison-scenarios', JSON.stringify(data.comparisonScenarios));
+      localStorage.setItem(LOCAL_STORAGE_KEYS.COMPARISON_SCENARIOS, JSON.stringify(data.comparisonScenarios));
     }
 
     // Save affordability inputs to localStorage
     if (data.affordabilityInputs && typeof data.affordabilityInputs === 'object' && Object.keys(data.affordabilityInputs).length > 0) {
-      localStorage.setItem('loan-affordability-values', JSON.stringify(data.affordabilityInputs));
+      localStorage.setItem(LOCAL_STORAGE_KEYS.AFFORDABILITY_VALUES, JSON.stringify(data.affordabilityInputs));
     }
 
     if (data.id && data.name) {
