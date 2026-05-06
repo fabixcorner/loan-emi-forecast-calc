@@ -9,6 +9,7 @@ import { ProfileModal } from "./ProfileModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Json } from "@/integrations/supabase/types";
+import { DB_TABLES } from "@/config";
 
 interface UserMenuProps {
   onLoadCalculation: (data: any) => void;
@@ -38,7 +39,7 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
     let cancelled = false;
     const load = async () => {
       const { data } = await supabase
-        .from("profiles")
+        .from(DB_TABLES.PROFILES)
         .select("avatar_url, display_name")
         .eq("user_id", user.id)
         .maybeSingle();
@@ -69,7 +70,7 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
     setSavingCurrent(true);
     const currentData = getCurrentData();
     const { error } = await supabase
-      .from("saved_calculations")
+      .from(DB_TABLES.SAVED_CALCULATIONS)
       .update({
         loan_amount: currentData.loanAmount,
         interest_rate: currentData.interestRate,

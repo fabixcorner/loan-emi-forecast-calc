@@ -10,23 +10,41 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AvatarCropModal } from "./AvatarCropModal";
+import {
+  DB_TABLES,
+  STORAGE_BUCKETS,
+  AVATAR_CONFIG,
+  PASSWORD_RULES,
+  PROFILE_FIELD_LIMITS,
+} from "@/config";
 
 interface ProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const emailSchema = z.string().trim().min(1, "Email is required").email("Please enter a valid email address").max(255);
-const nameSchema = z.string().trim().max(100, "Name must be less than 100 characters");
+const emailSchema = z
+  .string()
+  .trim()
+  .min(1, "Email is required")
+  .email("Please enter a valid email address")
+  .max(PROFILE_FIELD_LIMITS.EMAIL_MAX_LENGTH);
+const nameSchema = z
+  .string()
+  .trim()
+  .max(
+    PROFILE_FIELD_LIMITS.DISPLAY_NAME_MAX_LENGTH,
+    `Name must be less than ${PROFILE_FIELD_LIMITS.DISPLAY_NAME_MAX_LENGTH} characters`,
+  );
 const passwordSchema = z
   .string()
-  .min(8, "Password must be at least 8 characters")
+  .min(PASSWORD_RULES.MIN_LENGTH, `Password must be at least ${PASSWORD_RULES.MIN_LENGTH} characters`)
   .regex(/[a-z]/, "Must include at least one lowercase letter")
   .regex(/[A-Z]/, "Must include at least one uppercase letter")
   .regex(/[0-9]/, "Must include at least one number");
 
 const getPasswordChecks = (pw: string) => ({
-  length: pw.length >= 8,
+  length: pw.length >= PASSWORD_RULES.MIN_LENGTH,
   lowercase: /[a-z]/.test(pw),
   uppercase: /[A-Z]/.test(pw),
   number: /[0-9]/.test(pw),
@@ -68,7 +86,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     setDeleteConfirmText("");
     (async () => {
       const { data } = await supabase
-        .from("profiles")
+        .from(DB_TABLES.PROFILES)
         .select("display_name, avatar_url")
         .eq("user_id", user.id)
         .maybeSingle();
@@ -99,8 +117,9 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
       toast.error("Please select an image file");
       return;
     }
-    if (file.size > 8 * 1024 * 1024) {
-      toast.error("Image must be smaller than 8MB");
+    if (file.size > AVATAR_CONFIG.MAX_FILE_SIZE_BYTES) {
+      const mb = Math.round(AVATAR_CONFIG.MAX_FILE_SIZE_BYTES / (1024 * 1024));
+      toast.error(`Image must be smaller than ${mb}MB`);
       return;
     }
     setPendingFile(file);
@@ -109,18 +128,18 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const handleCroppedUpload = async (blob: Blob) => {
     setUploading(true);
     try {
-      const path = `${user.id}/avatar-${Date.now()}.jpg`;
+      const path = `${user.id}/${AVATAR_CONFIG.FILENAME_PREFIX}-${Date.now()}.jpg`;
       const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(path, blob, { upsert: true, contentType: "image/jpeg" });
+        .from(STORAGE_BUCKETS.AVATARS)
+        .upload(path, blob, { upsert: true, contentType: AVATAR_CONFIG.UPLOAD_MIME_TYPE });
       if (uploadError) throw uploadError;
 
-      const { data: pub } = supabase.storage.from("avatars").getPublicUrl(path);
+      const { data: pub } = supabase.storage.from(STORAGE_BUCKETS.AVATARS).getPublicUrl(path);
       // Cache-bust so the new image appears immediately
       const publicUrl = `${pub.publicUrl}?t=${Date.now()}`;
 
       const { error: updateError } = await supabase
-        .from("profiles")
+        .from(DB_TABLES.PROFILES)
         .update({ avatar_url: publicUrl })
         .eq("user_id", user.id);
       if (updateError) throw updateError;
@@ -139,7 +158,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     setUploading(true);
     try {
       const { error } = await supabase
-        .from("profiles")
+        .from(DB_TABLES.PROFILES)
         .update({ avatar_url: null })
         .eq("user_id", user.id);
       if (error) throw error;
@@ -164,7 +183,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     setSavingProfile(true);
     try {
       const { error: profileError } = await supabase
-        .from("profiles")
+        .from(DB_TABLES.PROFILES)
         .update({ display_name: displayName.trim() || null, email: email.trim() })
         .eq("user_id", user.id);
       if (profileError) throw profileError;

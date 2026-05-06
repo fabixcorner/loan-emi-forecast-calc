@@ -43,7 +43,9 @@ const getCreditScoreRating = (score: number): { label: string; color: string } =
   return { label: "Very Poor", color: "text-red-500" };
 };
 
-const STORAGE_KEY = "loan-affordability-values";
+import { LOCAL_STORAGE_KEYS } from "@/config";
+
+const STORAGE_KEY = LOCAL_STORAGE_KEYS.AFFORDABILITY_VALUES;
 
 interface StoredValues {
   grossIncome: number;
@@ -86,7 +88,7 @@ export const LoanAffordabilityCalculator = () => {
     // Clear affordability data
     localStorage.removeItem(STORAGE_KEY);
     // Clear comparison scenarios
-    localStorage.removeItem('loan-comparison-scenarios');
+    localStorage.removeItem(LOCAL_STORAGE_KEYS.COMPARISON_SCENARIOS);
     
     // Reset to defaults
     setGrossIncome(100000);

@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Json } from "@/integrations/supabase/types";
+import { DB_TABLES, DEFAULT_SCORING_WEIGHTS } from "@/config";
 
 interface SaveLoadModalProps {
   isOpen: boolean;
@@ -60,7 +61,7 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
     if (!user) return;
     setLoading(true);
     const { data, error } = await supabase
-      .from("saved_calculations")
+      .from(DB_TABLES.SAVED_CALCULATIONS)
       .select("*")
       .order("updated_at", { ascending: false });
 
@@ -99,7 +100,7 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
     let error: any = null;
     if (replaceId) {
       const { data, error: updErr } = await supabase
-        .from("saved_calculations")
+        .from(DB_TABLES.SAVED_CALCULATIONS)
         .update({ ...payload, updated_at: new Date().toISOString() })
         .eq("id", replaceId)
         .select("id")
@@ -108,7 +109,7 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
       savedId = data?.id ?? replaceId;
     } else {
       const { data, error: insErr } = await supabase
-        .from("saved_calculations")
+        .from(DB_TABLES.SAVED_CALCULATIONS)
         .insert(payload)
         .select("id")
         .maybeSingle();
@@ -156,7 +157,7 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
       startYear: calc.start_year,
       partPayments: calc.part_payments || [],
       comparisonScenarios: calc.comparison_scenarios || [],
-      scoringWeights: calc.scoring_weights || { emiWeight: 30, interestWeight: 50 },
+      scoringWeights: calc.scoring_weights || { ...DEFAULT_SCORING_WEIGHTS },
       affordabilityInputs: calc.affordability_inputs || {},
     });
     toast.success(`Loaded "${calc.name}"`);
@@ -165,7 +166,7 @@ export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCal
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
-    const { error } = await supabase.from("saved_calculations").delete().eq("id", id);
+    const { error } = await supabase.from(DB_TABLES.SAVED_CALCULATIONS).delete().eq("id", id);
     setDeleting(null);
     if (error) {
       toast.error("Failed to delete");

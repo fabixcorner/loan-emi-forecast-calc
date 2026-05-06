@@ -61,7 +61,7 @@ export const LoanComparisonSection = ({
   startMonth,
   startYear,
 }: LoanComparisonSectionProps) => {
-  const STORAGE_KEY = 'loan-comparison-scenarios';
+  const STORAGE_KEY = LOCAL_STORAGE_KEYS.COMPARISON_SCENARIOS;
 
   const [scenarios, setScenarios] = useState<LoanScenario[]>(() => {
     // Load saved scenarios from localStorage
