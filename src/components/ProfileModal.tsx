@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Mail, User as UserIcon, Lock, Loader2, Camera, Trash2, Eye, EyeOff } from "lucide-react";
+import { X, Mail, User as UserIcon, Lock, Loader2, Camera, Trash2, Eye, EyeOff, Check, Circle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -25,6 +25,15 @@ const passwordSchema = z
   .regex(/[A-Z]/, "Must include at least one uppercase letter")
   .regex(/[0-9]/, "Must include at least one number");
 
+const getPasswordChecks = (pw: string) => ({
+  length: pw.length >= 8,
+  lowercase: /[a-z]/.test(pw),
+  uppercase: /[A-Z]/.test(pw),
+  number: /[0-9]/.test(pw),
+});
+
+const isEmailValid = (e: string) => emailSchema.safeParse(e).success;
+
 export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const { user, signOut } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +43,8 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
@@ -74,6 +84,15 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   if (!isOpen || !user) return null;
 
   const initials = (displayName || email || "U").trim().charAt(0).toUpperCase();
+
+  const passwordChecks = getPasswordChecks(newPassword);
+  const passwordChecksPassed = Object.values(passwordChecks).filter(Boolean).length;
+  const emailValid = isEmailValid(email);
+  const nameValid = nameSchema.safeParse(displayName).success;
+  const profileChanged = email !== (user.email ?? "") || displayName !== (user.user_metadata?.display_name ?? "");
+  const profileReady = emailValid && nameValid;
+  const passwordsMatch = newPassword.length > 0 && newPassword === confirmPassword;
+  const passwordReady = passwordChecksPassed === 4 && passwordsMatch;
 
   const handleAvatarFileSelected = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -291,6 +310,9 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                     />
                   </div>
                   {errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
+                  {!errors.email && email.length > 0 && !emailValid && (
+                    <p className="text-xs text-destructive mt-1">Please enter a valid email address</p>
+                  )}
                   {email !== user.email && !errors.email && (
                     <p className="text-xs text-muted-foreground mt-1">You'll receive a confirmation link at the new address.</p>
                   )}
@@ -308,7 +330,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                 Remove avatar
               </button>
             )}
-            <Button onClick={handleProfileSave} disabled={savingProfile} className="w-full">
+            <Button onClick={handleProfileSave} disabled={savingProfile || !profileReady} className="w-full">
               {savingProfile && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Save Profile
             </Button>
@@ -323,7 +345,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="profile-new-password"
-                    type={showPassword ? "text" : "password"}
+                    type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => { setNewPassword(e.target.value); if (errors.password) setErrors({ ...errors, password: undefined }); }}
                     placeholder="Min. 8 chars, A-z, 0-9"
@@ -332,15 +354,40 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword((s) => !s)}
+                    onClick={() => setShowNewPassword((s) => !s)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     tabIndex={-1}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={showNewPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
+                {newPassword.length > 0 && (
+                  <div className="mt-2 space-y-1.5">
+                    <div className="flex gap-1" aria-hidden="true">
+                      {[0, 1, 2, 3].map((i) => (
+                        <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i < passwordChecksPassed ? (passwordChecksPassed <= 1 ? "bg-destructive" : passwordChecksPassed <= 2 ? "bg-orange-500" : passwordChecksPassed === 3 ? "bg-yellow-500" : "bg-green-500") : "bg-muted"}`} />
+                      ))}
+                    </div>
+                    <ul className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                      {([
+                        ["length", "At least 8 characters"],
+                        ["lowercase", "One lowercase letter"],
+                        ["uppercase", "One uppercase letter"],
+                        ["number", "One number"],
+                      ] as const).map(([key, label]) => {
+                        const ok = passwordChecks[key];
+                        return (
+                          <li key={key} className={`flex items-center gap-1.5 ${ok ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
+                            {ok ? <Check className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
+                            <span>{label}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-[100px_1fr] items-start gap-3">
@@ -350,18 +397,30 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     id="profile-confirm-password"
-                    type={showPassword ? "text" : "password"}
+                    type={showConfirmPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => { setConfirmPassword(e.target.value); if (errors.confirm) setErrors({ ...errors, confirm: undefined }); }}
                     placeholder="Repeat password"
-                    className="pl-10"
+                    className="pl-10 pr-10"
                     aria-invalid={!!errors.confirm}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((s) => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
                 {errors.confirm && <p className="text-xs text-destructive mt-1">{errors.confirm}</p>}
+                {!errors.confirm && confirmPassword.length > 0 && newPassword !== confirmPassword && (
+                  <p className="text-xs text-destructive mt-1">Passwords do not match</p>
+                )}
               </div>
             </div>
-            <Button onClick={handlePasswordSave} disabled={savingPassword || !newPassword || !confirmPassword} className="w-full">
+            <Button onClick={handlePasswordSave} disabled={savingPassword || !passwordReady} className="w-full">
               {savingPassword && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Update Password
             </Button>
