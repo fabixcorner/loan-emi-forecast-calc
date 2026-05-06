@@ -128,10 +128,6 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
-          <DropdownMenuItem className="text-xs text-muted-foreground cursor-default">
-            {user.email}
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setShowProfileModal(true)} className="gap-2 cursor-pointer">
             <UserCog className="w-4 h-4" />
             Profile
