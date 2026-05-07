@@ -144,7 +144,11 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
             {savingCurrent ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setShowSaveNewModal(true)} className="gap-2 cursor-pointer">
+          <DropdownMenuItem
+            onClick={() => setShowSaveNewModal(true)}
+            disabled={!!currentLoanId && !isDirty}
+            className="gap-2 cursor-pointer"
+          >
             <FilePlus2 className="w-4 h-4" />
             Save New
           </DropdownMenuItem>
