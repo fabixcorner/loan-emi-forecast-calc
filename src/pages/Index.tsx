@@ -101,6 +101,7 @@ const Index = () => {
   const [showPartPayments, setShowPartPayments] = useState(false);
   const [currentLoanId, setCurrentLoanId] = useState<string | null>(null);
   const [currentLoanName, setCurrentLoanName] = useState<string | null>(null);
+  const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
   const openLoadOnLoginRef = useRef<boolean>(false);
   const { user } = useAuth();
 
@@ -109,6 +110,7 @@ const Index = () => {
     if (!user) {
       setCurrentLoanId(null);
       setCurrentLoanName(null);
+      setLoadedSnapshot(null);
     }
   }, [user]);
 
@@ -165,6 +167,15 @@ const Index = () => {
       setCurrentLoanName(data.name);
     }
 
+    setLoadedSnapshot(JSON.stringify({
+      loanAmount: data.loanAmount,
+      interestRate: data.interestRate,
+      loanTenure: data.loanTenure,
+      startMonth: data.startMonth,
+      startYear: data.startYear,
+      partPayments: data.partPayments || [],
+    }));
+
     setActiveTab("loan-details");
   }, []);
 
@@ -172,6 +183,29 @@ const Index = () => {
     setCurrentLoanId(id);
     setCurrentLoanName(name);
   }, []);
+
+  // Build snapshot of currently observable persisted values
+  const currentSnapshot = JSON.stringify({
+    loanAmount,
+    interestRate,
+    loanTenure,
+    startMonth,
+    startYear,
+    partPayments,
+  });
+
+  const isDirty = loadedSnapshot !== null && loadedSnapshot !== currentSnapshot;
+
+  const handleSavedCurrent = useCallback(() => {
+    setLoadedSnapshot(JSON.stringify({
+      loanAmount,
+      interestRate,
+      loanTenure,
+      startMonth,
+      startYear,
+      partPayments,
+    }));
+  }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
 
 
   // Load data from URL parameters on mount
@@ -282,6 +316,8 @@ const Index = () => {
                 currentLoanId={currentLoanId}
                 currentLoanName={currentLoanName}
                 onSavedAs={handleSavedAs}
+                isDirty={isDirty}
+                onSavedCurrent={handleSavedCurrent}
                 openLoadOnLoginRef={openLoadOnLoginRef}
               />
             </div>
