@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet, FileText } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet, FileText, Circle, Undo2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import calculatorIcon from "@/assets/calculator.png";
 import { UserMenu } from "@/components/UserMenu";
 import { LoanInputSection } from "@/components/LoanInputSection";
@@ -196,6 +197,44 @@ const Index = () => {
 
   const isDirty = loadedSnapshot !== null && loadedSnapshot !== currentSnapshot;
 
+  // Compute a human-readable list of changed fields vs the loaded snapshot
+  const changedFields: string[] = (() => {
+    if (!isDirty || !loadedSnapshot) return [];
+    try {
+      const prev = JSON.parse(loadedSnapshot);
+      const fmt = (n: number) => n.toLocaleString("en-IN");
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const diffs: string[] = [];
+      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ₹${fmt(prev.loanAmount)} → ₹${fmt(loanAmount)}`);
+      if (prev.interestRate !== interestRate) diffs.push(`Interest rate: ${prev.interestRate}% → ${interestRate}%`);
+      if (prev.loanTenure !== loanTenure) diffs.push(`Tenure: ${prev.loanTenure} yrs → ${loanTenure} yrs`);
+      if (prev.startMonth !== startMonth || prev.startYear !== startYear) {
+        diffs.push(`Start date: ${months[prev.startMonth-1]} ${prev.startYear} → ${months[startMonth-1]} ${startYear}`);
+      }
+      if (JSON.stringify(prev.partPayments) !== JSON.stringify(partPayments)) {
+        const before = (prev.partPayments || []).length;
+        const after = partPayments.length;
+        diffs.push(before === after ? `Part payments edited (${after})` : `Part payments: ${before} → ${after}`);
+      }
+      return diffs;
+    } catch {
+      return [];
+    }
+  })();
+
+  const handleDiscardChanges = useCallback(() => {
+    if (!loadedSnapshot) return;
+    try {
+      const prev = JSON.parse(loadedSnapshot);
+      setLoanAmount(prev.loanAmount);
+      setInterestRate(prev.interestRate);
+      setLoanTenure(prev.loanTenure);
+      setStartMonth(prev.startMonth);
+      setStartYear(prev.startYear);
+      setPartPayments(prev.partPayments || []);
+    } catch {}
+  }, [loadedSnapshot]);
+
   const handleSavedCurrent = useCallback(() => {
     setLoadedSnapshot(JSON.stringify({
       loanAmount,
@@ -317,6 +356,36 @@ const Index = () => {
                   <span className="text-xs font-medium text-foreground truncate" title={currentLoanName}>
                     {currentLoanName}
                   </span>
+                  {isDirty && (
+                    <>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 cursor-help">
+                            <Circle className="w-2 h-2 fill-current" />
+                            Unsaved
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs">
+                          <p className="font-medium mb-1 text-xs">Unsaved changes:</p>
+                          <ul className="text-xs space-y-0.5 list-disc pl-4">
+                            {changedFields.map((c, i) => <li key={i}>{c}</li>)}
+                          </ul>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={handleDiscardChanges}
+                            className="text-muted-foreground hover:text-destructive transition-colors flex-shrink-0"
+                            aria-label="Discard changes"
+                          >
+                            <Undo2 className="w-3.5 h-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">Discard changes</TooltipContent>
+                      </Tooltip>
+                    </>
+                  )}
                 </div>
               )}
               <HowItWorks />
