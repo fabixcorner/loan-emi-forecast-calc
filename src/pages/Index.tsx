@@ -196,6 +196,44 @@ const Index = () => {
 
   const isDirty = loadedSnapshot !== null && loadedSnapshot !== currentSnapshot;
 
+  // Compute a human-readable list of changed fields vs the loaded snapshot
+  const changedFields: string[] = (() => {
+    if (!isDirty || !loadedSnapshot) return [];
+    try {
+      const prev = JSON.parse(loadedSnapshot);
+      const fmt = (n: number) => n.toLocaleString("en-IN");
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const diffs: string[] = [];
+      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ₹${fmt(prev.loanAmount)} → ₹${fmt(loanAmount)}`);
+      if (prev.interestRate !== interestRate) diffs.push(`Interest rate: ${prev.interestRate}% → ${interestRate}%`);
+      if (prev.loanTenure !== loanTenure) diffs.push(`Tenure: ${prev.loanTenure} yrs → ${loanTenure} yrs`);
+      if (prev.startMonth !== startMonth || prev.startYear !== startYear) {
+        diffs.push(`Start date: ${months[prev.startMonth-1]} ${prev.startYear} → ${months[startMonth-1]} ${startYear}`);
+      }
+      if (JSON.stringify(prev.partPayments) !== JSON.stringify(partPayments)) {
+        const before = (prev.partPayments || []).length;
+        const after = partPayments.length;
+        diffs.push(before === after ? `Part payments edited (${after})` : `Part payments: ${before} → ${after}`);
+      }
+      return diffs;
+    } catch {
+      return [];
+    }
+  })();
+
+  const handleDiscardChanges = useCallback(() => {
+    if (!loadedSnapshot) return;
+    try {
+      const prev = JSON.parse(loadedSnapshot);
+      setLoanAmount(prev.loanAmount);
+      setInterestRate(prev.interestRate);
+      setLoanTenure(prev.loanTenure);
+      setStartMonth(prev.startMonth);
+      setStartYear(prev.startYear);
+      setPartPayments(prev.partPayments || []);
+    } catch {}
+  }, [loadedSnapshot]);
+
   const handleSavedCurrent = useCallback(() => {
     setLoadedSnapshot(JSON.stringify({
       loanAmount,
