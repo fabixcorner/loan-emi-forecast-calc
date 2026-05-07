@@ -17,7 +17,13 @@ import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useAuth } from "@/hooks/useAuth";
-import { LOCAL_STORAGE_KEYS, DEFAULT_SCORING_WEIGHTS } from "@/config";
+import {
+  LOCAL_STORAGE_KEYS,
+  DEFAULT_SCORING_WEIGHTS,
+  LOAN_DEFAULTS,
+  getDefaultStartMonth,
+  getDefaultStartYear,
+} from "@/config";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { z } from "zod";
 
@@ -79,12 +85,12 @@ const PartPaymentSchema = z.object({
 const PartPaymentsArraySchema = z.array(PartPaymentSchema);
 
 const Index = () => {
-  // Default values
-  const [loanAmount, setLoanAmount] = useState(2000000); // 20 lakhs
-  const [interestRate, setInterestRate] = useState(8.0);
-  const [loanTenure, setLoanTenure] = useState(15);
-  const [startMonth, setStartMonth] = useState<number>(new Date().getMonth() + 1);
-  const [startYear, setStartYear] = useState<number>(new Date().getFullYear());
+  // Default values (sourced from config)
+  const [loanAmount, setLoanAmount] = useState(LOAN_DEFAULTS.LOAN_AMOUNT);
+  const [interestRate, setInterestRate] = useState(LOAN_DEFAULTS.INTEREST_RATE);
+  const [loanTenure, setLoanTenure] = useState(LOAN_DEFAULTS.TENURE_YEARS);
+  const [startMonth, setStartMonth] = useState<number>(getDefaultStartMonth());
+  const [startYear, setStartYear] = useState<number>(getDefaultStartYear());
   const [partPayments, setPartPayments] = useState<PartPayment[]>([]);
   const [calculation, setCalculation] = useState<any>(null);
   const [calculationWithoutPartPayments, setCalculationWithoutPartPayments] = useState<any>(null);
