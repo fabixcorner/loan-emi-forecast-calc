@@ -5,14 +5,18 @@
  * tenure (in years), and start date used when the page first loads.
  */
 
-export const LOAN_DEFAULTS = {
+export const LOAN_DEFAULTS: {
+  LOAN_AMOUNT: number;
+  INTEREST_RATE: number;
+  TENURE_YEARS: number;
+} = {
   /** Default loan principal in rupees. */
   LOAN_AMOUNT: 2000000, // 20 lakhs
   /** Default annual interest rate (percent). */
   INTEREST_RATE: 8.0,
   /** Default loan tenure in years. */
   TENURE_YEARS: 15,
-} as const;
+};
 
 /**
  * Returns the default start month (1-12) for a new loan.
