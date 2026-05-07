@@ -17,10 +17,12 @@ interface UserMenuProps {
   currentLoanId: string | null;
   currentLoanName: string | null;
   onSavedAs: (id: string, name: string) => void;
+  isDirty?: boolean;
+  onSavedCurrent?: () => void;
   openLoadOnLoginRef?: React.MutableRefObject<boolean>;
 }
 
-export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, openLoadOnLoginRef }: UserMenuProps) => {
+export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, openLoadOnLoginRef }: UserMenuProps) => {
   const { user, loading, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSaveNewModal, setShowSaveNewModal] = useState(false);
@@ -89,6 +91,7 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
       toast.error("Failed to save changes");
     } else {
       toast.success(`Updated "${currentLoanName}"`);
+      onSavedCurrent?.();
     }
   };
 
@@ -135,7 +138,7 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={handleSaveCurrent}
-            disabled={!currentLoanId || savingCurrent}
+            disabled={!currentLoanId || savingCurrent || !isDirty}
             className="gap-2 cursor-pointer"
           >
             {savingCurrent ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
