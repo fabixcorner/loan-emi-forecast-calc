@@ -207,6 +207,17 @@ const Index = () => {
     }));
   }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
 
+  // Warn before leaving the page if there are unsaved changes to a loaded loan
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
+
 
   // Load data from URL parameters on mount
   useEffect(() => {
