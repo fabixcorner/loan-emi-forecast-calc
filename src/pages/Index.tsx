@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet, FileText, Circle, Undo2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import calculatorIcon from "@/assets/calculator.png";
 import { UserMenu } from "@/components/UserMenu";
 import { LoanInputSection } from "@/components/LoanInputSection";
@@ -16,6 +17,14 @@ import { Footer } from "@/components/Footer";
 import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { useAuth } from "@/hooks/useAuth";
+import {
+  LOCAL_STORAGE_KEYS,
+  DEFAULT_SCORING_WEIGHTS,
+  LOAN_DEFAULTS,
+  getDefaultStartMonth,
+  getDefaultStartYear,
+} from "@/config";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { z } from "zod";
 
@@ -77,12 +86,12 @@ const PartPaymentSchema = z.object({
 const PartPaymentsArraySchema = z.array(PartPaymentSchema);
 
 const Index = () => {
-  // Default values
-  const [loanAmount, setLoanAmount] = useState(2000000); // 20 lakhs
-  const [interestRate, setInterestRate] = useState(8.0);
-  const [loanTenure, setLoanTenure] = useState(15);
-  const [startMonth, setStartMonth] = useState<number>(new Date().getMonth() + 1);
-  const [startYear, setStartYear] = useState<number>(new Date().getFullYear());
+  // Default values (sourced from config)
+  const [loanAmount, setLoanAmount] = useState(LOAN_DEFAULTS.LOAN_AMOUNT);
+  const [interestRate, setInterestRate] = useState(LOAN_DEFAULTS.INTEREST_RATE);
+  const [loanTenure, setLoanTenure] = useState(LOAN_DEFAULTS.TENURE_YEARS);
+  const [startMonth, setStartMonth] = useState<number>(getDefaultStartMonth());
+  const [startYear, setStartYear] = useState<number>(getDefaultStartYear());
   const [partPayments, setPartPayments] = useState<PartPayment[]>([]);
   const [calculation, setCalculation] = useState<any>(null);
   const [calculationWithoutPartPayments, setCalculationWithoutPartPayments] = useState<any>(null);
@@ -91,18 +100,32 @@ const Index = () => {
   const [showSchedule, setShowSchedule] = useState(false);
   const [activeTab, setActiveTab] = useState("loan-details");
   const [showPartPayments, setShowPartPayments] = useState(false);
+  const [currentLoanId, setCurrentLoanId] = useState<string | null>(null);
+  const [currentLoanName, setCurrentLoanName] = useState<string | null>(null);
+  const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
+  const openLoadOnLoginRef = useRef<boolean>(false);
+  const { user } = useAuth();
+
+  // Clear active loan session when user signs out
+  useEffect(() => {
+    if (!user) {
+      setCurrentLoanId(null);
+      setCurrentLoanName(null);
+      setLoadedSnapshot(null);
+    }
+  }, [user]);
 
   // Get current data for saving
   const getCurrentData = useCallback(() => {
     // Read comparison scenarios from localStorage
-    const savedScenarios = localStorage.getItem('loan-comparison-scenarios');
+    const savedScenarios = localStorage.getItem(LOCAL_STORAGE_KEYS.COMPARISON_SCENARIOS);
     let comparisonScenarios: any[] = [];
     try {
       if (savedScenarios) comparisonScenarios = JSON.parse(savedScenarios);
     } catch {}
 
     // Read affordability inputs from localStorage
-    const savedAffordability = localStorage.getItem('loan-affordability-values');
+    const savedAffordability = localStorage.getItem(LOCAL_STORAGE_KEYS.AFFORDABILITY_VALUES);
     let affordabilityInputs = {};
     try {
       if (savedAffordability) affordabilityInputs = JSON.parse(savedAffordability);
@@ -116,7 +139,7 @@ const Index = () => {
       startYear,
       partPayments,
       comparisonScenarios,
-      scoringWeights: { emiWeight: 30, interestWeight: 50 }, // default, will be overridden by component state
+      scoringWeights: { ...DEFAULT_SCORING_WEIGHTS }, // default, will be overridden by component state
       affordabilityInputs,
     };
   }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
@@ -132,16 +155,107 @@ const Index = () => {
 
     // Save comparison scenarios to localStorage for the component to pick up
     if (data.comparisonScenarios && Array.isArray(data.comparisonScenarios)) {
-      localStorage.setItem('loan-comparison-scenarios', JSON.stringify(data.comparisonScenarios));
+      localStorage.setItem(LOCAL_STORAGE_KEYS.COMPARISON_SCENARIOS, JSON.stringify(data.comparisonScenarios));
     }
 
     // Save affordability inputs to localStorage
     if (data.affordabilityInputs && typeof data.affordabilityInputs === 'object' && Object.keys(data.affordabilityInputs).length > 0) {
-      localStorage.setItem('loan-affordability-values', JSON.stringify(data.affordabilityInputs));
+      localStorage.setItem(LOCAL_STORAGE_KEYS.AFFORDABILITY_VALUES, JSON.stringify(data.affordabilityInputs));
     }
+
+    if (data.id && data.name) {
+      setCurrentLoanId(data.id);
+      setCurrentLoanName(data.name);
+    }
+
+    setLoadedSnapshot(JSON.stringify({
+      loanAmount: data.loanAmount,
+      interestRate: data.interestRate,
+      loanTenure: data.loanTenure,
+      startMonth: data.startMonth,
+      startYear: data.startYear,
+      partPayments: data.partPayments || [],
+    }));
 
     setActiveTab("loan-details");
   }, []);
+
+  const handleSavedAs = useCallback((id: string, name: string) => {
+    setCurrentLoanId(id);
+    setCurrentLoanName(name);
+  }, []);
+
+  // Build snapshot of currently observable persisted values
+  const currentSnapshot = JSON.stringify({
+    loanAmount,
+    interestRate,
+    loanTenure,
+    startMonth,
+    startYear,
+    partPayments,
+  });
+
+  const isDirty = loadedSnapshot !== null && loadedSnapshot !== currentSnapshot;
+
+  // Compute a human-readable list of changed fields vs the loaded snapshot
+  const changedFields: string[] = (() => {
+    if (!isDirty || !loadedSnapshot) return [];
+    try {
+      const prev = JSON.parse(loadedSnapshot);
+      const fmt = (n: number) => n.toLocaleString("en-IN");
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const diffs: string[] = [];
+      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ₹${fmt(prev.loanAmount)} → ₹${fmt(loanAmount)}`);
+      if (prev.interestRate !== interestRate) diffs.push(`Interest rate: ${prev.interestRate}% → ${interestRate}%`);
+      if (prev.loanTenure !== loanTenure) diffs.push(`Tenure: ${prev.loanTenure} yrs → ${loanTenure} yrs`);
+      if (prev.startMonth !== startMonth || prev.startYear !== startYear) {
+        diffs.push(`Start date: ${months[prev.startMonth-1]} ${prev.startYear} → ${months[startMonth-1]} ${startYear}`);
+      }
+      if (JSON.stringify(prev.partPayments) !== JSON.stringify(partPayments)) {
+        const before = (prev.partPayments || []).length;
+        const after = partPayments.length;
+        diffs.push(before === after ? `Part payments edited (${after})` : `Part payments: ${before} → ${after}`);
+      }
+      return diffs;
+    } catch {
+      return [];
+    }
+  })();
+
+  const handleDiscardChanges = useCallback(() => {
+    if (!loadedSnapshot) return;
+    try {
+      const prev = JSON.parse(loadedSnapshot);
+      setLoanAmount(prev.loanAmount);
+      setInterestRate(prev.interestRate);
+      setLoanTenure(prev.loanTenure);
+      setStartMonth(prev.startMonth);
+      setStartYear(prev.startYear);
+      setPartPayments(prev.partPayments || []);
+    } catch {}
+  }, [loadedSnapshot]);
+
+  const handleSavedCurrent = useCallback(() => {
+    setLoadedSnapshot(JSON.stringify({
+      loanAmount,
+      interestRate,
+      loanTenure,
+      startMonth,
+      startYear,
+      partPayments,
+    }));
+  }, [loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
+
+  // Warn before leaving the page if there are unsaved changes to a loaded loan
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
 
 
   // Load data from URL parameters on mount
@@ -236,11 +350,55 @@ const Index = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
+              {currentLoanName && (
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30 max-w-[180px]">
+                  <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
+                  <span className="text-xs font-medium text-foreground truncate" title={currentLoanName}>
+                    {currentLoanName}
+                  </span>
+                  {isDirty && (
+                    <>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 dark:text-amber-400 cursor-help">
+                            <Circle className="w-2 h-2 fill-current" />
+                            Unsaved
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="max-w-xs">
+                          <p className="font-medium mb-1 text-xs">Unsaved changes:</p>
+                          <ul className="text-xs space-y-0.5 list-disc pl-4">
+                            {changedFields.map((c, i) => <li key={i}>{c}</li>)}
+                          </ul>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={handleDiscardChanges}
+                            className="text-muted-foreground hover:text-destructive transition-colors flex-shrink-0"
+                            aria-label="Discard changes"
+                          >
+                            <Undo2 className="w-3.5 h-3.5" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">Discard changes</TooltipContent>
+                      </Tooltip>
+                    </>
+                  )}
+                </div>
+              )}
               <HowItWorks />
               <ThemeToggle />
               <UserMenu
                 onLoadCalculation={handleLoadCalculation}
                 getCurrentData={getCurrentData}
+                currentLoanId={currentLoanId}
+                currentLoanName={currentLoanName}
+                onSavedAs={handleSavedAs}
+                isDirty={isDirty}
+                onSavedCurrent={handleSavedCurrent}
+                openLoadOnLoginRef={openLoadOnLoginRef}
               />
             </div>
           </div>

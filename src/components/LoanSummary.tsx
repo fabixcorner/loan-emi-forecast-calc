@@ -334,7 +334,7 @@ export const LoanSummary = ({
                     EMI Reduction Summary
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-4 pb-4">
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground">EMI Changes</p>
