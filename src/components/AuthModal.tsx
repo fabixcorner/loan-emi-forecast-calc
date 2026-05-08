@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X, Mail, Lock, User, Wand2, Loader2 } from "lucide-react";
+import { X, Mail, Lock, User, Wand2, Loader2, Eye, EyeOff, Check, Circle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
@@ -26,6 +26,15 @@ const signupPasswordSchema = z
 
 type FieldErrors = { email?: string; password?: string };
 
+const getPasswordChecks = (pw: string) => ({
+  length: pw.length >= 8,
+  lowercase: /[a-z]/.test(pw),
+  uppercase: /[A-Z]/.test(pw),
+  number: /[0-9]/.test(pw),
+});
+
+const isEmailValid = (e: string) => emailSchema.safeParse(e).success;
+
 export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const { signInWithPassword, signUp, signInWithMagicLink, resetPassword } = useAuth();
   const [email, setEmail] = useState("");
@@ -34,8 +43,15 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const [loading, setLoading] = useState(false);
   const [mode, setMode] = useState<"signin" | "signup" | "magic-link" | "forgot-password">("signin");
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!isOpen) return null;
+
+  const passwordChecks = getPasswordChecks(password);
+  const passwordChecksPassed = Object.values(passwordChecks).filter(Boolean).length;
+  const emailValid = isEmailValid(email);
+  const signinReady = emailValid && password.length > 0;
+  const signupReady = emailValid && passwordChecksPassed === 4;
 
   const validate = (opts: { email?: boolean; password?: "signin" | "signup" }) => {
     const next: FieldErrors = {};
@@ -202,12 +218,15 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                       <div>
                         <div className="relative">
                           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input id="signin-password" type="password" value={password} onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors({ ...errors, password: undefined }); }} placeholder="••••••••" className="pl-10" aria-invalid={!!errors.password} />
+                          <Input id="signin-password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors({ ...errors, password: undefined }); }} placeholder="••••••••" className="pl-10 pr-10" aria-invalid={!!errors.password} />
+                          <button type="button" onClick={() => setShowPassword((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={showPassword ? "Hide password" : "Show password"} tabIndex={-1}>
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
                         </div>
                         {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
                       </div>
                     </div>
-                    <Button type="submit" className="w-full" disabled={loading}>
+                    <Button type="submit" className="w-full" disabled={loading || !signinReady}>
                       {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                       Sign In
                     </Button>
@@ -247,16 +266,43 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     <div>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input id="signup-password" type="password" value={password} onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors({ ...errors, password: undefined }); }} placeholder="Min. 8 chars, A-z, 0-9" className="pl-10" aria-invalid={!!errors.password} />
+                        <Input id="signup-password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => { setPassword(e.target.value); if (errors.password) setErrors({ ...errors, password: undefined }); }} placeholder="Min. 8 chars, A-z, 0-9" className="pl-10 pr-10" aria-invalid={!!errors.password} />
+                        <button type="button" onClick={() => setShowPassword((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={showPassword ? "Hide password" : "Show password"} tabIndex={-1}>
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
                       </div>
-                      {errors.password ? (
-                        <p className="text-xs text-destructive mt-1">{errors.password}</p>
-                      ) : (
+                      {errors.password && <p className="text-xs text-destructive mt-1">{errors.password}</p>}
+                      {password.length > 0 && (
+                        <div className="mt-2 space-y-1.5">
+                          <div className="flex gap-1" aria-hidden="true">
+                            {[0, 1, 2, 3].map((i) => (
+                              <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i < passwordChecksPassed ? (passwordChecksPassed <= 1 ? "bg-destructive" : passwordChecksPassed <= 2 ? "bg-orange-500" : passwordChecksPassed === 3 ? "bg-yellow-500" : "bg-green-500") : "bg-muted"}`} />
+                            ))}
+                          </div>
+                          <ul className="grid grid-cols-2 gap-x-2 gap-y-1 text-xs">
+                            {([
+                              ["length", "At least 8 characters"],
+                              ["lowercase", "One lowercase letter"],
+                              ["uppercase", "One uppercase letter"],
+                              ["number", "One number"],
+                            ] as const).map(([key, label]) => {
+                              const ok = passwordChecks[key];
+                              return (
+                                <li key={key} className={`flex items-center gap-1.5 ${ok ? "text-green-600 dark:text-green-400" : "text-muted-foreground"}`}>
+                                  {ok ? <Check className="w-3 h-3" /> : <Circle className="w-3 h-3" />}
+                                  <span>{label}</span>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      )}
+                      {password.length === 0 && !errors.password && (
                         <p className="text-xs text-muted-foreground mt-1">Min 8 chars with uppercase, lowercase, and a number. Symbols allowed.</p>
                       )}
                     </div>
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full" disabled={loading || !signupReady}>
                     {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                     Create Account
                   </Button>
