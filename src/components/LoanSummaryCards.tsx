@@ -81,7 +81,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
         </CardContent>
       </Card>
 
-      <Card className="bg-card shadow-card border border-border">
+      <Card className="glass-card-danger shadow-card border border-border">
         <CardContent className="p-3">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1 font-bold">Total Interest</p>

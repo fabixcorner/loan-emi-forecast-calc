@@ -8,58 +8,71 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Darker blue theme inspired by the reference design */
-    --background: 220 25% 92%;
-    --foreground: 220 40% 15%;
+    /* Soft pastel blue glassmorphism (light theme reference) */
+    --background: 210 60% 94%;
+    --foreground: 218 45% 18%;
 
-    --card: 220 20% 97%;
-    --card-foreground: 220 40% 18%;
+    --card: 205 75% 90%;
+    --card-foreground: 218 45% 20%;
 
-    --popover: 220 20% 97%;
-    --popover-foreground: 220 40% 15%;
+    --popover: 205 75% 96%;
+    --popover-foreground: 218 45% 18%;
 
-    --primary: 220 50% 25%;
+    --primary: 218 60% 30%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 20% 90%;
-    --secondary-foreground: 220 40% 18%;
+    --secondary: 205 60% 88%;
+    --secondary-foreground: 218 45% 20%;
 
-    --muted: 220 18% 93%;
-    --muted-foreground: 220 20% 45%;
+    --muted: 210 50% 92%;
+    --muted-foreground: 218 25% 40%;
 
-    --accent: 220 50% 25%;
+    --accent: 218 60% 30%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 55%;
+    --destructive: 6 80% 62%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 25% 85%;
-    --input: 220 20% 90%;
-    --ring: 220 50% 25%;
+    --border: 210 50% 80%;
+    --input: 205 60% 92%;
+    --ring: 218 60% 30%;
 
-    --financial-primary: 220 50% 25%;
-    --financial-success: 210 55% 35%;
+    --financial-primary: 218 60% 30%;
+    --financial-success: 210 55% 38%;
     --financial-warning: 43 96% 56%;
-    --financial-background: 220 25% 92%;
-    --financial-card: 220 20% 97%;
-    --financial-border: 220 25% 85%;
+    --financial-background: 210 60% 94%;
+    --financial-card: 205 75% 90%;
+    --financial-border: 210 50% 80%;
     
     --gradient-financial: linear-gradient(135deg, hsl(var(--financial-primary)), hsl(var(--financial-success)));
-    --shadow-financial: 0 4px 20px -4px hsl(var(--financial-primary) / 0.15);
-    --shadow-card: 0 4px 24px -4px hsl(220 40% 40% / 0.08), 0 2px 8px -2px hsl(220 40% 40% / 0.04);
+    --shadow-financial: 0 4px 20px -4px hsl(var(--financial-primary) / 0.25);
+    /* 3D glass bevel: outer drop shadow + inner top highlight + inner bottom dark line */
+    --shadow-card:
+      0 10px 30px -10px hsl(218 50% 30% / 0.25),
+      0 2px 6px -2px hsl(218 50% 30% / 0.15),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.7),
+      inset 0 -1px 0 0 hsl(218 50% 30% / 0.15);
 
     --radius: 0.75rem;
 
-    /* Glassmorphism Background - soft blue/gray gradient */
-    --glass-background-start: 220 25% 92%;
-    --glass-background-end: 220 20% 90%;
-    --glass-overlay: 220 20% 97% / 0.95;
-    --glass-border: 220 25% 82%;
-    --glass-blur: blur(12px);
+    /* Glassmorphism Background - soft blue gradient */
+    --glass-background-start: 210 65% 94%;
+    --glass-background-end: 205 70% 90%;
+    --glass-overlay: 205 80% 96% / 0.55;
+    --glass-border: 205 60% 82%;
+    --glass-blur: blur(16px);
+
+    /* Card gradient (light glass) */
+    --card-gradient-start: 205 90% 94%;
+    --card-gradient-end: 210 70% 84%;
+    --card-warm-start: 30 60% 96%;
+    --card-warm-end: 25 50% 90%;
+    --card-danger-start: 5 90% 90%;
+    --card-danger-end: 10 70% 80%;
 
     /* Tab gradient for active state */
-    --tab-gradient-start: 220 50% 25%;
-    --tab-gradient-end: 210 55% 35%;
+    --tab-gradient-start: 218 70% 38%;
+    --tab-gradient-end: 210 65% 50%;
 
     --sidebar-background: 220 20% 96%;
     --sidebar-foreground: 220 40% 18%;
@@ -75,50 +88,65 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222 35% 8%;
-    --foreground: 210 40% 95%;
+    --background: 218 55% 10%;
+    --foreground: 210 40% 96%;
 
-    --card: 222 30% 12%;
-    --card-foreground: 210 40% 95%;
+    --card: 218 55% 18%;
+    --card-foreground: 210 40% 96%;
 
-    --popover: 222 30% 12%;
-    --popover-foreground: 210 40% 95%;
+    --popover: 218 55% 14%;
+    --popover-foreground: 210 40% 96%;
 
-    --primary: 210 60% 55%;
+    --primary: 210 80% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 30% 16%;
-    --secondary-foreground: 210 40% 95%;
+    --secondary: 218 45% 20%;
+    --secondary-foreground: 210 40% 96%;
 
-    --muted: 220 25% 16%;
-    --muted-foreground: 215 20% 60%;
+    --muted: 218 40% 18%;
+    --muted-foreground: 210 30% 70%;
 
-    --accent: 210 60% 55%;
+    --accent: 210 80% 60%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 210 40% 95%;
+    --destructive: 4 80% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 25% 20%;
-    --input: 220 25% 18%;
-    --ring: 210 60% 55%;
+    --border: 215 60% 35%;
+    --input: 218 50% 18%;
+    --ring: 210 80% 60%;
 
-    --financial-primary: 210 60% 55%;
-    --financial-success: 200 55% 45%;
-    --financial-warning: 43 90% 50%;
-    --financial-background: 222 35% 8%;
-    --financial-card: 222 30% 12%;
-    --financial-border: 220 25% 20%;
+    --financial-primary: 210 80% 60%;
+    --financial-success: 200 70% 50%;
+    --financial-warning: 43 90% 55%;
+    --financial-background: 218 55% 10%;
+    --financial-card: 218 55% 18%;
+    --financial-border: 215 60% 35%;
 
-    --shadow-card: 0 4px 24px -4px hsl(220 50% 10% / 0.4), 0 2px 8px -2px hsl(220 50% 10% / 0.3);
+    /* 3D glass bevel in dark: glowing top edge + deep shadow */
+    --shadow-card:
+      0 14px 40px -12px hsl(215 90% 4% / 0.7),
+      0 4px 10px -4px hsl(215 90% 4% / 0.6),
+      inset 0 1px 0 0 hsl(210 90% 75% / 0.35),
+      inset 0 -1px 0 0 hsl(215 90% 4% / 0.6),
+      inset 1px 0 0 0 hsl(210 80% 60% / 0.15),
+      inset -1px 0 0 0 hsl(215 90% 4% / 0.4);
 
-    --glass-background-start: 222 35% 8%;
-    --glass-background-end: 222 30% 10%;
-    --glass-overlay: 222 30% 12% / 0.95;
-    --glass-border: 220 25% 18%;
+    --glass-background-start: 218 60% 8%;
+    --glass-background-end: 218 55% 12%;
+    --glass-overlay: 218 55% 18% / 0.7;
+    --glass-border: 215 60% 35%;
 
-    --tab-gradient-start: 210 60% 50%;
-    --tab-gradient-end: 200 55% 40%;
+    /* Single rich blue gradient for all dark loan cards */
+    --card-gradient-start: 215 75% 28%;
+    --card-gradient-end: 218 70% 14%;
+    --card-warm-start: 215 75% 28%;
+    --card-warm-end: 218 70% 14%;
+    --card-danger-start: 6 75% 45%;
+    --card-danger-end: 6 80% 28%;
+
+    --tab-gradient-start: 215 75% 35%;
+    --tab-gradient-end: 210 70% 50%;
 
     --sidebar-background: 222 30% 10%;
     --sidebar-foreground: 210 40% 95%;
@@ -155,11 +183,11 @@ All colors MUST be HSL.
   .glass-background {
     background: linear-gradient(
       135deg, 
-      hsl(220 22% 90%) 0%, 
-      hsl(220 20% 88%) 25%,
-      hsl(220 24% 89%) 50%,
-      hsl(220 18% 87%) 75%,
-      hsl(220 22% 90%) 100%
+      hsl(210 65% 94%) 0%,
+      hsl(205 70% 90%) 25%,
+      hsl(210 60% 92%) 50%,
+      hsl(208 65% 88%) 75%,
+      hsl(210 65% 94%) 100%
     );
     min-height: 100vh;
     transition: background 0.3s ease;
@@ -168,11 +196,11 @@ All colors MUST be HSL.
   .dark .glass-background {
     background: linear-gradient(
       135deg, 
-      hsl(222 35% 8%) 0%, 
-      hsl(222 32% 10%) 25%,
-      hsl(222 35% 9%) 50%,
-      hsl(222 30% 11%) 75%,
-      hsl(222 35% 8%) 100%
+      hsl(218 60% 10%) 0%,
+      hsl(218 55% 14%) 25%,
+      hsl(215 60% 11%) 50%,
+      hsl(218 55% 13%) 75%,
+      hsl(218 60% 9%) 100%
     );
   }
 
@@ -184,6 +212,61 @@ All colors MUST be HSL.
     border: 1px solid hsl(var(--glass-border));
     box-shadow: var(--shadow-card);
     border-radius: var(--radius);
+  }
+
+  /* 3D glass card with gradient + bevel — applied to all Card components */
+  .glass-card-3d {
+    background: linear-gradient(
+      145deg,
+      hsl(var(--card-gradient-start)) 0%,
+      hsl(var(--card-gradient-end)) 100%
+    );
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  /* Subtle diagonal sheen highlight on the top edge */
+  .glass-card-3d::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      160deg,
+      hsl(0 0% 100% / 0.18) 0%,
+      hsl(0 0% 100% / 0.04) 28%,
+      transparent 55%
+    );
+    border-radius: inherit;
+  }
+  .dark .glass-card-3d::before {
+    background: linear-gradient(
+      160deg,
+      hsl(210 100% 80% / 0.18) 0%,
+      hsl(210 100% 80% / 0.04) 25%,
+      transparent 55%
+    );
+  }
+
+  /* Warm cream variant (light only) for breakdown card */
+  .glass-card-warm {
+    background: linear-gradient(
+      145deg,
+      hsl(var(--card-warm-start)) 0%,
+      hsl(var(--card-warm-end)) 100%
+    );
+  }
+
+  /* Danger / red variant for Total Interest card */
+  .glass-card-danger {
+    background: linear-gradient(
+      145deg,
+      hsl(var(--card-danger-start)) 0%,
+      hsl(var(--card-danger-end)) 100%
+    ) !important;
   }
 
   /* Calculator animation styles */
