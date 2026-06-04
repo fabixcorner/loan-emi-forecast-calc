@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import {
   LOCAL_STORAGE_KEYS,
+  SESSION_STORAGE_KEYS,
   DEFAULT_SCORING_WEIGHTS,
   LOAN_DEFAULTS,
   getDefaultStartMonth,
