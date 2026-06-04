@@ -65,8 +65,8 @@ All colors MUST be HSL.
     /* Card gradient (light glass) */
     --card-gradient-start: 205 90% 94%;
     --card-gradient-end: 210 70% 84%;
-    --card-warm-start: 30 60% 96%;
-    --card-warm-end: 25 50% 90%;
+    --card-warm-start: 205 90% 96%;
+    --card-warm-end: 210 75% 88%;
     --card-danger-start: 5 90% 90%;
     --card-danger-end: 10 70% 80%;
 
