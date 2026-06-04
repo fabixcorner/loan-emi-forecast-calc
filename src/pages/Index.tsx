@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import {
   LOCAL_STORAGE_KEYS,
+  SESSION_STORAGE_KEYS,
   DEFAULT_SCORING_WEIGHTS,
   LOAN_DEFAULTS,
   getDefaultStartMonth,
@@ -106,14 +107,59 @@ const Index = () => {
   const openLoadOnLoginRef = useRef<boolean>(false);
   const { user } = useAuth();
 
-  // Clear active loan session when user signs out
+  // Restore / clear active loan session based on auth state
+  const sessionRestoredRef = useRef(false);
   useEffect(() => {
     if (!user) {
       setCurrentLoanId(null);
       setCurrentLoanName(null);
       setLoadedSnapshot(null);
+      sessionStorage.removeItem(SESSION_STORAGE_KEYS.ACTIVE_LOAN);
+      sessionRestoredRef.current = false;
+      return;
     }
+    if (sessionRestoredRef.current) return;
+    sessionRestoredRef.current = true;
+    try {
+      const raw = sessionStorage.getItem(SESSION_STORAGE_KEYS.ACTIVE_LOAN);
+      if (!raw) return;
+      const s = JSON.parse(raw);
+      if (s.loanAmount != null) setLoanAmount(s.loanAmount);
+      if (s.interestRate != null) setInterestRate(s.interestRate);
+      if (s.loanTenure != null) setLoanTenure(s.loanTenure);
+      if (s.startMonth != null) setStartMonth(s.startMonth);
+      if (s.startYear != null) setStartYear(s.startYear);
+      if (Array.isArray(s.partPayments)) setPartPayments(s.partPayments);
+      if (s.currentLoanId) setCurrentLoanId(s.currentLoanId);
+      if (s.currentLoanName) setCurrentLoanName(s.currentLoanName);
+      if (s.loadedSnapshot) setLoadedSnapshot(s.loadedSnapshot);
+    } catch {}
   }, [user]);
+
+  // Persist active loan session whenever it changes (only when logged in and a loan is loaded)
+  useEffect(() => {
+    if (!user) return;
+    if (!currentLoanId) {
+      sessionStorage.removeItem(SESSION_STORAGE_KEYS.ACTIVE_LOAN);
+      return;
+    }
+    try {
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEYS.ACTIVE_LOAN,
+        JSON.stringify({
+          currentLoanId,
+          currentLoanName,
+          loadedSnapshot,
+          loanAmount,
+          interestRate,
+          loanTenure,
+          startMonth,
+          startYear,
+          partPayments,
+        })
+      );
+    } catch {}
+  }, [user, currentLoanId, currentLoanName, loadedSnapshot, loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
 
   // Get current data for saving
   const getCurrentData = useCallback(() => {
