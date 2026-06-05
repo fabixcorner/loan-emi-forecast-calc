@@ -269,40 +269,67 @@ export const PartPaymentSection = ({
             )}
             
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Month-Year</Label>
-                <div className="grid grid-cols-2 gap-3 flex-1">
-                  <Select 
-                    value={newPayment.month.toString()} 
-                    onValueChange={(value) => setNewPayment(prev => ({ ...prev, month: parseInt(value) }))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getMonthOptions().map((month) => (
-                        <SelectItem key={month} value={month.toString()}>
-                          {getMonthName(month)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  
-                  <Select 
-                    value={newPayment.year.toString()} 
-                    onValueChange={(value) => setNewPayment(prev => ({ ...prev, year: parseInt(value) }))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getYearOptions().map((year) => (
-                        <SelectItem key={year} value={year.toString()}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="flex items-start gap-3">
+                <Label className="text-sm text-muted-foreground w-20 shrink-0 pt-2">Month-Year</Label>
+                <div className="flex-1 space-y-1">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Select 
+                      value={newPayment.month.toString()} 
+                      onValueChange={(value) => {
+                        const month = parseInt(value);
+                        setNewPayment(prev => ({ ...prev, month }));
+                        const wouldBeDuplicate = partPayments.some(
+                          p => p.id !== editingId && p.month === month && p.year === newPayment.year
+                        );
+                        if (wouldBeDuplicate) {
+                          setDuplicateError(`A part payment already exists for ${getMonthName(month)} ${newPayment.year}`);
+                        } else {
+                          setDuplicateError(null);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className={`h-9 ${duplicateError ? 'border-destructive ring-1 ring-destructive' : ''}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getMonthOptions().map((month) => (
+                          <SelectItem key={month} value={month.toString()}>
+                            {getMonthName(month)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select 
+                      value={newPayment.year.toString()} 
+                      onValueChange={(value) => {
+                        const year = parseInt(value);
+                        setNewPayment(prev => ({ ...prev, year }));
+                        const wouldBeDuplicate = partPayments.some(
+                          p => p.id !== editingId && p.month === newPayment.month && p.year === year
+                        );
+                        if (wouldBeDuplicate) {
+                          setDuplicateError(`A part payment already exists for ${getMonthName(newPayment.month)} ${year}`);
+                        } else {
+                          setDuplicateError(null);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className={`h-9 ${duplicateError ? 'border-destructive ring-1 ring-destructive' : ''}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getYearOptions().map((year) => (
+                          <SelectItem key={year} value={year.toString()}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {duplicateError && (
+                    <p className="text-xs text-destructive font-medium">{duplicateError}</p>
+                  )}
                 </div>
               </div>
 
