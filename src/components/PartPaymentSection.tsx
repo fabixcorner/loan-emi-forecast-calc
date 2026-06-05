@@ -178,6 +178,7 @@ export const PartPaymentSection = ({
       notes: payment.notes || '',
     });
     setEditingId(payment.id);
+    setDuplicateError(null);
   };
 
   const cancelEdit = () => {
@@ -190,6 +191,7 @@ export const PartPaymentSection = ({
       notes: '',
     });
     setEditingId(null);
+    setDuplicateError(null);
   };
 
   const removePartPayment = (id: string) => {
