@@ -57,6 +57,11 @@ export const PartPaymentSection = ({
   );
 
   const addPartPayment = () => {
+    // Early duplicate guard
+    if (isDuplicate) {
+      setDuplicateError(`A part payment already exists for ${getMonthName(newPayment.month)} ${newPayment.year}`);
+      return;
+    }
     if (newPayment.amount > 0) {
       // Get actual end date from loan schedule (accounts for existing part payments)
       const lastScheduleEntry = loanSchedule[loanSchedule.length - 1];
