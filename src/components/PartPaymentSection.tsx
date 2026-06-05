@@ -48,6 +48,7 @@ export const PartPaymentSection = ({
     strategy: 'reduce-tenure',
     notes: '',
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
 
   const addPartPayment = () => {
