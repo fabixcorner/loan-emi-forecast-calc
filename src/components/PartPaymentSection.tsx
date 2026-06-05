@@ -188,7 +188,6 @@ export const PartPaymentSection = ({
       notes: '',
     });
     setEditingId(null);
-    setDuplicateError(null);
   };
 
   const removePartPayment = (id: string) => {
