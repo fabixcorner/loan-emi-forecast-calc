@@ -278,20 +278,9 @@ export const PartPaymentSection = ({
                   <div className="grid grid-cols-2 gap-3">
                     <Select 
                       value={newPayment.month.toString()} 
-                      onValueChange={(value) => {
-                        const month = parseInt(value);
-                        setNewPayment(prev => ({ ...prev, month }));
-                        const wouldBeDuplicate = partPayments.some(
-                          p => p.id !== editingId && p.month === month && p.year === newPayment.year
-                        );
-                        if (wouldBeDuplicate) {
-                          setDuplicateError(`A part payment already exists for ${getMonthName(month)} ${newPayment.year}`);
-                        } else {
-                          setDuplicateError(null);
-                        }
-                      }}
+                      onValueChange={(value) => setNewPayment(prev => ({ ...prev, month: parseInt(value) }))}
                     >
-                      <SelectTrigger className={`h-9 ${duplicateError ? 'border-destructive ring-1 ring-destructive' : ''}`}>
+                      <SelectTrigger className={`h-9 ${isDuplicate ? 'border-destructive ring-1 ring-destructive' : ''}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -305,20 +294,9 @@ export const PartPaymentSection = ({
                     
                     <Select 
                       value={newPayment.year.toString()} 
-                      onValueChange={(value) => {
-                        const year = parseInt(value);
-                        setNewPayment(prev => ({ ...prev, year }));
-                        const wouldBeDuplicate = partPayments.some(
-                          p => p.id !== editingId && p.month === newPayment.month && p.year === year
-                        );
-                        if (wouldBeDuplicate) {
-                          setDuplicateError(`A part payment already exists for ${getMonthName(newPayment.month)} ${year}`);
-                        } else {
-                          setDuplicateError(null);
-                        }
-                      }}
+                      onValueChange={(value) => setNewPayment(prev => ({ ...prev, year: parseInt(value) }))}
                     >
-                      <SelectTrigger className={`h-9 ${duplicateError ? 'border-destructive ring-1 ring-destructive' : ''}`}>
+                      <SelectTrigger className={`h-9 ${isDuplicate ? 'border-destructive ring-1 ring-destructive' : ''}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -330,8 +308,10 @@ export const PartPaymentSection = ({
                       </SelectContent>
                     </Select>
                   </div>
-                  {duplicateError && (
-                    <p className="text-xs text-destructive font-medium">{duplicateError}</p>
+                  {isDuplicate && (
+                    <p className="text-xs text-destructive font-medium">
+                      A part payment already exists for {getMonthName(newPayment.month)} {newPayment.year}
+                    </p>
                   )}
                 </div>
               </div>
