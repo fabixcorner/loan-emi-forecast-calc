@@ -49,7 +49,6 @@ export const PartPaymentSection = ({
     notes: '',
   });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [duplicateError, setDuplicateError] = useState<string | null>(null);
 
   // Check if current month/year would create a duplicate (excluding the one being edited)
   const isDuplicate = partPayments.some(
