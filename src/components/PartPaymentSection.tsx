@@ -176,7 +176,6 @@ export const PartPaymentSection = ({
       notes: payment.notes || '',
     });
     setEditingId(payment.id);
-    setDuplicateError(null);
   };
 
   const cancelEdit = () => {
