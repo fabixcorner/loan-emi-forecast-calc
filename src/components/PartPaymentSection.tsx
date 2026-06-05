@@ -411,7 +411,8 @@ export const PartPaymentSection = ({
             
             <Button 
               onClick={addPartPayment} 
-              className="w-full h-9 bg-financial-success hover:bg-financial-success/90"
+              disabled={isDuplicate || newPayment.amount <= 0}
+              className="w-full h-9 bg-financial-success hover:bg-financial-success/90 disabled:opacity-50 disabled:cursor-not-allowed"
               size="sm"
             >
               {editingId ? (
