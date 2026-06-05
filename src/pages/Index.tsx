@@ -105,20 +105,21 @@ const Index = () => {
   const [currentLoanName, setCurrentLoanName] = useState<string | null>(null);
   const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
   const openLoadOnLoginRef = useRef<boolean>(false);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   // Restore / clear active loan session based on auth state
   const sessionRestoredRef = useRef(false);
   useEffect(() => {
-    if (!user) {
-      setCurrentLoanId(null);
-      setCurrentLoanName(null);
-      setLoadedSnapshot(null);
-      sessionStorage.removeItem(SESSION_STORAGE_KEYS.ACTIVE_LOAN);
-      sessionRestoredRef.current = false;
+    if (authLoading) return;
+    if (sessionRestoredRef.current) {
+      // On subsequent auth changes, clear loaded-loan metadata on logout
+      if (!user) {
+        setCurrentLoanId(null);
+        setCurrentLoanName(null);
+        setLoadedSnapshot(null);
+      }
       return;
     }
-    if (sessionRestoredRef.current) return;
     sessionRestoredRef.current = true;
     try {
       const raw = sessionStorage.getItem(SESSION_STORAGE_KEYS.ACTIVE_LOAN);
@@ -130,19 +131,18 @@ const Index = () => {
       if (s.startMonth != null) setStartMonth(s.startMonth);
       if (s.startYear != null) setStartYear(s.startYear);
       if (Array.isArray(s.partPayments)) setPartPayments(s.partPayments);
-      if (s.currentLoanId) setCurrentLoanId(s.currentLoanId);
-      if (s.currentLoanName) setCurrentLoanName(s.currentLoanName);
-      if (s.loadedSnapshot) setLoadedSnapshot(s.loadedSnapshot);
+      // Only restore loaded-loan metadata when the user is still logged in
+      if (user) {
+        if (s.currentLoanId) setCurrentLoanId(s.currentLoanId);
+        if (s.currentLoanName) setCurrentLoanName(s.currentLoanName);
+        if (s.loadedSnapshot) setLoadedSnapshot(s.loadedSnapshot);
+      }
     } catch {}
-  }, [user]);
+  }, [user, authLoading]);
 
-  // Persist active loan session whenever it changes (only when logged in and a loan is loaded)
+  // Persist all loan input fields to sessionStorage so they survive a refresh
   useEffect(() => {
-    if (!user) return;
-    if (!currentLoanId) {
-      sessionStorage.removeItem(SESSION_STORAGE_KEYS.ACTIVE_LOAN);
-      return;
-    }
+    if (!sessionRestoredRef.current) return;
     try {
       sessionStorage.setItem(
         SESSION_STORAGE_KEYS.ACTIVE_LOAN,
