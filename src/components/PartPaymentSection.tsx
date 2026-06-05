@@ -51,7 +51,10 @@ export const PartPaymentSection = ({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
 
-  const addPartPayment = () => {
+  // Check if current month/year would create a duplicate (excluding the one being edited)
+  const isDuplicate = partPayments.some(
+    (payment) => payment.id !== editingId && payment.month === newPayment.month && payment.year === newPayment.year
+  );
     if (newPayment.amount > 0) {
       // Get actual end date from loan schedule (accounts for existing part payments)
       const lastScheduleEntry = loanSchedule[loanSchedule.length - 1];
