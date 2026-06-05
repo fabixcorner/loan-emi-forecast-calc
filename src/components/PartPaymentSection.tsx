@@ -58,7 +58,6 @@ export const PartPaymentSection = ({
   const addPartPayment = () => {
     // Early duplicate guard
     if (isDuplicate) {
-      setDuplicateError(`A part payment already exists for ${getMonthName(newPayment.month)} ${newPayment.year}`);
       return;
     }
     if (newPayment.amount > 0) {
