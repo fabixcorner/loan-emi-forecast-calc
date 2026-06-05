@@ -105,11 +105,12 @@ const Index = () => {
   const [currentLoanName, setCurrentLoanName] = useState<string | null>(null);
   const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
   const openLoadOnLoginRef = useRef<boolean>(false);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   // Restore / clear active loan session based on auth state
   const sessionRestoredRef = useRef(false);
   useEffect(() => {
+    if (authLoading) return;
     if (sessionRestoredRef.current) {
       // On subsequent auth changes, clear loaded-loan metadata on logout
       if (!user) {
@@ -137,7 +138,7 @@ const Index = () => {
         if (s.loadedSnapshot) setLoadedSnapshot(s.loadedSnapshot);
       }
     } catch {}
-  }, [user]);
+  }, [user, authLoading]);
 
   // Persist all loan input fields to sessionStorage so they survive a refresh
   useEffect(() => {
