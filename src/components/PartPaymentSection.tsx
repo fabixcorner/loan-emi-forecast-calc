@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus, Clock, TrendingDown, Edit2, X, MessageSquare } from "lucide-react";
+import { Trash2, Plus, Clock, TrendingDown, Edit2, X, MessageSquare, Trash } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -192,6 +192,20 @@ export const PartPaymentSection = ({
 
   const removePartPayment = (id: string) => {
     setPartPayments(partPayments.filter(payment => payment.id !== id));
+  };
+
+  const clearAllPartPayments = () => {
+    if (partPayments.length === 0) return;
+    const confirmed = window.confirm(
+      `Remove all ${partPayments.length} scheduled part payment${partPayments.length > 1 ? 's' : ''}? This cannot be undone.`
+    );
+    if (!confirmed) return;
+    setPartPayments([]);
+    cancelEdit();
+    toast({
+      title: "Part Payments Cleared",
+      description: "All scheduled part payments have been removed.",
+    });
   };
 
   const getYearOptions = () => {
@@ -407,7 +421,20 @@ export const PartPaymentSection = ({
 
           {/* Existing Part Payments */}
           <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-            <h4 className="font-medium text-foreground">Scheduled Part Payments</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-foreground">Scheduled Part Payments</h4>
+              {partPayments.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAllPartPayments}
+                  className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash className="w-3.5 h-3.5 mr-1" />
+                  Clear all
+                </Button>
+              )}
+            </div>
             {partPayments.length > 0 ? (
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {partPayments.map((payment) => (
