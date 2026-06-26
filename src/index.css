@@ -188,11 +188,9 @@ All colors MUST be HSL.
   .glass-background {
     background: linear-gradient(
       135deg, 
-      hsl(210 65% 94%) 0%,
-      hsl(205 70% 90%) 25%,
-      hsl(210 60% 92%) 50%,
-      hsl(208 65% 88%) 75%,
-      hsl(210 65% 94%) 100%
+      hsl(0 0% 98%) 0%,
+      hsl(0 0% 96%) 50%,
+      hsl(0 0% 98%) 100%
     );
     min-height: 100vh;
     transition: background 0.3s ease;
@@ -201,11 +199,9 @@ All colors MUST be HSL.
   .dark .glass-background {
     background: linear-gradient(
       135deg, 
-      hsl(218 60% 10%) 0%,
-      hsl(218 55% 14%) 25%,
-      hsl(215 60% 11%) 50%,
-      hsl(218 55% 13%) 75%,
-      hsl(218 60% 9%) 100%
+      hsl(220 10% 8%) 0%,
+      hsl(220 8% 10%) 50%,
+      hsl(220 10% 8%) 100%
     );
   }
 
