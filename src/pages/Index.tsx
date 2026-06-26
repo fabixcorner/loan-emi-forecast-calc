@@ -496,7 +496,7 @@ const Index = () => {
                 <span className="text-sm">EMI Schedule</span>
               </TabsTrigger>
               <TabsTrigger value="compare-scenarios" className="flex flex-row items-center gap-2 py-3">
-                <Scale className="w-10 h-10 -my-2" />
+                <Scale className="w-7 h-7 -my-1" strokeWidth={1.75} />
                 <span className="text-sm">Compare Scenarios</span>
               </TabsTrigger>
               <TabsTrigger value="loan-affordability" className="flex flex-row items-center gap-2 py-3">
@@ -517,7 +517,7 @@ const Index = () => {
                   <span className="leading-tight text-center">EMI<br/>Schedule</span>
                 </TabsTrigger>
                 <TabsTrigger value="compare-scenarios" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
-                  <Scale className="w-10 h-10 -my-2" />
+                  <Scale className="w-7 h-7 -my-1" strokeWidth={1.75} />
                   <span className="leading-tight text-center">Compare<br/>Scenarios</span>
                 </TabsTrigger>
                 <TabsTrigger value="loan-affordability" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
