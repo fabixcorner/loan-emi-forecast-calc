@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus, Clock, TrendingDown, Edit2, X, MessageSquare } from "lucide-react";
+import { Trash2, Plus, Clock, TrendingDown, Edit2, X, MessageSquare, Trash } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -50,7 +50,16 @@ export const PartPaymentSection = ({
   });
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  // Check if current month/year would create a duplicate (excluding the one being edited)
+  const isDuplicate = partPayments.some(
+    (payment) => payment.id !== editingId && payment.month === newPayment.month && payment.year === newPayment.year
+  );
+
   const addPartPayment = () => {
+    // Early duplicate guard
+    if (isDuplicate) {
+      return;
+    }
     if (newPayment.amount > 0) {
       // Get actual end date from loan schedule (accounts for existing part payments)
       const lastScheduleEntry = loanSchedule[loanSchedule.length - 1];
@@ -185,6 +194,20 @@ export const PartPaymentSection = ({
     setPartPayments(partPayments.filter(payment => payment.id !== id));
   };
 
+  const clearAllPartPayments = () => {
+    if (partPayments.length === 0) return;
+    const confirmed = window.confirm(
+      `Remove all ${partPayments.length} scheduled part payment${partPayments.length > 1 ? 's' : ''}? This cannot be undone.`
+    );
+    if (!confirmed) return;
+    setPartPayments([]);
+    cancelEdit();
+    toast({
+      title: "Part Payments Cleared",
+      description: "All scheduled part payments have been removed.",
+    });
+  };
+
   const getYearOptions = () => {
     // Get actual end date from loan schedule (accounts for existing part payments)
     const lastScheduleEntry = loanSchedule[loanSchedule.length - 1];
@@ -263,40 +286,47 @@ export const PartPaymentSection = ({
             )}
             
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Month-Year</Label>
-                <div className="grid grid-cols-2 gap-3 flex-1">
-                  <Select 
-                    value={newPayment.month.toString()} 
-                    onValueChange={(value) => setNewPayment(prev => ({ ...prev, month: parseInt(value) }))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getMonthOptions().map((month) => (
-                        <SelectItem key={month} value={month.toString()}>
-                          {getMonthName(month)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  
-                  <Select 
-                    value={newPayment.year.toString()} 
-                    onValueChange={(value) => setNewPayment(prev => ({ ...prev, year: parseInt(value) }))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {getYearOptions().map((year) => (
-                        <SelectItem key={year} value={year.toString()}>
-                          {year}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="flex items-start gap-3">
+                <Label className="text-sm text-muted-foreground w-20 shrink-0 pt-2">Month-Year</Label>
+                <div className="flex-1 space-y-1">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Select 
+                      value={newPayment.month.toString()} 
+                      onValueChange={(value) => setNewPayment(prev => ({ ...prev, month: parseInt(value) }))}
+                    >
+                      <SelectTrigger className={`h-9 ${isDuplicate ? 'border-destructive ring-1 ring-destructive' : ''}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getMonthOptions().map((month) => (
+                          <SelectItem key={month} value={month.toString()}>
+                            {getMonthName(month)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select 
+                      value={newPayment.year.toString()} 
+                      onValueChange={(value) => setNewPayment(prev => ({ ...prev, year: parseInt(value) }))}
+                    >
+                      <SelectTrigger className={`h-9 ${isDuplicate ? 'border-destructive ring-1 ring-destructive' : ''}`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getYearOptions().map((year) => (
+                          <SelectItem key={year} value={year.toString()}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {isDuplicate && (
+                    <p className="text-xs text-destructive font-medium">
+                      A part payment already exists for {getMonthName(newPayment.month)} {newPayment.year}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -371,7 +401,8 @@ export const PartPaymentSection = ({
             
             <Button 
               onClick={addPartPayment} 
-              className="w-full h-9 bg-financial-success hover:bg-financial-success/90"
+              disabled={isDuplicate || newPayment.amount <= 0}
+              className="w-full h-9 bg-financial-success hover:bg-financial-success/90 disabled:opacity-50 disabled:cursor-not-allowed"
               size="sm"
             >
               {editingId ? (
@@ -390,7 +421,20 @@ export const PartPaymentSection = ({
 
           {/* Existing Part Payments */}
           <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-            <h4 className="font-medium text-foreground">Scheduled Part Payments</h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium text-foreground">Scheduled Part Payments</h4>
+              {partPayments.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={clearAllPartPayments}
+                  className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash className="w-3.5 h-3.5 mr-1" />
+                  Clear all
+                </Button>
+              )}
+            </div>
             {partPayments.length > 0 ? (
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {partPayments.map((payment) => (

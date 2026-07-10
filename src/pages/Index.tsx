@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import {
   LOCAL_STORAGE_KEYS,
+  SESSION_STORAGE_KEYS,
   DEFAULT_SCORING_WEIGHTS,
   LOAN_DEFAULTS,
   getDefaultStartMonth,
@@ -104,16 +105,61 @@ const Index = () => {
   const [currentLoanName, setCurrentLoanName] = useState<string | null>(null);
   const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
   const openLoadOnLoginRef = useRef<boolean>(false);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
-  // Clear active loan session when user signs out
+  // Restore / clear active loan session based on auth state
+  const sessionRestoredRef = useRef(false);
   useEffect(() => {
-    if (!user) {
-      setCurrentLoanId(null);
-      setCurrentLoanName(null);
-      setLoadedSnapshot(null);
+    if (authLoading) return;
+    if (sessionRestoredRef.current) {
+      // On subsequent auth changes, clear loaded-loan metadata on logout
+      if (!user) {
+        setCurrentLoanId(null);
+        setCurrentLoanName(null);
+        setLoadedSnapshot(null);
+      }
+      return;
     }
-  }, [user]);
+    sessionRestoredRef.current = true;
+    try {
+      const raw = sessionStorage.getItem(SESSION_STORAGE_KEYS.ACTIVE_LOAN);
+      if (!raw) return;
+      const s = JSON.parse(raw);
+      if (s.loanAmount != null) setLoanAmount(s.loanAmount);
+      if (s.interestRate != null) setInterestRate(s.interestRate);
+      if (s.loanTenure != null) setLoanTenure(s.loanTenure);
+      if (s.startMonth != null) setStartMonth(s.startMonth);
+      if (s.startYear != null) setStartYear(s.startYear);
+      if (Array.isArray(s.partPayments)) setPartPayments(s.partPayments);
+      // Only restore loaded-loan metadata when the user is still logged in
+      if (user) {
+        if (s.currentLoanId) setCurrentLoanId(s.currentLoanId);
+        if (s.currentLoanName) setCurrentLoanName(s.currentLoanName);
+        if (s.loadedSnapshot) setLoadedSnapshot(s.loadedSnapshot);
+      }
+    } catch {}
+  }, [user, authLoading]);
+
+  // Persist all loan input fields to sessionStorage so they survive a refresh
+  useEffect(() => {
+    if (!sessionRestoredRef.current) return;
+    try {
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEYS.ACTIVE_LOAN,
+        JSON.stringify({
+          currentLoanId,
+          currentLoanName,
+          loadedSnapshot,
+          loanAmount,
+          interestRate,
+          loanTenure,
+          startMonth,
+          startYear,
+          partPayments,
+        })
+      );
+    } catch {}
+  }, [user, currentLoanId, currentLoanName, loadedSnapshot, loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
 
   // Get current data for saving
   const getCurrentData = useCallback(() => {
@@ -450,7 +496,7 @@ const Index = () => {
                 <span className="text-sm">EMI Schedule</span>
               </TabsTrigger>
               <TabsTrigger value="compare-scenarios" className="flex flex-row items-center gap-2 py-3">
-                <Scale className="w-5 h-5" />
+                <Scale className="w-7 h-7 -my-1" strokeWidth={1.75} />
                 <span className="text-sm">Compare Scenarios</span>
               </TabsTrigger>
               <TabsTrigger value="loan-affordability" className="flex flex-row items-center gap-2 py-3">
@@ -471,7 +517,7 @@ const Index = () => {
                   <span className="leading-tight text-center">EMI<br/>Schedule</span>
                 </TabsTrigger>
                 <TabsTrigger value="compare-scenarios" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
-                  <Scale className="w-5 h-5" />
+                  <Scale className="w-7 h-7 -my-1" strokeWidth={1.75} />
                   <span className="leading-tight text-center">Compare<br/>Scenarios</span>
                 </TabsTrigger>
                 <TabsTrigger value="loan-affordability" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">

@@ -12,3 +12,10 @@ export const LOCAL_STORAGE_KEYS = {
 
 export type LocalStorageKey =
   (typeof LOCAL_STORAGE_KEYS)[keyof typeof LOCAL_STORAGE_KEYS];
+
+export const SESSION_STORAGE_KEYS = {
+  ACTIVE_LOAN: "active-loan-session",
+} as const;
+
+export type SessionStorageKey =
+  (typeof SESSION_STORAGE_KEYS)[keyof typeof SESSION_STORAGE_KEYS];
