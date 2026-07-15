@@ -4,10 +4,41 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, Plus, Clock, TrendingDown, Edit2, X, MessageSquare, Trash } from "lucide-react";
+import { Trash2, Plus, Clock, TrendingDown, Edit2, X, MessageSquare, Trash, Info } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+
+const FieldLabel = ({ 
+  label, 
+  tooltip, 
+  align = "center" 
+}: { 
+  label: string; 
+  tooltip: string; 
+  align?: "center" | "top"; 
+}) => (
+  <Label className={cn(
+    "text-sm text-muted-foreground w-20 shrink-0 flex gap-1",
+    align === "top" ? "items-start pt-2" : "items-center"
+  )}>
+    <span className="leading-tight">{label}</span>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Info className={cn(
+          "w-3.5 h-3.5 text-muted-foreground/70 hover:text-primary cursor-help shrink-0",
+          align === "top" && "mt-0.5"
+        )} />
+      </TooltipTrigger>
+      <TooltipContent side="right" className="max-w-[220px]">
+        <p>{tooltip}</p>
+      </TooltipContent>
+    </Tooltip>
+  </Label>
+);
+
 
 export interface PartPayment {
   id: string;
@@ -287,7 +318,7 @@ export const PartPaymentSection = ({
             
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0 pt-2">Month-Year</Label>
+                <FieldLabel label="Month-Year" tooltip="Select the month and year when you plan to make the part payment." align="top" />
                 <div className="flex-1 space-y-1">
                   <div className="grid grid-cols-2 gap-3">
                     <Select 
@@ -331,7 +362,7 @@ export const PartPaymentSection = ({
               </div>
 
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Amount</Label>
+                <FieldLabel label="Amount" tooltip="The lump-sum amount you want to pay in addition to your regular EMI." />
                 <Input
                   type="number"
                   value={newPayment.amount}
@@ -344,8 +375,8 @@ export const PartPaymentSection = ({
               </div>
 
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Frequency</Label>
-                <Select 
+                <FieldLabel label="Frequency" tooltip="How often this extra payment repeats: one-time or recurring monthly/quarterly/yearly." />
+                <Select
                   value={newPayment.frequency} 
                   onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
                 >
@@ -363,7 +394,7 @@ export const PartPaymentSection = ({
               </div>
 
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Strategy</Label>
+                <FieldLabel label="Strategy" tooltip="Choose whether the part payment should reduce loan tenure or reduce monthly EMI." />
                 <div className="flex gap-2 flex-1">
                   <Button
                     type="button"
@@ -389,7 +420,7 @@ export const PartPaymentSection = ({
               </div>
 
               <div className="flex items-start gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0 pt-2">Notes</Label>
+                <FieldLabel label="Notes" tooltip="Optional note to remind yourself why this part payment is scheduled (e.g., bonus, tax refund)." align="top" />
                 <Textarea
                   value={newPayment.notes || ''}
                   onChange={(e) => setNewPayment(prev => ({ ...prev, notes: e.target.value }))}
