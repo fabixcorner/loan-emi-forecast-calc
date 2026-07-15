@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet, FileText, Circle, Undo2 } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Calculator, CalendarRange, BarChart2, Wallet, FileText, Circle, Undo2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import calculatorIcon from "@/assets/calculator.png";
 import { UserMenu } from "@/components/UserMenu";
@@ -488,7 +488,7 @@ const Index = () => {
             {/* Desktop Tab Navigation - Hidden on mobile */}
             <TabsList className="hidden md:grid w-full max-w-4xl mx-auto grid-cols-4 mb-8">
               <TabsTrigger value="loan-details" className="flex flex-row items-center gap-2 py-3">
-                <Coins className="w-5 h-5" />
+                <Calculator className="w-5 h-5" />
                 <span className="text-sm">Loan Details</span>
               </TabsTrigger>
               <TabsTrigger value="emi-schedule" className="flex flex-row items-center gap-2 py-3">
@@ -496,7 +496,7 @@ const Index = () => {
                 <span className="text-sm">EMI Schedule</span>
               </TabsTrigger>
               <TabsTrigger value="compare-scenarios" className="flex flex-row items-center gap-2 py-3">
-                <Scale className="w-7 h-7 -my-1" strokeWidth={1.75} />
+                <BarChart2 className="w-5 h-5" />
                 <span className="text-sm">Compare Scenarios</span>
               </TabsTrigger>
               <TabsTrigger value="loan-affordability" className="flex flex-row items-center gap-2 py-3">
@@ -509,7 +509,7 @@ const Index = () => {
             <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border shadow-lg">
               <TabsList className="grid w-full grid-cols-4 h-auto p-0 bg-transparent">
                 <TabsTrigger value="loan-details" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
-                  <Coins className="w-5 h-5" />
+                  <Calculator className="w-5 h-5" />
                   <span className="leading-tight text-center">Loan<br/>Details</span>
                 </TabsTrigger>
                 <TabsTrigger value="emi-schedule" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
@@ -517,7 +517,7 @@ const Index = () => {
                   <span className="leading-tight text-center">EMI<br/>Schedule</span>
                 </TabsTrigger>
                 <TabsTrigger value="compare-scenarios" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
-                  <Scale className="w-7 h-7 -my-1" strokeWidth={1.75} />
+                  <BarChart2 className="w-5 h-5" />
                   <span className="leading-tight text-center">Compare<br/>Scenarios</span>
                 </TabsTrigger>
                 <TabsTrigger value="loan-affordability" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">

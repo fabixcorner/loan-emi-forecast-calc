@@ -31,8 +31,6 @@ Understanding loan repayments can be complex and overwhelming. This calculator d
 3. Choose your **Loan Tenure** (in months or years)
 4. View your calculated EMI and total interest instantly
 
-![EMI Calculation Demo](https://via.placeholder.com/800x400?text=EMI+Calculation+Demo+GIF)
-
 ### Adding Part Payments
 
 1. Scroll to the **Part Payment** section
@@ -42,8 +40,6 @@ Understanding loan repayments can be complex and overwhelming. This calculator d
 5. Select strategy: **Reduce Tenure** or **Reduce EMI**
 6. Watch your savings update in real-time!
 
-![Part Payment Demo](https://via.placeholder.com/800x400?text=Part+Payment+Demo+GIF)
-
 ### Comparing Loan Scenarios
 
 1. Navigate to the **Loan Comparison** section
@@ -51,8 +47,6 @@ Understanding loan repayments can be complex and overwhelming. This calculator d
 3. Adjust parameters for each scenario
 4. Compare total interest and EMI differences at a glance
 5. Note: Part payments are excluded from all scenarios for fair comparison
-
-![Loan Comparison Demo](https://via.placeholder.com/800x400?text=Loan+Comparison+Demo+GIF)
 
 ### Checking Loan Affordability
 
@@ -107,9 +101,3 @@ Have questions, suggestions, or need help? Feel free to reach out!
 ## 📄 License
 
 This project is open source and available under the MIT License.
-
----
-
-<p align="center">
-  Made with ❤️ using <a href="https://lovable.dev">Lovable</a>
-</p>
