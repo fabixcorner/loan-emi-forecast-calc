@@ -64,7 +64,7 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
                 cy="48%"
                 innerRadius={60}
                 outerRadius={120}
-                paddingAngle={5}
+                paddingAngle={0.5}
                 dataKey="value"
                 onMouseEnter={(_, index) => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
