@@ -318,7 +318,7 @@ export const PartPaymentSection = ({
             
             <div className="space-y-3">
               <div className="flex items-start gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0 pt-2">Month-Year</Label>
+                <FieldLabel label="Month-Year" tooltip="Select the month and year when you plan to make the part payment." align="top" />
                 <div className="flex-1 space-y-1">
                   <div className="grid grid-cols-2 gap-3">
                     <Select 
@@ -362,7 +362,7 @@ export const PartPaymentSection = ({
               </div>
 
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Amount</Label>
+                <FieldLabel label="Amount" tooltip="The lump-sum amount you want to pay in addition to your regular EMI." />
                 <Input
                   type="number"
                   value={newPayment.amount}
@@ -375,8 +375,8 @@ export const PartPaymentSection = ({
               </div>
 
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Frequency</Label>
-                <Select 
+                <FieldLabel label="Frequency" tooltip="How often this extra payment repeats: one-time or recurring monthly/quarterly/yearly." />
+                <Select
                   value={newPayment.frequency} 
                   onValueChange={(value: 'one-time' | 'monthly' | 'quarterly' | 'half-yearly' | 'yearly') => setNewPayment(prev => ({ ...prev, frequency: value }))}
                 >
@@ -394,7 +394,7 @@ export const PartPaymentSection = ({
               </div>
 
               <div className="flex items-center gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0">Strategy</Label>
+                <FieldLabel label="Strategy" tooltip="Choose whether the part payment should reduce loan tenure or reduce monthly EMI." />
                 <div className="flex gap-2 flex-1">
                   <Button
                     type="button"
@@ -420,7 +420,7 @@ export const PartPaymentSection = ({
               </div>
 
               <div className="flex items-start gap-3">
-                <Label className="text-sm text-muted-foreground w-20 shrink-0 pt-2">Notes</Label>
+                <FieldLabel label="Notes" tooltip="Optional note to remind yourself why this part payment is scheduled (e.g., bonus, tax refund)." align="top" />
                 <Textarea
                   value={newPayment.notes || ''}
                   onChange={(e) => setNewPayment(prev => ({ ...prev, notes: e.target.value }))}
