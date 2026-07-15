@@ -496,7 +496,7 @@ const Index = () => {
                 <span className="text-sm">EMI Schedule</span>
               </TabsTrigger>
               <TabsTrigger value="compare-scenarios" className="flex flex-row items-center gap-2 py-3">
-                <GitCompare className="w-5 h-5" />
+                <GitCompare className="w-5 h-5 shrink-0" strokeWidth={2.25} />
                 <span className="text-sm">Compare Scenarios</span>
               </TabsTrigger>
               <TabsTrigger value="loan-affordability" className="flex flex-row items-center gap-2 py-3">
