@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface LoanCalculation {
   emi: number;
@@ -24,18 +25,11 @@ interface LoanBreakdownChartProps {
 
 export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownChartProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { format: formatCurrency } = useCurrency();
 
   if (!calculation) {
     return null;
   }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   // Calculate totals
   const totalPrincipal = calculation.totalAmount - calculation.totalInterest;
