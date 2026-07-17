@@ -10,14 +10,8 @@ import { IndianRupee, Percent, Calendar, CreditCard, TrendingUp, Target, Buildin
 import { exportAffordabilityPDF } from "@/utils/exportUtils";
 import { toast } from "sonner";
 import { EligibilityBreakdownChart } from "./EligibilityBreakdownChart";
-const formatCurrency = (amount: number): string => {
-  if (amount >= 10000000) {
-    return `₹${(amount / 10000000).toFixed(2)} Cr`;
-  } else if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(2)} L`;
-  }
-  return `₹${amount.toLocaleString('en-IN')}`;
-};
+import { formatCompactAmount as formatCurrency } from "@/lib/currency";
+import { useCurrency } from "@/hooks/useCurrency";
 
 type EmploymentType = "salaried" | "self-employed" | "business-owner";
 

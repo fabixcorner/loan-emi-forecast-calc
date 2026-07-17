@@ -12,14 +12,7 @@ interface EligibilityBreakdownChartProps {
   hasCreditScore: boolean;
 }
 
-const formatCurrency = (amount: number): string => {
-  if (amount >= 10000000) {
-    return `₹${(amount / 10000000).toFixed(2)} Cr`;
-  } else if (amount >= 100000) {
-    return `₹${(amount / 100000).toFixed(2)} L`;
-  }
-  return `₹${amount.toLocaleString('en-IN')}`;
-};
+import { formatCompactAmount as formatCurrency } from "@/lib/currency";
 
 const formatPercent = (value: number): string => {
   return `${(value * 100).toFixed(0)}%`;
