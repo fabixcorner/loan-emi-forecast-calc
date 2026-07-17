@@ -13,6 +13,7 @@ interface EligibilityBreakdownChartProps {
 }
 
 import { formatCompactAmount as formatCurrency } from "@/lib/currency";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const formatPercent = (value: number): string => {
   return `${(value * 100).toFixed(0)}%`;

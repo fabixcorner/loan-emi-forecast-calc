@@ -36,6 +36,7 @@ interface SavedCalc {
 }
 
 import { formatCompactAmount as formatCurrency } from "@/lib/currency";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCalculation, onSaved }: SaveLoadModalProps) => {
   const { user } = useAuth();

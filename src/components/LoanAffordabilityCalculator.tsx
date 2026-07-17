@@ -62,6 +62,7 @@ const getStoredValues = (): Partial<StoredValues> => {
 };
 
 export const LoanAffordabilityCalculator = () => {
+  useCurrency();
   const storedValues = getStoredValues();
   
   const [grossIncome, setGrossIncome] = useState(storedValues.grossIncome ?? 100000);

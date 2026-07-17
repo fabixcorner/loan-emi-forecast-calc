@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { exportToExcel, exportToPDF, exportToJSON, exportToCSV, exportDetailedPDFReport } from "@/utils/exportUtils";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface LoanCalculation {
   emi: number;
