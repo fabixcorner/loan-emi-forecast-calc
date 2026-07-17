@@ -11,31 +11,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-const FieldLabel = ({ 
-  label, 
-  tooltip, 
-  align = "center" 
-}: { 
-  label: string; 
-  tooltip: string; 
-  align?: "center" | "top"; 
+const FieldLabel = ({
+  label,
+  align = "center"
+}: {
+  label: string;
+  align?: "center" | "top";
 }) => (
   <Label className={cn(
     "text-sm text-muted-foreground w-20 shrink-0 flex gap-1",
     align === "top" ? "items-start pt-2" : "items-center"
   )}>
     <span className="leading-tight">{label}</span>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Info className={cn(
-          "w-3.5 h-3.5 text-muted-foreground/70 hover:text-primary cursor-help shrink-0",
-          align === "top" && "mt-0.5"
-        )} />
-      </TooltipTrigger>
-      <TooltipContent side="right" className="max-w-[220px]">
-        <p>{tooltip}</p>
-      </TooltipContent>
-    </Tooltip>
   </Label>
 );
 
