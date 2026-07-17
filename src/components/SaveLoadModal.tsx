@@ -39,6 +39,7 @@ import { formatCompactAmount as formatCurrency } from "@/lib/currency";
 import { useCurrency } from "@/hooks/useCurrency";
 
 export const SaveLoadModal = ({ isOpen, onClose, mode, getCurrentData, onLoadCalculation, onSaved }: SaveLoadModalProps) => {
+  useCurrency();
   const { user } = useAuth();
   const [saveName, setSaveName] = useState("");
   const [savedCalcs, setSavedCalcs] = useState<SavedCalc[]>([]);

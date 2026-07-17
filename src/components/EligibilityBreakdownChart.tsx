@@ -28,6 +28,7 @@ export const EligibilityBreakdownChart = ({
   hasCreditScore,
 }: EligibilityBreakdownChartProps) => {
   const isMobile = useIsMobile();
+  useCurrency();
 
   // Calculate intermediate values to show the waterfall effect
   const afterCreditScore = incomeBasedAmount * creditScoreMultiplier;

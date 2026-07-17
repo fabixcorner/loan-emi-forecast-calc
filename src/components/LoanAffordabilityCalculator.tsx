@@ -187,8 +187,8 @@ export const LoanAffordabilityCalculator = () => {
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>₹10K</span>
-                    <span>₹10L</span>
+                    <span>{formatCurrency(10000)}</span>
+                    <span>{formatCurrency(1000000)}</span>
                   </div>
                 </div>
               </div>
@@ -304,7 +304,7 @@ export const LoanAffordabilityCalculator = () => {
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>₹0</span>
+                    <span>{formatCurrency(0)}</span>
                     <span>{formatCurrency(grossIncome * 0.5)}</span>
                   </div>
                 </div>
@@ -335,8 +335,8 @@ export const LoanAffordabilityCalculator = () => {
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>₹5L</span>
-                    <span>₹5Cr</span>
+                    <span>{formatCurrency(500000)}</span>
+                    <span>{formatCurrency(50000000)}</span>
                   </div>
                 </div>
               </div>
