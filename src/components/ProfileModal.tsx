@@ -10,6 +10,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AvatarCropModal } from "./AvatarCropModal";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCurrency } from "@/hooks/useCurrency";
+import { CURRENCIES, setCurrency, type CurrencyCode } from "@/lib/currency";
 import {
   DB_TABLES,
   STORAGE_BUCKETS,
@@ -54,6 +57,8 @@ const isEmailValid = (e: string) => emailSchema.safeParse(e).success;
 
 export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const { user, signOut } = useAuth();
+  const { code: currentCurrencyCode } = useCurrency();
+  const [savingCurrency, setSavingCurrency] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [displayName, setDisplayName] = useState("");
@@ -87,12 +92,16 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     (async () => {
       const { data } = await supabase
         .from(DB_TABLES.PROFILES)
-        .select("display_name, avatar_url")
+        .select("display_name, avatar_url, preferred_currency")
         .eq("user_id", user.id)
         .maybeSingle();
       if (data) {
         if (data.display_name) setDisplayName(data.display_name);
         setAvatarUrl(data.avatar_url ?? null);
+        const pc = (data as any).preferred_currency as CurrencyCode | undefined;
+        if (pc && CURRENCIES.some((c) => c.code === pc)) {
+          setCurrency(pc);
+        }
       } else if (fallbackName) {
         setDisplayName(fallbackName);
       }
@@ -100,6 +109,23 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   }, [isOpen, user]);
 
   if (!isOpen || !user) return null;
+
+  const handleCurrencyChange = async (code: CurrencyCode) => {
+    setCurrency(code);
+    setSavingCurrency(true);
+    try {
+      const { error } = await supabase
+        .from(DB_TABLES.PROFILES)
+        .update({ preferred_currency: code } as any)
+        .eq("user_id", user.id);
+      if (error) throw error;
+      toast.success("Preferred currency updated");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to save currency");
+    } finally {
+      setSavingCurrency(false);
+    }
+  };
 
   const initials = (displayName || email || "U").trim().charAt(0).toUpperCase();
 
@@ -353,6 +379,32 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
               {savingProfile && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Save Profile
             </Button>
+          </div>
+
+          <div className="border-t border-border pt-4 space-y-3">
+            <h3 className="text-sm font-semibold text-foreground">Preferred Currency</h3>
+            <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+              <Label htmlFor="profile-currency" className="text-sm text-foreground">Currency</Label>
+              <Select value={currentCurrencyCode} onValueChange={(v) => handleCurrencyChange(v as CurrencyCode)}>
+                <SelectTrigger id="profile-currency" className="h-9" disabled={savingCurrency}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENCIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-5 text-center font-medium">{c.symbol}</span>
+                        <span>{c.name}</span>
+                        <span className="text-xs text-muted-foreground">({c.code})</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Amounts across the app will display using the selected currency symbol.
+            </p>
           </div>
 
           <div className="border-t border-border pt-4 space-y-3">

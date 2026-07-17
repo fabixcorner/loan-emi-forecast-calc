@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { Sparkles } from "lucide-react";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface LoanCalculation {
   emi: number;
@@ -24,6 +25,7 @@ interface LoanSummaryCardsProps {
 }
 
 export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings = 0 }: LoanSummaryCardsProps) => {
+  const { format: formatCurrency } = useCurrency();
   if (!calculation) {
     return null;
   }
@@ -40,14 +42,6 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
   const averageEMI = hasVariableEMI && calculation.schedule.length > 0
     ? calculation.schedule.reduce((sum, row) => sum + row.emiAmount, 0) / calculation.schedule.length
     : calculation.emi;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   // Calculate totals
   const totalPrincipal = calculation.totalAmount - calculation.totalInterest;

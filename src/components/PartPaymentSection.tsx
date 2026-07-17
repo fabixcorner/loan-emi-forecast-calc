@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { cn } from "@/lib/utils";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const FieldLabel = ({
   label,
@@ -269,15 +270,7 @@ export const PartPaymentSection = ({
     return months[month - 1];
   };
 
-  const formatAmount = (amount: number) => {
-    if (amount >= 10000000) {
-      return `₹${(amount / 10000000).toFixed(1)} Cr`;
-    } else if (amount >= 100000) {
-      return `₹${(amount / 100000).toFixed(1)} L`;
-    } else {
-      return `₹${(amount / 1000).toFixed(0)}K`;
-    }
-  };
+  const { formatCompact: formatAmount, symbol: currencySymbol } = useCurrency();
 
   return (
     <Card className="h-fit bg-card shadow-card border border-border">
@@ -357,7 +350,7 @@ export const PartPaymentSection = ({
                   className="h-9"
                   min={50000}
                   step={10000}
-                  placeholder="₹"
+                  placeholder={currencySymbol}
                 />
               </div>
 

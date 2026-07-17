@@ -18,6 +18,9 @@ import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useAuth } from "@/hooks/useAuth";
+import { setCurrency, type CurrencyCode, CURRENCIES } from "@/lib/currency";
+import { supabase } from "@/integrations/supabase/client";
+import { useCurrency } from "@/hooks/useCurrency";
 import {
   LOCAL_STORAGE_KEYS,
   SESSION_STORAGE_KEYS,
@@ -106,6 +109,28 @@ const Index = () => {
   const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
   const openLoadOnLoginRef = useRef<boolean>(false);
   const { user, loading: authLoading } = useAuth();
+  const { symbol: currencySymbol } = useCurrency();
+
+  // Load preferred currency from profile on sign-in.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("preferred_currency")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const code = (data as any)?.preferred_currency as CurrencyCode | undefined;
+      if (code && CURRENCIES.some((c) => c.code === code)) {
+        setCurrency(code);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   // Restore / clear active loan session based on auth state
   const sessionRestoredRef = useRef(false);
@@ -251,7 +276,7 @@ const Index = () => {
       const fmt = (n: number) => n.toLocaleString("en-IN");
       const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const diffs: string[] = [];
-      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ₹${fmt(prev.loanAmount)} → ₹${fmt(loanAmount)}`);
+      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ${currencySymbol}${fmt(prev.loanAmount)} → ${currencySymbol}${fmt(loanAmount)}`);
       if (prev.interestRate !== interestRate) diffs.push(`Interest rate: ${prev.interestRate}% → ${interestRate}%`);
       if (prev.loanTenure !== loanTenure) diffs.push(`Tenure: ${prev.loanTenure} yrs → ${loanTenure} yrs`);
       if (prev.startMonth !== startMonth || prev.startYear !== startYear) {
