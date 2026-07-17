@@ -18,6 +18,9 @@ import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useAuth } from "@/hooks/useAuth";
+import { setCurrency, type CurrencyCode, CURRENCIES } from "@/lib/currency";
+import { supabase } from "@/integrations/supabase/client";
+import { useCurrency } from "@/hooks/useCurrency";
 import {
   LOCAL_STORAGE_KEYS,
   SESSION_STORAGE_KEYS,
