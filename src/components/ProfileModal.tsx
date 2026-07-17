@@ -382,6 +382,32 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
           </div>
 
           <div className="border-t border-border pt-4 space-y-3">
+            <h3 className="text-sm font-semibold text-foreground">Preferred Currency</h3>
+            <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+              <Label htmlFor="profile-currency" className="text-sm text-foreground">Currency</Label>
+              <Select value={currentCurrencyCode} onValueChange={(v) => handleCurrencyChange(v as CurrencyCode)}>
+                <SelectTrigger id="profile-currency" className="h-9" disabled={savingCurrency}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CURRENCIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      <span className="inline-flex items-center gap-2">
+                        <span className="w-5 text-center font-medium">{c.symbol}</span>
+                        <span>{c.name}</span>
+                        <span className="text-xs text-muted-foreground">({c.code})</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Amounts across the app will display using the selected currency symbol.
+            </p>
+          </div>
+
+          <div className="border-t border-border pt-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Change Password</h3>
             <div className="grid grid-cols-[100px_1fr] items-start gap-3">
               <Label htmlFor="profile-new-password" className="text-sm text-foreground pt-2">New</Label>
