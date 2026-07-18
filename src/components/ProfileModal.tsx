@@ -389,7 +389,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                 <SelectTrigger id="profile-currency" className="h-9" disabled={savingCurrency}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[10000]">
                   {CURRENCIES.map((c) => (
                     <SelectItem key={c.code} value={c.code}>
                       <span className="inline-flex items-center gap-2">
