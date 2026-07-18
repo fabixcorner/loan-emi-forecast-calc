@@ -32,6 +32,50 @@ export const CURRENCIES: CurrencyInfo[] = [
 
 const STORAGE_KEY = "preferred_currency";
 
+// Map region (ISO 3166) → supported currency code.
+const REGION_TO_CURRENCY: Record<string, CurrencyCode> = {
+  IN: "INR",
+  US: "USD", EC: "USD", SV: "USD", PA: "USD", PR: "USD",
+  GB: "GBP",
+  JP: "JPY",
+  CN: "CNY",
+  AU: "AUD",
+  CA: "CAD",
+  CH: "CHF", LI: "CHF",
+  SG: "SGD",
+  // Eurozone
+  DE: "EUR", FR: "EUR", ES: "EUR", IT: "EUR", NL: "EUR", BE: "EUR", AT: "EUR",
+  PT: "EUR", IE: "EUR", FI: "EUR", GR: "EUR", LU: "EUR", SK: "EUR", SI: "EUR",
+  EE: "EUR", LV: "EUR", LT: "EUR", CY: "EUR", MT: "EUR", HR: "EUR",
+};
+
+const detectLocalCurrency = (): CurrencyCode => {
+  try {
+    // Prefer explicit region from resolved locale.
+    const locales: string[] = [
+      ...(navigator.languages ?? []),
+      navigator.language,
+    ].filter(Boolean) as string[];
+    for (const loc of locales) {
+      try {
+        const region = new Intl.Locale(loc).maximize().region;
+        if (region && REGION_TO_CURRENCY[region]) return REGION_TO_CURRENCY[region];
+      } catch { /* ignore */ }
+    }
+    // Fallback: infer region from timezone.
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    if (tz.startsWith("Asia/Kolkata") || tz.startsWith("Asia/Calcutta")) return "INR";
+    if (tz.startsWith("America/")) return "USD";
+    if (tz.startsWith("Europe/London")) return "GBP";
+    if (tz.startsWith("Europe/")) return "EUR";
+    if (tz.startsWith("Asia/Tokyo")) return "JPY";
+    if (tz.startsWith("Asia/Shanghai") || tz.startsWith("Asia/Hong_Kong")) return "CNY";
+    if (tz.startsWith("Australia/")) return "AUD";
+    if (tz.startsWith("Asia/Singapore")) return "SGD";
+  } catch { /* ignore */ }
+  return "INR";
+};
+
 const readStored = (): CurrencyCode => {
   try {
     const v = localStorage.getItem(STORAGE_KEY) as CurrencyCode | null;
@@ -39,7 +83,7 @@ const readStored = (): CurrencyCode => {
   } catch {
     /* ignore */
   }
-  return "INR";
+  return detectLocalCurrency();
 };
 
 let currentCode: CurrencyCode = typeof window !== "undefined" ? readStored() : "INR";
