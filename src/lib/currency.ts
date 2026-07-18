@@ -119,19 +119,20 @@ export const formatCurrency = (
 ): string => {
   const c = getCurrency();
   try {
-    return new Intl.NumberFormat(c.locale, {
+    const raw = new Intl.NumberFormat(c.locale, {
       style: "currency",
       currency: c.code,
       maximumFractionDigits: options?.maximumFractionDigits ?? 0,
     }).format(amount);
+    return addSymbolSpace(raw);
   } catch {
-    return `${c.symbol}${amount.toLocaleString()}`;
+    return `${c.symbol}\u2009${amount.toLocaleString()}`;
   }
 };
 
 export const formatCompactAmount = (amount: number): string => {
   const c = getCurrency();
-  const s = c.symbol;
+  const s = `${c.symbol}\u2009`;
   const abs = Math.abs(amount);
   if (c.code === "INR") {
     if (abs >= 1_00_00_000) return `${s}${(amount / 1_00_00_000).toFixed(1)} Cr`;
@@ -148,7 +149,7 @@ export const formatCompactAmount = (amount: number): string => {
 // Fixed compact labels for slider endpoints (independent of stored amount magnitude).
 export const formatCompactLabel = (indianAbbrev: "K" | "L" | "Cr", multiplier: number): string => {
   const c = getCurrency();
-  const s = c.symbol;
+  const s = `${c.symbol}\u2009`;
   if (c.code === "INR") {
     return `${s}${multiplier}${indianAbbrev}`;
   }
@@ -160,4 +161,17 @@ export const formatCompactLabel = (indianAbbrev: "K" | "L" | "Cr", multiplier: n
         ? multiplier * 100_000
         : multiplier * 10_000_000;
   return formatCompactAmount(value);
+};
+
+// Insert a thin space (U+2009 ≈ half a letter) between a leading currency
+// symbol and the first digit or minus sign, if not already spaced.
+const addSymbolSpace = (formatted: string): string => {
+  // Match: optional non-breaking/regular space already present.
+  return formatted.replace(
+    /^([^\d\-\u2212]+?)([\s\u00A0\u202F\u2009]*)(-?[\d])/u,
+    (_m, sym, gap, rest) => {
+      const trimmed = sym.trimEnd();
+      return `${trimmed}\u2009${rest}`;
+    },
+  );
 };
