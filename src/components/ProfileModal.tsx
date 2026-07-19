@@ -279,23 +279,14 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-start sm:items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
       <Card className="w-full max-w-lg bg-card border-border shadow-2xl animate-fade-in relative my-8" onClick={(e) => e.stopPropagation()}>
         <CardHeader className="relative bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute right-2 top-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/20"
-          >
+          <Button variant="ghost" size="icon" onClick={onClose} className="absolute right-2 top-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/20" >
             <X className="w-4 h-4" />
           </Button>
           <CardTitle className="text-xl">Your Profile</CardTitle>
         </CardHeader>
         <CardContent className="pt-4 pb-4 space-y-5">
           {/* Avatar + Profile fields */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) handleAvatarFileSelected(file);
@@ -304,13 +295,8 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
           />
           <div className="space-y-3">
             <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={() => !uploading && fileInputRef.current?.click()}
-                disabled={uploading}
-                aria-label={avatarUrl ? "Change avatar" : "Upload avatar"}
-                className="group relative w-20 h-20 shrink-0 rounded-full overflow-hidden bg-gradient-to-br from-financial-primary to-financial-success flex items-center justify-center text-primary-foreground text-2xl font-semibold ring-2 ring-border focus:outline-none focus:ring-2 focus:ring-ring"
-              >
+              <button type="button" onClick={() => !uploading && fileInputRef.current?.click()} disabled={uploading} aria-label={avatarUrl ? "Change avatar" : "Upload avatar"}
+                className="group relative w-20 h-20 shrink-0 rounded-full overflow-hidden bg-gradient-to-br from-financial-primary to-financial-success flex items-center justify-center text-primary-foreground text-2xl font-semibold ring-2 ring-border focus:outline-none focus:ring-2 focus:ring-ring" >
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
@@ -382,7 +368,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
           </div>
 
           <div className="border-t border-border pt-4">
-            <div className="grid grid-cols-[150px_1fr] items-center gap-3">
+            <div className="grid grid-cols-[100px_1fr] items-center gap-3">
               <Label htmlFor="profile-currency" className="text-sm text-foreground">Preferred Currency</Label>
               <Select value={currentCurrencyCode} onValueChange={(v) => handleCurrencyChange(v as CurrencyCode)}>
                 <SelectTrigger id="profile-currency" className="h-9 w-44" disabled={savingCurrency}>
@@ -401,6 +387,9 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                 </SelectContent>
               </Select>
             </div>
+            <p className="text-xs text-muted-foreground">
+              Amounts across the app will display using the selected currency symbol.
+            </p>
           </div>
 
           <div className="border-t border-border pt-4 space-y-3">
@@ -530,8 +519,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                     size="sm"
                     onClick={() => { setConfirmingDelete(false); setDeleteConfirmText(""); }}
                     disabled={deletingAccount}
-                    className="flex-1"
-                  >
+                    className="flex-1" >
                     Cancel
                   </Button>
                   <Button
@@ -540,8 +528,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                     size="sm"
                     onClick={handleDeleteAccount}
                     disabled={deleteConfirmText !== "DELETE" || deletingAccount}
-                    className="flex-1"
-                  >
+                    className="flex-1" >
                     {deletingAccount && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                     Permanently Delete
                   </Button>
@@ -551,11 +538,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
           </div>
         </CardContent>
       </Card>
-      <AvatarCropModal
-        isOpen={!!pendingFile}
-        file={pendingFile}
-        onClose={() => setPendingFile(null)}
-        onConfirm={handleCroppedUpload}
+      <AvatarCropModal isOpen={!!pendingFile} file={pendingFile} onClose={() => setPendingFile(null)} onConfirm={handleCroppedUpload}
       />
     </div>,
     document.body
