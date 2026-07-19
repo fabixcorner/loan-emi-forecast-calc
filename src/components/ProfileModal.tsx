@@ -387,9 +387,6 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                 </SelectContent>
               </Select>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Amounts across the app will display using the selected currency symbol.
-            </p>
           </div>
 
           <div className="border-t border-border pt-4 space-y-3">
