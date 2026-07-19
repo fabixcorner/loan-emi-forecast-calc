@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, Plus, Clock, TrendingDown, Edit2, X, MessageSquare, Trash } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import { cn } from "@/lib/utils";
@@ -92,9 +92,7 @@ export const PartPaymentSection = ({
       
       // Validate if payment date is within actual remaining loan schedule
       if (paymentDate < startDate || paymentDate > endDate) {
-        toast({
-          variant: "destructive",
-          title: "Invalid Part Payment Date",
+        toast.error("Invalid Part Payment Date", {
           description: `Part payments are accepted only between ${getMonthName(startMonth)} ${startYear} and ${getMonthName(endMonth)} ${endYear}. Loan ends at ${getMonthName(endMonth)} ${endYear} with current part payments.`,
         });
         return;
@@ -108,9 +106,7 @@ export const PartPaymentSection = ({
       );
       
       if (conflictingPayment) {
-        toast({
-          variant: "destructive",
-          title: "Duplicate Part Payment Date",
+        toast.error("Duplicate Part Payment Date", {
           description: `A part payment already exists for ${getMonthName(newPayment.month)} ${newPayment.year}. Please choose a different date or edit the existing payment.`,
         });
         return;
@@ -122,9 +118,7 @@ export const PartPaymentSection = ({
       );
       
       if (!scheduleEntry) {
-        toast({
-          variant: "destructive",
-          title: "Invalid Part Payment Date",
+        toast.error("Invalid Part Payment Date", {
           description: `No remaining balance for ${getMonthName(newPayment.month)} ${newPayment.year}. Loan ends at ${getMonthName(endMonth)} ${endYear} with current part payments.`,
         });
         return;
@@ -137,9 +131,7 @@ export const PartPaymentSection = ({
       
       // Check if new amount plus existing payments exceed remaining balance
       if (newPayment.amount + existingPaymentAmount >= scheduleEntry.remainingBalance) {
-        toast({
-          variant: "destructive",
-          title: "Invalid Part Payment Amount",
+        toast.error("Invalid Part Payment Amount", {
           description: `Amount ${existingPaymentAmount > 0 ? `(including existing payment of ${formatAmount(existingPaymentAmount)}) ` : ''}exceeds remaining loan amount of ${formatAmount(scheduleEntry.remainingBalance)} for ${getMonthName(newPayment.month)} ${newPayment.year}`,
         });
         return;
@@ -156,8 +148,7 @@ export const PartPaymentSection = ({
           return a.month - b.month;
         });
         setPartPayments(updatedPayments);
-        toast({
-          title: "Part Payment Updated",
+        toast.success("Part Payment Updated", {
           description: `Updated payment for ${getMonthName(newPayment.month)} ${newPayment.year}`,
         });
       } else {
@@ -221,8 +212,7 @@ export const PartPaymentSection = ({
     if (!confirmed) return;
     setPartPayments([]);
     cancelEdit();
-    toast({
-      title: "Part Payments Cleared",
+    toast.success("Part Payments Cleared", {
       description: "All scheduled part payments have been removed.",
     });
   };

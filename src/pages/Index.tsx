@@ -109,7 +109,7 @@ const Index = () => {
   const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
   const openLoadOnLoginRef = useRef<boolean>(false);
   const { user, loading: authLoading } = useAuth();
-  const { symbol: currencySymbol } = useCurrency();
+  const { symbol: currencySymbol, format: formatCurrency } = useCurrency();
 
   // Load preferred currency from profile on sign-in.
   useEffect(() => {
@@ -273,10 +273,9 @@ const Index = () => {
     if (!isDirty || !loadedSnapshot) return [];
     try {
       const prev = JSON.parse(loadedSnapshot);
-      const fmt = (n: number) => n.toLocaleString("en-IN");
       const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const diffs: string[] = [];
-      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ${currencySymbol}${fmt(prev.loanAmount)} → ${currencySymbol}${fmt(loanAmount)}`);
+      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ${formatCurrency(prev.loanAmount)} → ${formatCurrency(loanAmount)}`);
       if (prev.interestRate !== interestRate) diffs.push(`Interest rate: ${prev.interestRate}% → ${interestRate}%`);
       if (prev.loanTenure !== loanTenure) diffs.push(`Tenure: ${prev.loanTenure} yrs → ${loanTenure} yrs`);
       if (prev.startMonth !== startMonth || prev.startYear !== startYear) {
