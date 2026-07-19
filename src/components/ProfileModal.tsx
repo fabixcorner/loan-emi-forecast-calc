@@ -368,10 +368,10 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
           </div>
 
           <div className="border-t border-border pt-4">
-            <div className="grid grid-cols-[100px_1fr] items-center gap-3">
+            <div className="grid grid-cols-[150px_1fr] items-center gap-3">
               <Label htmlFor="profile-currency" className="text-sm text-foreground">Preferred Currency</Label>
               <Select value={currentCurrencyCode} onValueChange={(v) => handleCurrencyChange(v as CurrencyCode)}>
-                <SelectTrigger id="profile-currency" className="h-9 w-44" disabled={savingCurrency}>
+                <SelectTrigger id="profile-currency" className="h-9 w-full" disabled={savingCurrency}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="z-[10000]">
