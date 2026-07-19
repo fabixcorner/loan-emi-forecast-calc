@@ -109,7 +109,7 @@ const Index = () => {
   const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
   const openLoadOnLoginRef = useRef<boolean>(false);
   const { user, loading: authLoading } = useAuth();
-  const { symbol: currencySymbol } = useCurrency();
+  const { symbol: currencySymbol, format: formatCurrency } = useCurrency();
 
   // Load preferred currency from profile on sign-in.
   useEffect(() => {
