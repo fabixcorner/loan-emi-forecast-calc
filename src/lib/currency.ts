@@ -130,6 +130,20 @@ export const formatCurrency = (
   }
 };
 
+// Plain "<symbol> <number>" formatting — used for PDF/Excel exports where
+// locale-specific currency glyphs (e.g. "Rs.") don't render in embedded fonts.
+export const formatCurrencyPlain = (
+  amount: number,
+  options?: { maximumFractionDigits?: number; withThinSpace?: boolean },
+): string => {
+  const c = getCurrency();
+  const gap = options?.withThinSpace === false ? " " : "\u2009";
+  const number = new Intl.NumberFormat(c.locale, {
+    maximumFractionDigits: options?.maximumFractionDigits ?? 0,
+  }).format(Math.round(amount));
+  return `${c.symbol}${gap}${number}`;
+};
+
 export const formatCompactAmount = (amount: number): string => {
   const c = getCurrency();
   const s = `${c.symbol}\u2009`;
