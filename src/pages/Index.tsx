@@ -414,9 +414,6 @@ const Index = () => {
                 <h1 className="text-base sm:text-2xl font-bold text-foreground truncate">
                   {isScheduleView ? 'Shared EMI Schedule' : 'Loan Forecast Calculator'}
                 </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
-                  {isScheduleView ? 'View detailed loan repayment schedule' : 'Plan your loan re-payments. Save on interest. Be Smarter than your lender.'}
-                </p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
