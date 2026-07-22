@@ -135,16 +135,23 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-1.5 text-xs border-financial-primary/50">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-financial-primary to-financial-success flex items-center justify-center overflow-hidden">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <User className="w-3 h-3 text-white" />
-              )}
-            </div>
-            <span className="hidden sm:inline max-w-[80px] truncate">{displayName}</span>
-          </Button>
+          {variant === "drawer" ? (
+            <Button variant="ghost" className="w-full justify-start gap-3 px-3 py-3 h-auto text-foreground hover:bg-muted/50">
+              <User className="w-5 h-5" />
+              <span className="text-sm font-medium">Profile</span>
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs border-financial-primary/50">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-r from-financial-primary to-financial-success flex items-center justify-center overflow-hidden">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-3 h-3 text-white" />
+                )}
+              </div>
+              <span className="hidden sm:inline max-w-[80px] truncate">{displayName}</span>
+            </Button>
+          )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
           <DropdownMenuItem onClick={() => setShowProfileModal(true)} className="gap-2 cursor-pointer">
