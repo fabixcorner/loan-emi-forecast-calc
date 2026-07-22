@@ -9,13 +9,14 @@ export function ThemeToggle({ variant = "responsive" }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
 
-  const sliderButton = (
-    <button
-      onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="relative h-9 w-[4.5rem] rounded-full bg-muted/80 border border-border shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)] transition-all duration-300 items-center px-1"
-      aria-label="Toggle theme"
+  const toggle = () => setTheme(isDark ? "light" : "dark");
+
+  const slider = (
+    <span
+      className={`relative h-9 w-[4.5rem] rounded-full bg-muted/80 border border-border shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)] transition-all duration-300 items-center px-1 inline-flex ${
+        variant === "slider" ? "" : "hidden sm:inline-flex"
+      }`}
     >
-      {/* Sliding knob */}
       <span
         className={`absolute top-0.5 h-7 w-7 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.25)] transition-all duration-300 flex items-center justify-center ${
           isDark
@@ -29,29 +30,30 @@ export function ThemeToggle({ variant = "responsive" }: ThemeToggleProps) {
           <Sun className="h-4 w-4 text-amber-500" />
         )}
       </span>
-      {/* Background icons */}
       <span className="absolute left-2 top-1/2 -translate-y-1/2">
         <Sun className={`h-3.5 w-3.5 transition-opacity ${isDark ? "opacity-30 text-muted-foreground" : "opacity-0"}`} />
       </span>
       <span className="absolute right-2 top-1/2 -translate-y-1/2">
         <Moon className={`h-3.5 w-3.5 transition-opacity ${isDark ? "opacity-0" : "opacity-30 text-muted-foreground"}`} />
       </span>
-    </button>
+    </span>
   );
 
   if (variant === "slider") {
-    return sliderButton;
+    return (
+      <button onClick={toggle} aria-label="Toggle theme">
+        {slider}
+      </button>
+    );
   }
 
   return (
     <>
-      {/* Desktop: slider */}
       <button
-        onClick={() => setTheme(isDark ? "light" : "dark")}
+        onClick={toggle}
         className="hidden sm:flex relative h-9 w-[4.5rem] rounded-full bg-muted/80 border border-border shadow-[inset_0_2px_4px_rgba(0,0,0,0.15)] transition-all duration-300 items-center px-1"
         aria-label="Toggle theme"
       >
-        {/* Sliding knob */}
         <span
           className={`absolute top-0.5 h-7 w-7 rounded-full shadow-[0_2px_6px_rgba(0,0,0,0.25)] transition-all duration-300 flex items-center justify-center ${
             isDark
@@ -65,7 +67,6 @@ export function ThemeToggle({ variant = "responsive" }: ThemeToggleProps) {
             <Sun className="h-4 w-4 text-amber-500" />
           )}
         </span>
-        {/* Background icons */}
         <span className="absolute left-2 top-1/2 -translate-y-1/2">
           <Sun className={`h-3.5 w-3.5 transition-opacity ${isDark ? "opacity-30 text-muted-foreground" : "opacity-0"}`} />
         </span>
@@ -74,9 +75,8 @@ export function ThemeToggle({ variant = "responsive" }: ThemeToggleProps) {
         </span>
       </button>
 
-      {/* Mobile: single icon */}
       <button
-        onClick={() => setTheme(isDark ? "light" : "dark")}
+        onClick={toggle}
         className="flex sm:hidden h-9 w-9 items-center justify-center rounded-full bg-muted/80 border border-border transition-all duration-300"
         aria-label="Toggle theme"
       >
