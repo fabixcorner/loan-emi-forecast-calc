@@ -494,6 +494,59 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-[80]">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <aside className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-card shadow-2xl border-r border-border flex flex-col animate-slide-in-right">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+              <h2 className="text-base font-semibold">Menu</h2>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-muted"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex flex-col gap-4 p-4" onClick={() => setMobileMenuOpen(false)}>
+              {currentLoanName && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30">
+                  <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
+                  <span className="text-xs font-medium text-foreground truncate" title={currentLoanName}>
+                    {currentLoanName}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-muted-foreground">Profile</span>
+                <UserMenu
+                  onLoadCalculation={handleLoadCalculation}
+                  getCurrentData={getCurrentData}
+                  currentLoanId={currentLoanId}
+                  currentLoanName={currentLoanName}
+                  onSavedAs={handleSavedAs}
+                  isDirty={isDirty}
+                  onSavedCurrent={handleSavedCurrent}
+                  openLoadOnLoginRef={openLoadOnLoginRef}
+                />
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-muted-foreground">Theme</span>
+                <ThemeToggle />
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-muted-foreground">Help</span>
+                <HowItWorks />
+              </div>
+            </div>
+          </aside>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
         {isScheduleView ? (
           /* Schedule-only view for shared links */
