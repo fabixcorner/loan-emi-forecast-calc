@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper, Calculator, CalendarRange, Scale, Wallet, FileText, Circle, Undo2, Menu, X } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Calculator, CalendarRange, Scale, Wallet, FileText, Circle, Undo2, Menu, X, Moon, Sun } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import calculatorIcon from "@/assets/calculator.png";
 import { UserMenu } from "@/components/UserMenu";
@@ -17,6 +17,7 @@ import { Footer } from "@/components/Footer";
 import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
 import { setCurrency, type CurrencyCode, CURRENCIES } from "@/lib/currency";
 import { supabase } from "@/integrations/supabase/client";
