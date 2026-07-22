@@ -111,6 +111,8 @@ const Index = () => {
   const openLoadOnLoginRef = useRef<boolean>(false);
   const { user, loading: authLoading } = useAuth();
   const { symbol: currencySymbol, format: formatCurrency } = useCurrency();
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Lock body scroll while mobile drawer is open, close on Escape
