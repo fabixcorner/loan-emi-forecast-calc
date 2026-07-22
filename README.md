@@ -1,4 +1,4 @@
-# 🏦 EMI Calculator Pro
+# 🏦 Loan Forecast Calculator
 
 A powerful, interactive loan EMI (Equated Monthly Installment) calculator that helps you understand, plan, and optimize your loan repayments. Whether you're taking a home loan, car loan, or personal loan, this tool provides comprehensive insights into your payment schedule and helps you save money through smart part-payment strategies.
 
@@ -93,8 +93,7 @@ The calculator considers:
 
 Have questions, suggestions, or need help? Feel free to reach out!
 
-- **Email**: [your-email@example.com](mailto:your-email@example.com)
-- **Issues**: Open an issue in this repository for bug reports or feature requests
+- **Email**: [queries@fabixcorner.com](mailto:queries@fabixcorner.com)
 
 ---
 
