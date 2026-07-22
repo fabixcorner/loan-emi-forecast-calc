@@ -515,7 +515,7 @@ const Index = () => {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-1 p-4">
               {currentLoanName && (
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30">
                   <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
@@ -524,27 +524,38 @@ const Index = () => {
                   </span>
                 </div>
               )}
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-muted-foreground">Profile</span>
-                <UserMenu
-                  onLoadCalculation={handleLoadCalculation}
-                  getCurrentData={getCurrentData}
-                  currentLoanId={currentLoanId}
-                  currentLoanName={currentLoanName}
-                  onSavedAs={handleSavedAs}
-                  isDirty={isDirty}
-                  onSavedCurrent={handleSavedCurrent}
-                  openLoadOnLoginRef={openLoadOnLoginRef}
-                />
+              <UserMenu
+                variant="drawer"
+                onLoadCalculation={handleLoadCalculation}
+                getCurrentData={getCurrentData}
+                currentLoanId={currentLoanId}
+                currentLoanName={currentLoanName}
+                onSavedAs={handleSavedAs}
+                isDirty={isDirty}
+                onSavedCurrent={handleSavedCurrent}
+                openLoadOnLoginRef={openLoadOnLoginRef}
+              />
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setTheme(isDark ? "light" : "dark");
+                  }
+                }}
+                className="flex items-center justify-between w-full px-3 py-3 rounded-lg hover:bg-muted/50 cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                  <span className="text-sm font-medium">Theme</span>
+                </div>
+                <div className="pointer-events-none">
+                  <ThemeToggle variant="slider" />
+                </div>
               </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-muted-foreground">Theme</span>
-                <ThemeToggle />
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-muted-foreground">Help</span>
-                <HowItWorks />
-              </div>
+              <HowItWorks variant="drawer" />
             </div>
           </aside>
         </div>
