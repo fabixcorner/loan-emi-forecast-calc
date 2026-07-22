@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper, Coins, CalendarRange, Scale, Wallet, FileText, Circle, Undo2 } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Calculator, CalendarRange, Scale, Wallet, FileText, Circle, Undo2, Menu, X, Moon, Sun } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import calculatorIcon from "@/assets/calculator.png";
 import { UserMenu } from "@/components/UserMenu";
@@ -17,9 +17,14 @@ import { Footer } from "@/components/Footer";
 import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
+import { setCurrency, type CurrencyCode, CURRENCIES } from "@/lib/currency";
+import { supabase } from "@/integrations/supabase/client";
+import { useCurrency } from "@/hooks/useCurrency";
 import {
   LOCAL_STORAGE_KEYS,
+  SESSION_STORAGE_KEYS,
   DEFAULT_SCORING_WEIGHTS,
   LOAN_DEFAULTS,
   getDefaultStartMonth,
@@ -104,16 +109,99 @@ const Index = () => {
   const [currentLoanName, setCurrentLoanName] = useState<string | null>(null);
   const [loadedSnapshot, setLoadedSnapshot] = useState<string | null>(null);
   const openLoadOnLoginRef = useRef<boolean>(false);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { symbol: currencySymbol, format: formatCurrency } = useCurrency();
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Clear active loan session when user signs out
+  // Lock body scroll while mobile drawer is open, close on Escape
   useEffect(() => {
-    if (!user) {
-      setCurrentLoanId(null);
-      setCurrentLoanName(null);
-      setLoadedSnapshot(null);
-    }
+    if (!mobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileMenuOpen(false);
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [mobileMenuOpen]);
+
+  // Load preferred currency from profile on sign-in.
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("preferred_currency")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const code = (data as any)?.preferred_currency as CurrencyCode | undefined;
+      if (code && CURRENCIES.some((c) => c.code === code)) {
+        setCurrency(code);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
+
+  // Restore / clear active loan session based on auth state
+  const sessionRestoredRef = useRef(false);
+  useEffect(() => {
+    if (authLoading) return;
+    if (sessionRestoredRef.current) {
+      // On subsequent auth changes, clear loaded-loan metadata on logout
+      if (!user) {
+        setCurrentLoanId(null);
+        setCurrentLoanName(null);
+        setLoadedSnapshot(null);
+      }
+      return;
+    }
+    sessionRestoredRef.current = true;
+    try {
+      const raw = sessionStorage.getItem(SESSION_STORAGE_KEYS.ACTIVE_LOAN);
+      if (!raw) return;
+      const s = JSON.parse(raw);
+      if (s.loanAmount != null) setLoanAmount(s.loanAmount);
+      if (s.interestRate != null) setInterestRate(s.interestRate);
+      if (s.loanTenure != null) setLoanTenure(s.loanTenure);
+      if (s.startMonth != null) setStartMonth(s.startMonth);
+      if (s.startYear != null) setStartYear(s.startYear);
+      if (Array.isArray(s.partPayments)) setPartPayments(s.partPayments);
+      // Only restore loaded-loan metadata when the user is still logged in
+      if (user) {
+        if (s.currentLoanId) setCurrentLoanId(s.currentLoanId);
+        if (s.currentLoanName) setCurrentLoanName(s.currentLoanName);
+        if (s.loadedSnapshot) setLoadedSnapshot(s.loadedSnapshot);
+      }
+    } catch {}
+  }, [user, authLoading]);
+
+  // Persist all loan input fields to sessionStorage so they survive a refresh
+  useEffect(() => {
+    if (!sessionRestoredRef.current) return;
+    try {
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEYS.ACTIVE_LOAN,
+        JSON.stringify({
+          currentLoanId,
+          currentLoanName,
+          loadedSnapshot,
+          loanAmount,
+          interestRate,
+          loanTenure,
+          startMonth,
+          startYear,
+          partPayments,
+        })
+      );
+    } catch {}
+  }, [user, currentLoanId, currentLoanName, loadedSnapshot, loanAmount, interestRate, loanTenure, startMonth, startYear, partPayments]);
 
   // Get current data for saving
   const getCurrentData = useCallback(() => {
@@ -202,10 +290,9 @@ const Index = () => {
     if (!isDirty || !loadedSnapshot) return [];
     try {
       const prev = JSON.parse(loadedSnapshot);
-      const fmt = (n: number) => n.toLocaleString("en-IN");
       const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       const diffs: string[] = [];
-      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ₹${fmt(prev.loanAmount)} → ₹${fmt(loanAmount)}`);
+      if (prev.loanAmount !== loanAmount) diffs.push(`Loan amount: ${formatCurrency(prev.loanAmount)} → ${formatCurrency(loanAmount)}`);
       if (prev.interestRate !== interestRate) diffs.push(`Interest rate: ${prev.interestRate}% → ${interestRate}%`);
       if (prev.loanTenure !== loanTenure) diffs.push(`Tenure: ${prev.loanTenure} yrs → ${loanTenure} yrs`);
       if (prev.startMonth !== startMonth || prev.startYear !== startYear) {
@@ -335,8 +422,16 @@ const Index = () => {
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm shadow-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between gap-2">
+          <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
             <div className="flex items-center justify-start gap-2 sm:gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className="md:hidden h-9 w-9 flex items-center justify-center rounded-full bg-muted/80 border border-border flex-shrink-0"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
               <div className="p-1.5 sm:p-2 bg-gradient-to-r from-financial-primary to-financial-success rounded-lg flex-shrink-0">
                 <img src={calculatorIcon} alt="Calculator" className="w-8 h-8 sm:w-10 sm:h-10" />
               </div>
@@ -344,12 +439,9 @@ const Index = () => {
                 <h1 className="text-base sm:text-2xl font-bold text-foreground truncate">
                   {isScheduleView ? 'Shared EMI Schedule' : 'Loan Forecast Calculator'}
                 </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
-                  {isScheduleView ? 'View detailed loan repayment schedule' : 'Plan your loan re-payments. Save on interest. Be Smarter than your lender.'}
-                </p>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
+            <div className="hidden md:flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
               {currentLoanName && (
                 <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30 max-w-[180px]">
                   <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
@@ -405,6 +497,70 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-[80]">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <aside className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-card shadow-2xl border-r border-border flex flex-col animate-slide-in-right">
+            <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+              <h2 className="text-base font-semibold">Menu</h2>
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-muted"
+                aria-label="Close menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex flex-col gap-1 p-4">
+              {currentLoanName && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30">
+                  <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
+                  <span className="text-xs font-medium text-foreground truncate" title={currentLoanName}>
+                    {currentLoanName}
+                  </span>
+                </div>
+              )}
+              <UserMenu
+                variant="drawer"
+                onLoadCalculation={handleLoadCalculation}
+                getCurrentData={getCurrentData}
+                currentLoanId={currentLoanId}
+                currentLoanName={currentLoanName}
+                onSavedAs={handleSavedAs}
+                isDirty={isDirty}
+                onSavedCurrent={handleSavedCurrent}
+                openLoadOnLoginRef={openLoadOnLoginRef}
+              />
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setTheme(isDark ? "light" : "dark");
+                  }
+                }}
+                className="flex items-center justify-between w-full px-3 py-3 rounded-lg hover:bg-muted/50 cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                  <span className="text-sm font-medium">Theme</span>
+                </div>
+                <div className="pointer-events-none">
+                  <ThemeToggle variant="slider" />
+                </div>
+              </div>
+              <HowItWorks variant="drawer" />
+            </div>
+          </aside>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
         {isScheduleView ? (
           /* Schedule-only view for shared links */
@@ -442,7 +598,7 @@ const Index = () => {
             {/* Desktop Tab Navigation - Hidden on mobile */}
             <TabsList className="hidden md:grid w-full max-w-4xl mx-auto grid-cols-4 mb-8">
               <TabsTrigger value="loan-details" className="flex flex-row items-center gap-2 py-3">
-                <Coins className="w-5 h-5" />
+                <Calculator className="w-5 h-5" />
                 <span className="text-sm">Loan Details</span>
               </TabsTrigger>
               <TabsTrigger value="emi-schedule" className="flex flex-row items-center gap-2 py-3">
@@ -450,7 +606,7 @@ const Index = () => {
                 <span className="text-sm">EMI Schedule</span>
               </TabsTrigger>
               <TabsTrigger value="compare-scenarios" className="flex flex-row items-center gap-2 py-3">
-                <Scale className="w-5 h-5" />
+                <Scale className="w-5 h-5 shrink-0" strokeWidth={2.25} />
                 <span className="text-sm">Compare Scenarios</span>
               </TabsTrigger>
               <TabsTrigger value="loan-affordability" className="flex flex-row items-center gap-2 py-3">
@@ -463,7 +619,7 @@ const Index = () => {
             <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border shadow-lg">
               <TabsList className="grid w-full grid-cols-4 h-auto p-0 bg-transparent">
                 <TabsTrigger value="loan-details" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">
-                  <Coins className="w-5 h-5" />
+                  <Calculator className="w-5 h-5" />
                   <span className="leading-tight text-center">Loan<br/>Details</span>
                 </TabsTrigger>
                 <TabsTrigger value="emi-schedule" className="flex flex-col items-center gap-1 py-2 px-1 rounded-none border-0 text-[10px] data-[state=active]:bg-primary/10 data-[state=active]:shadow-none">

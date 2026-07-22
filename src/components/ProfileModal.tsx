@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Mail, User as UserIcon, Lock, Loader2, Camera, Trash2, Eye, EyeOff, Check, Circle } from "lucide-react";
+import { X, Mail, User as UserIcon, Lock, Loader2, Camera, Trash2, Eye, EyeOff, Check, Circle, KeyRound } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { AvatarCropModal } from "./AvatarCropModal";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCurrency } from "@/hooks/useCurrency";
+import { CURRENCIES, setCurrency, type CurrencyCode } from "@/lib/currency";
 import {
   DB_TABLES,
   STORAGE_BUCKETS,
@@ -54,10 +57,15 @@ const isEmailValid = (e: string) => emailSchema.safeParse(e).success;
 
 export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const { user, signOut } = useAuth();
+  const { code: currentCurrencyCode } = useCurrency();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
+  const [pendingCurrency, setPendingCurrency] = useState<CurrencyCode>(currentCurrencyCode);
+  const [initialName, setInitialName] = useState("");
+  const [initialEmail, setInitialEmail] = useState("");
+  const [initialCurrency, setInitialCurrency] = useState<CurrencyCode>(currentCurrencyCode);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -72,32 +80,59 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [otpRequired, setOtpRequired] = useState(false);
+  const [otpEmail, setOtpEmail] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !user) return;
     const userEmail = user.email ?? "";
     setEmail(userEmail);
+    setInitialEmail(userEmail);
     const fallbackName = userEmail.includes("@") ? userEmail.split("@")[0] : "";
-    setDisplayName(user.user_metadata?.display_name ?? fallbackName);
+    const initName = user.user_metadata?.display_name ?? fallbackName;
+    setDisplayName(initName);
+    setInitialName(initName);
     setNewPassword("");
     setConfirmPassword("");
     setErrors({});
     setConfirmingDelete(false);
     setDeleteConfirmText("");
+    setOtpRequired(false);
+    setOtpCode("");
+    setOtpEmail("");
     (async () => {
       const { data } = await supabase
         .from(DB_TABLES.PROFILES)
-        .select("display_name, avatar_url")
+        .select("display_name, avatar_url, preferred_currency")
         .eq("user_id", user.id)
         .maybeSingle();
       if (data) {
-        if (data.display_name) setDisplayName(data.display_name);
+        if (data.display_name) {
+          setDisplayName(data.display_name);
+          setInitialName(data.display_name);
+        }
         setAvatarUrl(data.avatar_url ?? null);
-      } else if (fallbackName) {
-        setDisplayName(fallbackName);
+        const pc = (data as any).preferred_currency as CurrencyCode | undefined;
+        if (pc && CURRENCIES.some((c) => c.code === pc)) {
+          setCurrency(pc);
+          setPendingCurrency(pc);
+          setInitialCurrency(pc);
+        } else {
+          setPendingCurrency(currentCurrencyCode);
+          setInitialCurrency(currentCurrencyCode);
+        }
+      } else {
+        setPendingCurrency(currentCurrencyCode);
+        setInitialCurrency(currentCurrencyCode);
+        if (fallbackName) {
+          setDisplayName(fallbackName);
+          setInitialName(fallbackName);
+        }
       }
     })();
-  }, [isOpen, user]);
+  }, [isOpen, user, currentCurrencyCode]);
 
   if (!isOpen || !user) return null;
 
@@ -107,8 +142,11 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const passwordChecksPassed = Object.values(passwordChecks).filter(Boolean).length;
   const emailValid = isEmailValid(email);
   const nameValid = nameSchema.safeParse(displayName).success;
-  const profileChanged = email !== (user.email ?? "") || displayName !== (user.user_metadata?.display_name ?? "");
-  const profileReady = emailValid && nameValid;
+  const profileChanged =
+    displayName.trim() !== initialName.trim() ||
+    email.trim() !== initialEmail.trim() ||
+    pendingCurrency !== initialCurrency;
+  const profileReady = emailValid && nameValid && profileChanged;
   const passwordsMatch = newPassword.length > 0 && newPassword === confirmPassword;
   const passwordReady = passwordChecksPassed === 4 && passwordsMatch;
 
@@ -182,19 +220,37 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
 
     setSavingProfile(true);
     try {
+      const trimmedName = displayName.trim();
+      const trimmedEmail = email.trim();
+      const emailChanged = trimmedEmail !== initialEmail.trim();
+
+      // Save name + currency to profiles table (and email only after OTP verify).
       const { error: profileError } = await supabase
         .from(DB_TABLES.PROFILES)
-        .update({ display_name: displayName.trim() || null, email: email.trim() })
+        .update({
+          display_name: trimmedName || null,
+          preferred_currency: pendingCurrency,
+        } as any)
         .eq("user_id", user.id);
       if (profileError) throw profileError;
 
-      const updates: any = { data: { display_name: displayName.trim() } };
-      if (email.trim() !== user.email) updates.email = email.trim();
-      const { error: authError } = await supabase.auth.updateUser(updates);
+      // Update display name in auth metadata.
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { display_name: trimmedName },
+      });
       if (authError) throw authError;
 
-      if (email.trim() !== user.email) {
-        toast.success("Profile saved. Check your inbox to confirm the new email.");
+      // Apply currency globally.
+      setCurrency(pendingCurrency);
+      setInitialName(trimmedName);
+      setInitialCurrency(pendingCurrency);
+
+      if (emailChanged) {
+        const { error: emailError } = await supabase.auth.updateUser({ email: trimmedEmail });
+        if (emailError) throw emailError;
+        setOtpEmail(trimmedEmail);
+        setOtpRequired(true);
+        toast.success(`We sent a verification code to ${trimmedEmail}. Enter it below to confirm.`);
       } else {
         toast.success("Profile saved");
       }
@@ -202,6 +258,35 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
       toast.error(err.message || "Failed to save profile");
     } finally {
       setSavingProfile(false);
+    }
+  };
+
+  const handleVerifyEmailOtp = async () => {
+    if (otpCode.trim().length < 6) {
+      toast.error("Enter the 6-digit code from your email");
+      return;
+    }
+    setVerifyingOtp(true);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: otpEmail,
+        token: otpCode.trim(),
+        type: "email_change",
+      });
+      if (error) throw error;
+      await supabase
+        .from(DB_TABLES.PROFILES)
+        .update({ email: otpEmail })
+        .eq("user_id", user.id);
+      setInitialEmail(otpEmail);
+      setEmail(otpEmail);
+      setOtpRequired(false);
+      setOtpCode("");
+      toast.success("Email updated");
+    } catch (err: any) {
+      toast.error(err.message || "Invalid or expired code");
+    } finally {
+      setVerifyingOtp(false);
     }
   };
 
@@ -252,39 +337,25 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   return createPortal(
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[9999] flex items-start sm:items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
       <Card className="w-full max-w-lg bg-card border-border shadow-2xl animate-fade-in relative my-8" onClick={(e) => e.stopPropagation()}>
-        <CardHeader className="relative bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="absolute right-2 top-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/20"
-          >
+        <CardHeader className="relative bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-2.5">
+          <Button variant="ghost" size="icon" onClick={onClose} className="absolute right-2 top-2 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/20" >
             <X className="w-4 h-4" />
           </Button>
-          <CardTitle className="text-xl">Your Profile</CardTitle>
+          <CardTitle className="text-lg">Your Profile</CardTitle>
         </CardHeader>
-        <CardContent className="pt-4 pb-4 space-y-5">
+        <CardContent className="pt-3 pb-4 space-y-3">
           {/* Avatar + Profile fields */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) handleAvatarFileSelected(file);
               e.target.value = "";
             }}
           />
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div className="flex items-center gap-4">
-              <button
-                type="button"
-                onClick={() => !uploading && fileInputRef.current?.click()}
-                disabled={uploading}
-                aria-label={avatarUrl ? "Change avatar" : "Upload avatar"}
-                className="group relative w-20 h-20 shrink-0 rounded-full overflow-hidden bg-gradient-to-br from-financial-primary to-financial-success flex items-center justify-center text-primary-foreground text-2xl font-semibold ring-2 ring-border focus:outline-none focus:ring-2 focus:ring-ring"
-              >
+              <button type="button" onClick={() => !uploading && fileInputRef.current?.click()} disabled={uploading} aria-label={avatarUrl ? "Change avatar" : "Upload avatar"}
+                className="group relative w-20 h-20 shrink-0 rounded-full overflow-hidden bg-gradient-to-br from-financial-primary to-financial-success flex items-center justify-center text-primary-foreground text-2xl font-semibold ring-2 ring-border focus:outline-none focus:ring-2 focus:ring-ring" >
                 {avatarUrl ? (
                   <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
@@ -300,7 +371,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                   </span>
                 )}
               </button>
-              <div className="flex-1 min-w-0 space-y-2">
+              <div className="flex-1 min-w-0 space-y-1.5">
                 <div>
                   <div className="relative">
                     <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -309,7 +380,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                       value={displayName}
                       onChange={(e) => { setDisplayName(e.target.value); if (errors.name) setErrors({ ...errors, name: undefined }); }}
                       placeholder="Display name"
-                      className="pl-10 h-9"
+                      className="pl-10 h-8"
                       aria-invalid={!!errors.name}
                     />
                   </div>
@@ -324,7 +395,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                       value={email}
                       onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors({ ...errors, email: undefined }); }}
                       placeholder="Email"
-                      className="pl-10 h-9"
+                      className="pl-10 h-8"
                       aria-invalid={!!errors.email}
                     />
                   </div>
@@ -332,9 +403,25 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                   {!errors.email && email.length > 0 && !emailValid && (
                     <p className="text-xs text-destructive mt-1">Please enter a valid email address</p>
                   )}
-                  {email !== user.email && !errors.email && (
-                    <p className="text-xs text-muted-foreground mt-1">You'll receive a confirmation link at the new address.</p>
-                  )}
+                </div>
+                <div className="grid grid-cols-[130px_1fr] items-center gap-2">
+                  <Label htmlFor="profile-currency" className="text-xs text-muted-foreground">Preferred Currency</Label>
+                  <Select value={pendingCurrency} onValueChange={(v) => setPendingCurrency(v as CurrencyCode)}>
+                    <SelectTrigger id="profile-currency" className="h-8 w-full text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="z-[10000]">
+                      {CURRENCIES.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          <span className="inline-flex items-center gap-2">
+                            <span className="w-5 text-center font-medium">{c.symbol}</span>
+                            <span>{c.name}</span>
+                            <span className="text-xs text-muted-foreground">({c.code})</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>
@@ -349,13 +436,36 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                 Remove avatar
               </button>
             )}
-            <Button onClick={handleProfileSave} disabled={savingProfile || !profileReady} className="w-full">
+            <Button onClick={handleProfileSave} disabled={savingProfile || !profileReady} className="w-full h-9">
               {savingProfile && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Save Profile
             </Button>
+            {otpRequired && (
+              <div className="rounded-md border border-border bg-muted/40 p-3 space-y-2">
+                <p className="text-xs text-foreground">
+                  Enter the 6-digit code sent to <span className="font-medium">{otpEmail}</span> to confirm your new email.
+                </p>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      placeholder="123456"
+                      inputMode="numeric"
+                      className="pl-10 h-9 tracking-widest"
+                    />
+                  </div>
+                  <Button onClick={handleVerifyEmailOtp} disabled={verifyingOtp || otpCode.length < 6} className="h-9">
+                    {verifyingOtp && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                    Verify
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="border-t border-border pt-4 space-y-3">
+          <div className="border-t border-border pt-3 space-y-2">
             <h3 className="text-sm font-semibold text-foreground">Change Password</h3>
             <div className="grid grid-cols-[100px_1fr] items-start gap-3">
               <Label htmlFor="profile-new-password" className="text-sm text-foreground pt-2">New</Label>
@@ -482,8 +592,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                     size="sm"
                     onClick={() => { setConfirmingDelete(false); setDeleteConfirmText(""); }}
                     disabled={deletingAccount}
-                    className="flex-1"
-                  >
+                    className="flex-1" >
                     Cancel
                   </Button>
                   <Button
@@ -492,8 +601,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                     size="sm"
                     onClick={handleDeleteAccount}
                     disabled={deleteConfirmText !== "DELETE" || deletingAccount}
-                    className="flex-1"
-                  >
+                    className="flex-1" >
                     {deletingAccount && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                     Permanently Delete
                   </Button>
@@ -503,11 +611,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
           </div>
         </CardContent>
       </Card>
-      <AvatarCropModal
-        isOpen={!!pendingFile}
-        file={pendingFile}
-        onClose={() => setPendingFile(null)}
-        onConfirm={handleCroppedUpload}
+      <AvatarCropModal isOpen={!!pendingFile} file={pendingFile} onClose={() => setPendingFile(null)} onConfirm={handleCroppedUpload}
       />
     </div>,
     document.body

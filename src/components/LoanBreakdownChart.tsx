@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface LoanCalculation {
   emi: number;
@@ -24,18 +25,11 @@ interface LoanBreakdownChartProps {
 
 export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownChartProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const { format: formatCurrency } = useCurrency();
 
   if (!calculation) {
     return null;
   }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
 
   // Calculate totals
   const totalPrincipal = calculation.totalAmount - calculation.totalInterest;
@@ -50,7 +44,7 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
   const totalValue = pieChartData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <Card className="bg-card shadow-card border border-border">
+    <Card className="glass-card-warm shadow-card border border-border bg-inherit">
       <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3">
         <CardTitle className="text-xl font-semibold">Loan Breakdown</CardTitle>
       </CardHeader>
@@ -62,9 +56,8 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
                 data={pieChartData}
                 cx="50%"
                 cy="48%"
-                innerRadius={60}
                 outerRadius={120}
-                paddingAngle={5}
+                paddingAngle={0.5}
                 dataKey="value"
                 onMouseEnter={(_, index) => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}

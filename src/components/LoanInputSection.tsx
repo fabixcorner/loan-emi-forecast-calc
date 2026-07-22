@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface LoanInputSectionProps {
   loanAmount: number;
@@ -31,15 +32,7 @@ export const LoanInputSection = ({
   startYear,
   setStartYear,
 }: LoanInputSectionProps) => {
-  const formatAmount = (amount: number) => {
-    if (amount >= 10000000) {
-      return `₹${(amount / 10000000).toFixed(1)} Cr`;
-    } else if (amount >= 100000) {
-      return `₹${(amount / 100000).toFixed(1)} L`;
-    } else {
-      return `₹${(amount / 1000).toFixed(0)}K`;
-    }
-  };
+  const { formatCompact: formatAmount, formatCompactLabel } = useCurrency();
 
   const getMonthName = (month: number) => {
     const months = [
@@ -142,8 +135,8 @@ export const LoanInputSection = ({
                 className="w-full"
               />
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>₹1L</span>
-                <span>₹3Cr</span>
+                <span>{formatCompactLabel("L", 1)}</span>
+                <span>{formatCompactLabel("Cr", 3)}</span>
               </div>
             </div>
           </div>

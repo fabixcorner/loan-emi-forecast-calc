@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { exportToExcel, exportToPDF, exportToJSON, exportToCSV, exportDetailedPDFReport } from "@/utils/exportUtils";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface LoanCalculation {
   emi: number;
@@ -70,6 +71,7 @@ export const LoanSummary = ({
   baseTenure,
   hideActionButtons = false
 }: LoanSummaryProps) => {
+  const { format: formatCurrency, formatCompact: formatAmount, symbol: currencySymbol } = useCurrency();
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set());
   const [showPrepayments, setShowPrepayments] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
@@ -140,7 +142,7 @@ export const LoanSummary = ({
       if (navigator.share) {
         await navigator.share({
           title: 'EMI Schedule',
-          text: `Check out this EMI schedule: EMI ₹${calculation?.emi.toLocaleString('en-IN')}`,
+          text: `Check out this EMI schedule: EMI ${currencySymbol}${calculation?.emi.toLocaleString()}`,
           url: shareUrl,
         });
       } else {
@@ -167,24 +169,6 @@ export const LoanSummary = ({
   if (!calculation) {
     return null;
   }
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatAmount = (amount: number) => {
-    if (amount >= 10000000) {
-      return `₹${(amount / 10000000).toFixed(1)} Cr`;
-    } else if (amount >= 100000) {
-      return `₹${(amount / 100000).toFixed(1)} L`;
-    } else {
-      return `₹${(amount / 1000).toFixed(0)}K`;
-    }
-  };
 
   const getFullMonthName = (month: number) => {
     const months = [

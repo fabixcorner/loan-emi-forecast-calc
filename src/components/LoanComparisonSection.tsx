@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { calculateLoanEMI } from "@/utils/loanCalculations";
 import { PartPayment } from "./PartPaymentSection";
 import { LOCAL_STORAGE_KEYS } from "@/config";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface LoanScenario {
   id: string;
@@ -25,14 +26,6 @@ interface ScenarioResult {
   totalAmount: number;
   tenureMonths: number;
 }
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
 
 const formatAmount = (value: number): string => {
   if (value >= 10000000) {
@@ -63,6 +56,7 @@ export const LoanComparisonSection = ({
   startYear,
 }: LoanComparisonSectionProps) => {
   const STORAGE_KEY = LOCAL_STORAGE_KEYS.COMPARISON_SCENARIOS;
+  const { format: formatCurrency } = useCurrency();
 
   const [scenarios, setScenarios] = useState<LoanScenario[]>(() => {
     // Load saved scenarios from localStorage

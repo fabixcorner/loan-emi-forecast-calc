@@ -1,130 +1,57 @@
+# Repo cleanup and consolidation
 
-# Plan: Implement Mobile Responsiveness Fixes (Selected Items Only)
+Based on a repo-wide audit, here's what's safe to remove/consolidate. All changes are internal — no user-facing behavior changes.
 
-## Overview
-Implement 4 specific mobile responsiveness improvements for the EMI Schedule tab as requested:
-1. Responsive Tab Triggers
-2. Reduce cell padding on mobile
-3. Responsive Action Buttons in Header
-4. Stack pagination on mobile
+## 1. Remove unused npm dependencies (26 packages)
 
----
+None of these are imported anywhere in the app code (verified against `src/`, `index.html`, `supabase/`, tailwind config):
 
-## Implementation Details
+- **UI stacks not used:** `canvas-confetti`, `embla-carousel-react`, `input-otp`, `cmdk`, `vaul`, `react-resizable-panels`, `react-day-picker`
+- **Form stack not used** (forms are hand-rolled with `useState` + inline `zod`): `react-hook-form`, `@hookform/resolvers`
+- **Radix primitives with 0 usages:** `@radix-ui/react-accordion`, `-alert-dialog`, `-aspect-ratio`, `-avatar`, `-checkbox`, `-collapsible`, `-context-menu`, `-dialog`, `-hover-card`, `-menubar`, `-navigation-menu`, `-popover`, `-progress`, `-radio-group`, `-scroll-area`, `-separator`, `-toggle`, `-toggle-group`
 
-### 1. Responsive Tab Triggers
-**File: `src/components/ui/tabs.tsx`** (Line 27)
+`zod` itself stays (used directly in 4 files). All Radix packages that back actively-used shadcn components stay.
 
-Update the `TabsTrigger` component styles to use smaller padding and text on mobile screens:
+## 2. Remove corresponding unused shadcn UI shell files
 
-**Current:**
-```css
-px-8 py-3 text-base
-```
+`src/components/ui/` files matching the removed Radix packages will be deleted (accordion, alert-dialog, aspect-ratio, avatar, checkbox, collapsible, context-menu, dialog, hover-card, menubar, navigation-menu, popover, progress, radio-group, scroll-area, separator, toggle, toggle-group, calendar, carousel, command, drawer, input-otp, resizable, form) — none are imported from outside `src/components/ui/`.
 
-**Updated:**
-```css
-px-4 py-2 text-sm md:px-8 md:py-3 md:text-base
-```
+Also delete the dead re-export shim `src/components/ui/use-toast.ts` (nothing imports it).
 
-This halves the horizontal padding on mobile (32px → 16px) and reduces font size from 16px to 14px.
+## 3. Consolidate the dual toast systems onto `sonner`
 
----
+Today the app ships **two** toast implementations mounted side-by-side in `App.tsx`:
+- `sonner` — used by 6 files
+- Radix-based shadcn toast — used by exactly 1 file (`PartPaymentSection.tsx`) plus the global mount
 
-### 2. Reduce Cell Padding on Mobile
-**File: `src/components/LoanSummary.tsx`** (Multiple table cells)
+Actions:
+- Switch `PartPaymentSection.tsx` from `useToast()` to `sonner`'s `toast.*` (same variants).
+- Remove `<Toaster />` (Radix) from `App.tsx`, keep `<Sonner />`.
+- Delete `src/components/ui/toast.tsx`, `src/components/ui/toaster.tsx`, `src/hooks/use-toast.ts`.
+- Uninstall `@radix-ui/react-toast`.
 
-Add responsive padding to `TableCell` and `TableHead` components throughout the EMI Schedule table:
+## 4. Consolidate currency formatting
 
-**Updates to make:**
-- Add `text-xs sm:text-sm` to the Table component for smaller font on mobile
-- Table cells already use default padding, but we'll add explicit responsive padding
+Four parallel currency formatters exist today (`lib/currency.ts` canonical + `hooks/useCurrency.ts` wrapper + `utils/exportUtils.ts` local `formatCurrency` + `formatCurrencyForPDF` + an inline `en-IN` `fmt` in `pages/Index.tsx`).
 
-**Line ~559-572 (Table Headers):**
-```tsx
-<TableHead className="w-12 font-bold uppercase text-xs sm:text-sm p-2 sm:p-4">×</TableHead>
-<TableHead className="w-20 font-bold uppercase text-xs sm:text-sm p-2 sm:p-4">Year</TableHead>
-<TableHead className="text-right font-bold uppercase text-xs sm:text-sm p-2 sm:p-4">Principal</TableHead>
-// ... apply to all headers
-```
+Actions (no behavior change to displayed values):
+- Keep `lib/currency.ts` as the single source of truth; extend it with a `formatCurrencyPlain` (no thin-space, for PDF/Excel where the special char breaks fonts) built on the same locale/code lookup.
+- Replace `utils/exportUtils.ts`'s local `formatCurrency` and `formatCurrencyForPDF` with imports from `lib/currency.ts`.
+- Replace the ad-hoc `fmt` in `pages/Index.tsx` with the shared helper.
+- `hooks/useCurrency.ts` stays — it's the reactive wrapper, that's a legitimate role.
 
-**Line ~583-656 (Table Cells):**
-Apply `p-2 sm:p-4` to all `TableCell` components for responsive padding.
+## 5. Not doing (deliberate)
 
----
+- **Not** centralizing lucide-react icon imports into a barrel file. Direct per-file `import { X } from "lucide-react"` is the tree-shaking-friendly pattern; a barrel would hurt bundle size and IDE navigation. This is the standard shadcn convention.
+- **Not** creating a `ui/index.ts` barrel for shadcn components — same reason.
+- **Not** refactoring `AuthModal`/`ProfileModal` shared password-toggle logic in this pass. It's real duplication but touches auth UX and is out of scope for a cleanup pass; call it out for a future refactor.
 
-### 3. Responsive Action Buttons in Header
-**File: `src/components/LoanSummary.tsx`** (Lines 496-556)
+## Verification
 
-Update the CardHeader to stack buttons on mobile and show icon-only buttons:
+After changes: run the build (auto), spot-check that toasts still fire in Part Payments (duplicate-entry error path), and that Excel/PDF exports still show correctly formatted amounts.
 
-**Current (Line 501):**
-```tsx
-<div className="flex gap-2">
-```
+## Technical notes
 
-**Updated:**
-```tsx
-<div className="flex gap-1 sm:gap-2 flex-wrap">
-```
-
-**Button Updates (Lines 502-554):**
-For each button, hide text on mobile and show icons only:
-
-```tsx
-<Button variant="outline" size="sm" className="gap-1 sm:gap-2 ...">
-  <Share2 className="h-4 w-4" />
-  <span className="hidden sm:inline">Share</span>
-</Button>
-```
-
-Apply the same pattern to:
-- Share button
-- Full Report button  
-- Download button
-
----
-
-### 4. Stack Pagination on Mobile
-**File: `src/components/LoanSummary.tsx`** (Lines 665-810)
-
-Update the pagination container layout to stack vertically on mobile:
-
-**Current (Line 667):**
-```tsx
-<div className="flex items-center justify-between mt-4 px-2">
-```
-
-**Updated:**
-```tsx
-<div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 px-2">
-```
-
-Additionally, hide the "years per page" selector on mobile to save space:
-
-**Line 668:**
-```tsx
-<div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-```
-
-The navigation controls section (prev/next buttons, page indicators) will remain visible on all screen sizes.
-
----
-
-## Summary of Files to Modify
-
-| File | Lines | Changes |
-|------|-------|---------|
-| `src/components/ui/tabs.tsx` | ~27 | Reduce padding/font-size on mobile |
-| `src/components/LoanSummary.tsx` | ~559-572 | Add responsive padding to table headers |
-| `src/components/LoanSummary.tsx` | ~583-656 | Add responsive padding to table cells |
-| `src/components/LoanSummary.tsx` | ~501-554 | Icon-only buttons on mobile |
-| `src/components/LoanSummary.tsx` | ~667-688 | Stack pagination, hide years selector on mobile |
-
----
-
-## Expected Result
-- Tabs will be more compact on mobile screens
-- Table cells will have reduced padding on mobile
-- Action buttons (Share, Full Report, Download) will show only icons on mobile
-- Pagination controls will stack vertically on mobile with the years-per-page selector hidden
+- Files deleted: ~25 unused `ui/*.tsx` files + 3 toast files + 1 shim = ~29 files.
+- `package.json` change: 26 dependencies removed. `bun.lockb` regenerates automatically.
+- No database, no route, no auth changes.

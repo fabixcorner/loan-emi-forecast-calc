@@ -1,6 +1,7 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { formatCurrency as fmtCurrencyLive, formatCurrencyPlain } from '@/lib/currency';
 
 interface ScheduleRow {
   month: number;
@@ -20,19 +21,10 @@ const getMonthName = (month: number) => {
   return months[month - 1];
 };
 
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
+const formatCurrency = (amount: number) => fmtCurrencyLive(amount);
 
-const formatCurrencyForPDF = (amount: number) => {
-  return '₹ ' + new Intl.NumberFormat('en-IN', {
-    maximumFractionDigits: 0,
-  }).format(Math.round(amount));
-};
+const formatCurrencyForPDF = (amount: number) =>
+  formatCurrencyPlain(amount, { withThinSpace: false });
 
 export const exportToExcel = (schedule: ScheduleRow[], emi: number, totalInterest: number, totalAmount: number, partPayments?: any[]) => {
   const hasVariableEMI = schedule.length > 1 && 
