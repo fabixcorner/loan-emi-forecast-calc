@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper, Calculator, CalendarRange, Scale, Wallet, FileText, Circle, Undo2, Menu, X } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Calculator, CalendarRange, Scale, Wallet, FileText, Circle, Undo2, Menu, X, Moon, Sun } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import calculatorIcon from "@/assets/calculator.png";
 import { UserMenu } from "@/components/UserMenu";
@@ -17,6 +17,7 @@ import { Footer } from "@/components/Footer";
 import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
 import { setCurrency, type CurrencyCode, CURRENCIES } from "@/lib/currency";
 import { supabase } from "@/integrations/supabase/client";
@@ -110,6 +111,8 @@ const Index = () => {
   const openLoadOnLoginRef = useRef<boolean>(false);
   const { user, loading: authLoading } = useAuth();
   const { symbol: currencySymbol, format: formatCurrency } = useCurrency();
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === "dark";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Lock body scroll while mobile drawer is open, close on Escape
@@ -512,7 +515,7 @@ const Index = () => {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-1 p-4">
               {currentLoanName && (
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30">
                   <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
@@ -521,27 +524,38 @@ const Index = () => {
                   </span>
                 </div>
               )}
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-muted-foreground">Profile</span>
-                <UserMenu
-                  onLoadCalculation={handleLoadCalculation}
-                  getCurrentData={getCurrentData}
-                  currentLoanId={currentLoanId}
-                  currentLoanName={currentLoanName}
-                  onSavedAs={handleSavedAs}
-                  isDirty={isDirty}
-                  onSavedCurrent={handleSavedCurrent}
-                  openLoadOnLoginRef={openLoadOnLoginRef}
-                />
+              <UserMenu
+                variant="drawer"
+                onLoadCalculation={handleLoadCalculation}
+                getCurrentData={getCurrentData}
+                currentLoanId={currentLoanId}
+                currentLoanName={currentLoanName}
+                onSavedAs={handleSavedAs}
+                isDirty={isDirty}
+                onSavedCurrent={handleSavedCurrent}
+                openLoadOnLoginRef={openLoadOnLoginRef}
+              />
+              <div
+                role="button"
+                tabIndex={0}
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setTheme(isDark ? "light" : "dark");
+                  }
+                }}
+                className="flex items-center justify-between w-full px-3 py-3 rounded-lg hover:bg-muted/50 cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                  <span className="text-sm font-medium">Theme</span>
+                </div>
+                <div className="pointer-events-none">
+                  <ThemeToggle variant="slider" />
+                </div>
               </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-muted-foreground">Theme</span>
-                <ThemeToggle />
-              </div>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm text-muted-foreground">Help</span>
-                <HowItWorks />
-              </div>
+              <HowItWorks variant="drawer" />
             </div>
           </aside>
         </div>

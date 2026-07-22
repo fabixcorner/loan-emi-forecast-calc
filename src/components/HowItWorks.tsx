@@ -110,7 +110,11 @@ const questions: Question[] = [
   },
 ];
 
-export const HowItWorks = () => {
+interface HowItWorksProps {
+  variant?: "default" | "drawer";
+}
+
+export const HowItWorks = ({ variant = "default" }: HowItWorksProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -125,15 +129,28 @@ export const HowItWorks = () => {
     setTimeout(() => setSelectedQuestion(null), 300);
   };
 
+  const trigger = variant === "drawer" ? (
+    <button
+      onClick={() => setIsOpen(true)}
+      className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-muted/50 text-left text-foreground transition-colors"
+      aria-label="How It Works"
+    >
+      <CircleHelp className="w-5 h-5" />
+      <span className="text-sm font-medium">Help</span>
+    </button>
+  ) : (
+    <button
+      onClick={() => setIsOpen(true)}
+      className="h-9 w-9 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
+      aria-label="How It Works"
+    >
+      <span className="h-7 w-7 rounded-full flex items-center justify-center text-white font-bold text-lg leading-none shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)]" style={{ backgroundColor: 'hsl(220, 50%, 25%)' }}>?</span>
+    </button>
+  );
+
   return (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="h-9 w-9 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
-        aria-label="How It Works"
-      >
-        <span className="h-7 w-7 rounded-full flex items-center justify-center text-white font-bold text-lg leading-none shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)]" style={{ backgroundColor: 'hsl(220, 50%, 25%)' }}>?</span>
-      </button>
+      {trigger}
 
       {isOpen && createPortal(
         <>

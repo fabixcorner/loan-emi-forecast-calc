@@ -20,9 +20,10 @@ interface UserMenuProps {
   isDirty?: boolean;
   onSavedCurrent?: () => void;
   openLoadOnLoginRef?: React.MutableRefObject<boolean>;
+  variant?: "default" | "drawer";
 }
 
-export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, openLoadOnLoginRef }: UserMenuProps) => {
+export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, openLoadOnLoginRef, variant = "default" }: UserMenuProps) => {
   const { user, loading, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSaveNewModal, setShowSaveNewModal] = useState(false);
@@ -100,15 +101,29 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
   if (!user) {
     return (
       <>
-        <Button
-          onClick={() => {
-            if (openLoadOnLoginRef) openLoadOnLoginRef.current = true;
-            setShowAuthModal(true);
-          }}
-          className="text-sm font-semibold rounded-full px-5 py-2 h-9 bg-gradient-to-b from-financial-primary to-financial-primary/80 text-white shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:brightness-110 transition-all duration-200 border-0"
-        >
-          <span>Login</span>
-        </Button>
+        {variant === "drawer" ? (
+          <Button
+            onClick={() => {
+              if (openLoadOnLoginRef) openLoadOnLoginRef.current = true;
+              setShowAuthModal(true);
+            }}
+            variant="ghost"
+            className="w-full justify-start gap-3 px-3 py-3 h-auto text-foreground hover:bg-muted/50"
+          >
+            <User className="w-5 h-5" />
+            <span className="text-sm font-medium">Login</span>
+          </Button>
+        ) : (
+          <Button
+            onClick={() => {
+              if (openLoadOnLoginRef) openLoadOnLoginRef.current = true;
+              setShowAuthModal(true);
+            }}
+            className="text-sm font-semibold rounded-full px-5 py-2 h-9 bg-gradient-to-b from-financial-primary to-financial-primary/80 text-white shadow-[0_3px_8px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.3)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.3)] hover:brightness-110 transition-all duration-200 border-0"
+          >
+            <span>Login</span>
+          </Button>
+        )}
         <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
       </>
     );
@@ -120,16 +135,23 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-1.5 text-xs border-financial-primary/50">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-financial-primary to-financial-success flex items-center justify-center overflow-hidden">
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <User className="w-3 h-3 text-white" />
-              )}
-            </div>
-            <span className="hidden sm:inline max-w-[80px] truncate">{displayName}</span>
-          </Button>
+          {variant === "drawer" ? (
+            <Button variant="ghost" className="w-full justify-start gap-3 px-3 py-3 h-auto text-foreground hover:bg-muted/50">
+              <User className="w-5 h-5" />
+              <span className="text-sm font-medium">Profile</span>
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs border-financial-primary/50">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-r from-financial-primary to-financial-success flex items-center justify-center overflow-hidden">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-3 h-3 text-white" />
+                )}
+              </div>
+              <span className="hidden sm:inline max-w-[80px] truncate">{displayName}</span>
+            </Button>
+          )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
           <DropdownMenuItem onClick={() => setShowProfileModal(true)} className="gap-2 cursor-pointer">
