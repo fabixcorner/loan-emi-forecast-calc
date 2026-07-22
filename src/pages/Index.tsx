@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronUp, CalendarDays, PartyPopper, Calculator, CalendarRange, Scale, Wallet, FileText, Circle, Undo2 } from "lucide-react";
+import { Plus, ChevronUp, CalendarDays, PartyPopper, Calculator, CalendarRange, Scale, Wallet, FileText, Circle, Undo2, Menu, X } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import calculatorIcon from "@/assets/calculator.png";
 import { UserMenu } from "@/components/UserMenu";
@@ -110,6 +110,20 @@ const Index = () => {
   const openLoadOnLoginRef = useRef<boolean>(false);
   const { user, loading: authLoading } = useAuth();
   const { symbol: currencySymbol, format: formatCurrency } = useCurrency();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Lock body scroll while mobile drawer is open, close on Escape
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMobileMenuOpen(false);
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [mobileMenuOpen]);
 
   // Load preferred currency from profile on sign-in.
   useEffect(() => {
@@ -407,6 +421,14 @@ const Index = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center justify-start gap-2 sm:gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen(true)}
+                className="md:hidden h-9 w-9 flex items-center justify-center rounded-full bg-muted/80 border border-border flex-shrink-0"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
               <div className="p-1.5 sm:p-2 bg-gradient-to-r from-financial-primary to-financial-success rounded-lg flex-shrink-0">
                 <img src={calculatorIcon} alt="Calculator" className="w-8 h-8 sm:w-10 sm:h-10" />
               </div>
@@ -416,7 +438,7 @@ const Index = () => {
                 </h1>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
+            <div className="hidden md:flex flex-col sm:flex-row items-center gap-1 sm:gap-3 flex-shrink-0">
               {currentLoanName && (
                 <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30 max-w-[180px]">
                   <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
