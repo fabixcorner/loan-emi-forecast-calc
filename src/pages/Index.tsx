@@ -515,10 +515,7 @@ const Index = () => {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div
-              className="flex flex-col gap-1 p-4"
-              onClick={() => setMobileMenuOpen(false)}
-            >
+            <div className="flex flex-col gap-1 p-4">
               {currentLoanName && (
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30">
                   <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
@@ -537,17 +534,19 @@ const Index = () => {
                 isDirty={isDirty}
                 onSavedCurrent={handleSavedCurrent}
                 openLoadOnLoginRef={openLoadOnLoginRef}
+                onCloseDrawer={() => setMobileMenuOpen(false)}
               />
               <div
                 role="button"
                 tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
+                onClick={() => {
+                  setMobileMenuOpen(false);
                   setTheme(isDark ? "light" : "dark");
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
+                    setMobileMenuOpen(false);
                     setTheme(isDark ? "light" : "dark");
                   }
                 }}
@@ -561,7 +560,7 @@ const Index = () => {
                   <ThemeToggle variant="slider" />
                 </div>
               </div>
-              <HowItWorks variant="drawer" />
+              <HowItWorks variant="drawer" onCloseDrawer={() => setMobileMenuOpen(false)} />
             </div>
           </aside>
         </div>
