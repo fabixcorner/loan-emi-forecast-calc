@@ -131,8 +131,12 @@ export const HowItWorks = ({ variant = "default", onCloseDrawer }: HowItWorksPro
   };
 
   const handleOpen = () => {
-    onCloseDrawer?.();
     setIsOpen(true);
+    // Defer closing the mobile drawer so the portaled modal can mount
+    // before the drawer (and this component) unmounts.
+    if (onCloseDrawer) {
+      setTimeout(onCloseDrawer, 50);
+    }
   };
 
   const trigger = variant === "drawer" ? (
