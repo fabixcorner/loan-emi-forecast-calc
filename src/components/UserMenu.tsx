@@ -106,6 +106,7 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
           <Button
             onClick={() => {
               if (openLoadOnLoginRef) openLoadOnLoginRef.current = true;
+              onCloseDrawer?.();
               setShowAuthModal(true);
             }}
             variant="ghost"
