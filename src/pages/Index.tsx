@@ -515,7 +515,10 @@ const Index = () => {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <div className="flex flex-col gap-1 p-4">
+            <div
+              className="flex flex-col gap-1 p-4"
+              onClick={() => setMobileMenuOpen(false)}
+            >
               {currentLoanName && (
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30">
                   <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
@@ -538,7 +541,10 @@ const Index = () => {
               <div
                 role="button"
                 tabIndex={0}
-                onClick={() => setTheme(isDark ? "light" : "dark")}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setTheme(isDark ? "light" : "dark");
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
