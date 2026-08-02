@@ -21,9 +21,10 @@ interface UserMenuProps {
   onSavedCurrent?: () => void;
   openLoadOnLoginRef?: React.MutableRefObject<boolean>;
   variant?: "default" | "drawer";
+  onCloseDrawer?: () => void;
 }
 
-export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, openLoadOnLoginRef, variant = "default" }: UserMenuProps) => {
+export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, openLoadOnLoginRef, variant = "default", onCloseDrawer }: UserMenuProps) => {
   const { user, loading, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSaveNewModal, setShowSaveNewModal] = useState(false);
