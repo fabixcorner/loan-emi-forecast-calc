@@ -497,69 +497,72 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[80]">
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <aside className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-card shadow-2xl border-r border-border flex flex-col animate-slide-in-right">
-            <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-              <h2 className="text-base font-semibold">Menu</h2>
-              <button
-                onClick={() => setMobileMenuOpen(false)}
-                className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-muted"
-                aria-label="Close menu"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="flex flex-col gap-1 p-4">
-              {currentLoanName && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30">
-                  <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
-                  <span className="text-xs font-medium text-foreground truncate" title={currentLoanName}>
-                    {currentLoanName}
-                  </span>
-                </div>
-              )}
-              <UserMenu
-                variant="drawer"
-                onLoadCalculation={handleLoadCalculation}
-                getCurrentData={getCurrentData}
-                currentLoanId={currentLoanId}
-                currentLoanName={currentLoanName}
-                onSavedAs={handleSavedAs}
-                isDirty={isDirty}
-                onSavedCurrent={handleSavedCurrent}
-                openLoadOnLoginRef={openLoadOnLoginRef}
-              />
-              <div
-                role="button"
-                tabIndex={0}
-                onClick={() => setTheme(isDark ? "light" : "dark")}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setTheme(isDark ? "light" : "dark");
-                  }
-                }}
-                className="flex items-center justify-between w-full px-3 py-3 rounded-lg hover:bg-muted/50 cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-                  <span className="text-sm font-medium">Theme</span>
-                </div>
-                <div className="pointer-events-none">
-                  <ThemeToggle variant="slider" />
-                </div>
+      {/* Mobile Drawer - rendered persistently so child modals survive closing */}
+      <div className={"md:hidden fixed inset-0 z-[80] transition-all duration-300 " + (mobileMenuOpen ? "pointer-events-auto" : "pointer-events-none")}>
+        <div
+          className={"absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 " + (mobileMenuOpen ? "opacity-100" : "opacity-0")}
+          onClick={() => setMobileMenuOpen(false)}
+        />
+        <aside className={"absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-card shadow-2xl border-r border-border flex flex-col transition-transform duration-300 ease-in-out " + (mobileMenuOpen ? "translate-x-0" : "-translate-x-full")}>
+          <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+            <h2 className="text-base font-semibold">Menu</h2>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-muted"
+              aria-label="Close menu"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="flex flex-col gap-1 p-4">
+            {currentLoanName && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-financial-primary/10 border border-financial-primary/30">
+                <FileText className="w-3.5 h-3.5 text-financial-primary flex-shrink-0" />
+                <span className="text-xs font-medium text-foreground truncate" title={currentLoanName}>
+                  {currentLoanName}
+                </span>
               </div>
-              <HowItWorks variant="drawer" />
+            )}
+            <UserMenu
+              variant="drawer"
+              onLoadCalculation={handleLoadCalculation}
+              getCurrentData={getCurrentData}
+              currentLoanId={currentLoanId}
+              currentLoanName={currentLoanName}
+              onSavedAs={handleSavedAs}
+              isDirty={isDirty}
+              onSavedCurrent={handleSavedCurrent}
+              openLoadOnLoginRef={openLoadOnLoginRef}
+              onCloseDrawer={() => setMobileMenuOpen(false)}
+            />
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setTheme(isDark ? "light" : "dark");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  setTheme(isDark ? "light" : "dark");
+                }
+              }}
+              className="flex items-center justify-between w-full px-3 py-3 rounded-lg hover:bg-muted/50 cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+                <span className="text-sm font-medium">Theme</span>
+              </div>
+              <div className="pointer-events-none">
+                <ThemeToggle variant="slider" />
+              </div>
             </div>
-          </aside>
-        </div>
-      )}
+            <HowItWorks variant="drawer" onCloseDrawer={() => setMobileMenuOpen(false)} />
+          </div>
+        </aside>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 md:pb-8">
         {isScheduleView ? (

@@ -112,9 +112,10 @@ const questions: Question[] = [
 
 interface HowItWorksProps {
   variant?: "default" | "drawer";
+  onCloseDrawer?: () => void;
 }
 
-export const HowItWorks = ({ variant = "default" }: HowItWorksProps) => {
+export const HowItWorks = ({ variant = "default", onCloseDrawer }: HowItWorksProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -129,9 +130,14 @@ export const HowItWorks = ({ variant = "default" }: HowItWorksProps) => {
     setTimeout(() => setSelectedQuestion(null), 300);
   };
 
+  const handleOpen = () => {
+    onCloseDrawer?.();
+    setIsOpen(true);
+  };
+
   const trigger = variant === "drawer" ? (
     <button
-      onClick={() => setIsOpen(true)}
+      onClick={handleOpen}
       className="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-muted/50 text-left text-foreground transition-colors"
       aria-label="How It Works"
     >
@@ -140,7 +146,7 @@ export const HowItWorks = ({ variant = "default" }: HowItWorksProps) => {
     </button>
   ) : (
     <button
-      onClick={() => setIsOpen(true)}
+      onClick={handleOpen}
       className="h-9 w-9 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
       aria-label="How It Works"
     >
