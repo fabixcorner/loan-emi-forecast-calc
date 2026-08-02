@@ -106,8 +106,8 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
           <Button
             onClick={() => {
               if (openLoadOnLoginRef) openLoadOnLoginRef.current = true;
-              onCloseDrawer?.();
               setShowAuthModal(true);
+              if (onCloseDrawer) setTimeout(onCloseDrawer, 50);
             }}
             variant="ghost"
             className="w-full justify-start gap-3 px-3 py-3 h-auto text-foreground hover:bg-muted/50"
