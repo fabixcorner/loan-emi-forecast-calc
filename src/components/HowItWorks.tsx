@@ -146,7 +146,7 @@ export const HowItWorks = ({ variant = "default", onCloseDrawer }: HowItWorksPro
     </button>
   ) : (
     <button
-      onClick={() => setIsOpen(true)}
+      onClick={handleOpen}
       className="h-9 w-9 rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
       aria-label="How It Works"
     >
