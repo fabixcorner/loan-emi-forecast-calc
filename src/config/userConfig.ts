@@ -38,3 +38,12 @@ export const DEFAULT_SCORING_WEIGHTS = {
   emiWeight: 30,
   interestWeight: 50,
 } as const;
+
+export const EMAIL_OTP_CONFIG = {
+  /** How long an email-change OTP stays valid (seconds). */
+  VALIDITY_SECONDS: 600,
+  /** Cooldown before a new code can be requested (seconds). */
+  RESEND_COOLDOWN_SECONDS: 60,
+  /** Expected code length. */
+  CODE_LENGTH: 6,
+} as const;
