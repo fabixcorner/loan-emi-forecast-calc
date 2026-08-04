@@ -494,7 +494,7 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                 Remove avatar
               </button>
             )}
-            <Button onClick={handleProfileSave} disabled={savingProfile || !profileReady} className="w-full h-9">
+            <Button onClick={handleProfileSave} disabled={savingProfile || !profileReady || saveBlockedByOtp} className="w-full h-9">
               {savingProfile && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               Save Profile
             </Button>
@@ -508,17 +508,43 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
                     <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
                       value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, EMAIL_OTP_CONFIG.CODE_LENGTH))}
                       placeholder="123456"
                       inputMode="numeric"
+                      disabled={otpExpired}
                       className="pl-10 h-9 tracking-widest"
                     />
                   </div>
-                  <Button onClick={handleVerifyEmailOtp} disabled={verifyingOtp || otpCode.length < 6} className="h-9">
+                  <Button
+                    onClick={handleVerifyEmailOtp}
+                    disabled={verifyingOtp || otpExpired || otpCode.length < EMAIL_OTP_CONFIG.CODE_LENGTH}
+                    className="h-9"
+                  >
                     {verifyingOtp && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
                     Verify
                   </Button>
                 </div>
+                <div className="flex items-center justify-between gap-2">
+                  <p className={`text-xs ${otpExpired ? "text-destructive" : "text-muted-foreground"}`}>
+                    {otpExpired
+                      ? "Code expired — request a new one."
+                      : `Code expires in ${Math.floor(otpSecondsLeft / 60)}:${String(otpSecondsLeft % 60).padStart(2, "0")}`}
+                  </p>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleResendEmailOtp}
+                    disabled={resendingOtp || resendSecondsLeft > 0}
+                    className="h-7 px-2 text-xs"
+                  >
+                    {resendingOtp && <Loader2 className="w-3 h-3 animate-spin mr-1" />}
+                    {resendSecondsLeft > 0 ? `Resend in ${resendSecondsLeft}s` : "Resend code"}
+                  </Button>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Profile saving is paused until this email change is verified.
+                </p>
               </div>
             )}
           </div>
