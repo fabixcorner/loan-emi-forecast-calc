@@ -19,6 +19,7 @@ import {
   AVATAR_CONFIG,
   PASSWORD_RULES,
   PROFILE_FIELD_LIMITS,
+  EMAIL_OTP_CONFIG,
 } from "@/config";
 
 interface ProfileModalProps {
@@ -84,6 +85,17 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   const [otpEmail, setOtpEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [resendingOtp, setResendingOtp] = useState(false);
+  const [otpExpiresAt, setOtpExpiresAt] = useState<number | null>(null);
+  const [resendAvailableAt, setResendAvailableAt] = useState<number | null>(null);
+  const [nowTick, setNowTick] = useState(Date.now());
+
+  // Tick every second while an OTP flow is active so timers stay live.
+  useEffect(() => {
+    if (!otpRequired) return;
+    const id = setInterval(() => setNowTick(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [otpRequired]);
 
   useEffect(() => {
     if (!isOpen || !user) return;
@@ -102,6 +114,8 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     setOtpRequired(false);
     setOtpCode("");
     setOtpEmail("");
+    setOtpExpiresAt(null);
+    setResendAvailableAt(null);
     (async () => {
       const { data } = await supabase
         .from(DB_TABLES.PROFILES)
