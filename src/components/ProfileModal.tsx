@@ -161,6 +161,12 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     email.trim() !== initialEmail.trim() ||
     pendingCurrency !== initialCurrency;
   const profileReady = emailValid && nameValid && profileChanged;
+  const otpSecondsLeft = otpExpiresAt ? Math.max(0, Math.ceil((otpExpiresAt - nowTick) / 1000)) : 0;
+  const otpExpired = otpRequired && otpSecondsLeft === 0;
+  const resendSecondsLeft = resendAvailableAt ? Math.max(0, Math.ceil((resendAvailableAt - nowTick) / 1000)) : 0;
+  // Block saving while an email change is awaiting a valid, verified OTP.
+  const emailAwaitingVerification = otpRequired && email.trim() === otpEmail;
+  const saveBlockedByOtp = emailAwaitingVerification;
   const passwordsMatch = newPassword.length > 0 && newPassword === confirmPassword;
   const passwordReady = passwordChecksPassed === 4 && passwordsMatch;
 
@@ -232,6 +238,16 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
     setErrors((e) => ({ ...e, name: next.name, email: next.email }));
     if (next.name || next.email) return;
 
+    const pendingEmail = email.trim();
+    if (otpRequired && pendingEmail === otpEmail) {
+      toast.error(
+        otpExpired
+          ? "Your verification code expired. Resend a new code and verify it before saving."
+          : "Verify the code sent to your new email before saving."
+      );
+      return;
+    }
+
     setSavingProfile(true);
     try {
       const trimmedName = displayName.trim();
@@ -264,6 +280,10 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
         if (emailError) throw emailError;
         setOtpEmail(trimmedEmail);
         setOtpRequired(true);
+        setOtpCode("");
+        setOtpExpiresAt(Date.now() + EMAIL_OTP_CONFIG.VALIDITY_SECONDS * 1000);
+        setResendAvailableAt(Date.now() + EMAIL_OTP_CONFIG.RESEND_COOLDOWN_SECONDS * 1000);
+        setNowTick(Date.now());
         toast.success(`We sent a verification code to ${trimmedEmail}. Enter it below to confirm.`);
       } else {
         toast.success("Profile saved");
@@ -276,8 +296,12 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
   };
 
   const handleVerifyEmailOtp = async () => {
-    if (otpCode.trim().length < 6) {
+    if (otpCode.trim().length < EMAIL_OTP_CONFIG.CODE_LENGTH) {
       toast.error("Enter the 6-digit code from your email");
+      return;
+    }
+    if (!otpExpiresAt || Date.now() >= otpExpiresAt) {
+      toast.error("This code has expired. Please resend a new code.");
       return;
     }
     setVerifyingOtp(true);
@@ -296,11 +320,31 @@ export const ProfileModal = ({ isOpen, onClose }: ProfileModalProps) => {
       setEmail(otpEmail);
       setOtpRequired(false);
       setOtpCode("");
+      setOtpExpiresAt(null);
+      setResendAvailableAt(null);
       toast.success("Email updated");
     } catch (err: any) {
       toast.error(err.message || "Invalid or expired code");
     } finally {
       setVerifyingOtp(false);
+    }
+  };
+
+  const handleResendEmailOtp = async () => {
+    if (resendSecondsLeft > 0 || resendingOtp) return;
+    setResendingOtp(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ email: otpEmail });
+      if (error) throw error;
+      setOtpCode("");
+      setOtpExpiresAt(Date.now() + EMAIL_OTP_CONFIG.VALIDITY_SECONDS * 1000);
+      setResendAvailableAt(Date.now() + EMAIL_OTP_CONFIG.RESEND_COOLDOWN_SECONDS * 1000);
+      setNowTick(Date.now());
+      toast.success(`A new code was sent to ${otpEmail}.`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to resend the code");
+    } finally {
+      setResendingOtp(false);
     }
   };
 
