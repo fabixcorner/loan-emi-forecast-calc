@@ -10,7 +10,7 @@ import { toast } from "@/components/ui/sonner";
 import { z } from "zod";
 import { DB_TABLES, FEEDBACK_FIELD_LIMITS } from "@/config";
 
-export const FEEDBACK_CATEGORIES = ["Bug", "Feedback", "Feature Request"] as const;
+export const FEEDBACK_CATEGORIES = ["Feedback", "Bug", "Feature Request"] as const;
 type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
 
 const feedbackSchema = z.object({
@@ -51,7 +51,7 @@ export const FeedbackSection = () => {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [category, setCategory] = useState<FeedbackCategory>("Bug");
+  const [category, setCategory] = useState<FeedbackCategory>("Feedback");
   const [feedback, setFeedback] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
