@@ -100,22 +100,25 @@ export type Database = {
       }
       user_feedback: {
         Row: {
+          category: string
           created_at: string
-          email: string
+          email: string | null
           feedback: string
           id: string
           name: string
         }
         Insert: {
+          category?: string
           created_at?: string
-          email: string
+          email?: string | null
           feedback: string
           id?: string
           name: string
         }
         Update: {
+          category?: string
           created_at?: string
-          email?: string
+          email?: string | null
           feedback?: string
           id?: string
           name?: string

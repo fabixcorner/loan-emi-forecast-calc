@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Send, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { MessageSquarePlus, Send, ChevronLeft, ChevronRight, Loader2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { z } from "zod";
 import { DB_TABLES, FEEDBACK_FIELD_LIMITS } from "@/config";
+
+export const FEEDBACK_CATEGORIES = ["Feedback", "Bug", "Feature Request"] as const;
+type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
 
 const feedbackSchema = z.object({
   name: z
@@ -19,22 +22,25 @@ const feedbackSchema = z.object({
   email: z
     .string()
     .trim()
+    .max(FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH, `Email must be less than ${FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH} characters`)
     .email("Please enter a valid email address")
-    .max(FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH, `Email must be less than ${FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH} characters`),
+    .optional()
+    .or(z.literal("")),
+  category: z.enum(FEEDBACK_CATEGORIES),
   feedback: z
     .string()
     .trim()
-    .min(1, "Feedback is required")
+    .min(1, "Comment is required")
     .max(
       FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH,
-      `Feedback must be less than ${FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH} characters`,
+      `Comment must be less than ${FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH} characters`,
     ),
 });
 
 interface FeedbackEntry {
   id: string;
   name: string;
-  email: string;
+  category: string;
   feedback: string;
   created_at: string;
 }
@@ -42,8 +48,10 @@ interface FeedbackEntry {
 const PAGE_SIZE = 5;
 
 export const FeedbackSection = () => {
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [category, setCategory] = useState<FeedbackCategory>("Feedback");
   const [feedback, setFeedback] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -63,7 +71,7 @@ export const FeedbackSection = () => {
       supabase.from(DB_TABLES.USER_FEEDBACK).select("*", { count: "exact", head: true }),
       supabase
         .from(DB_TABLES.USER_FEEDBACK)
-        .select("id, name, feedback, created_at")
+        .select("id, name, category, feedback, created_at")
         .order("created_at", { ascending: false })
         .range(from, to),
     ]);
@@ -77,11 +85,18 @@ export const FeedbackSection = () => {
     fetchFeedback(page);
   }, [page]);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
 
-    const result = feedbackSchema.safeParse({ name, email, feedback });
+    const result = feedbackSchema.safeParse({ name, email, category, feedback });
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach((err) => {
@@ -94,7 +109,8 @@ export const FeedbackSection = () => {
     setSubmitting(true);
     const { error } = await supabase.from(DB_TABLES.USER_FEEDBACK).insert({
       name: result.data.name,
-      email: result.data.email,
+      email: result.data.email ? result.data.email : null,
+      category: result.data.category,
       feedback: result.data.feedback,
     });
 
@@ -104,7 +120,9 @@ export const FeedbackSection = () => {
       toast.success("Thank you for your feedback!");
       setName("");
       setEmail("");
+      setCategory("Bug");
       setFeedback("");
+      setOpen(false);
       setPage(0);
       fetchFeedback(0);
     }
@@ -119,64 +137,111 @@ export const FeedbackSection = () => {
     });
   };
 
-  return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 py-8">
-      <Card className="border-border shadow-card">
-        <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
-          <CardTitle className="text-xl font-semibold">Share Your Feedback</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-4 pb-4">
-          <form onSubmit={handleSubmit} className="space-y-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <div className="space-y-1.5">
-                  <Input
-                    id="fb-name"
-                    placeholder="Your Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    maxLength={FEEDBACK_FIELD_LIMITS.NAME_MAX_LENGTH}
-                  />
-                  {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
-                </div>
-                <div className="space-y-1.5">
-                  <Input
-                    id="fb-email"
-                    type="email"
-                    placeholder="your@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    maxLength={FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH}
-                  />
-                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+  const modal = open
+    ? createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-background/60 backdrop-blur-md" onClick={() => setOpen(false)} />
+          <div className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-xl border border-border bg-card shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border/60">
+              <h2 className="text-base font-semibold">Send feedback</h2>
+              <button onClick={() => setOpen(false)} aria-label="Close" className="text-muted-foreground hover:text-foreground">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-5 space-y-3">
+              <div className="space-y-1.5">
+                <label htmlFor="fb-name" className="text-sm font-medium">
+                  Name <span className="text-destructive">*</span>
+                </label>
+                <Input
+                  id="fb-name"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  maxLength={FEEDBACK_FIELD_LIMITS.NAME_MAX_LENGTH}
+                />
+                {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+              </div>
+
+              <div className="space-y-1.5">
+                <span className="text-sm font-medium">Category</span>
+                <div className="flex flex-wrap gap-2">
+                  {FEEDBACK_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setCategory(cat)}
+                      className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                        category === cat
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "border-border text-foreground hover:bg-muted/50"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
                 </div>
               </div>
+
               <div className="space-y-1.5">
+                <label htmlFor="fb-email" className="text-sm font-medium">
+                  Email (optional)
+                </label>
+                <Input
+                  id="fb-email"
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  maxLength={FEEDBACK_FIELD_LIMITS.EMAIL_MAX_LENGTH}
+                />
+                {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+              </div>
+
+              <div className="space-y-1.5">
+                <label htmlFor="fb-comment" className="text-sm font-medium">
+                  Comment <span className="text-destructive">*</span>
+                </label>
                 <Textarea
-                  id="fb-feedback"
-                  placeholder="Feedback / Suggestions / Report any issues"
+                  id="fb-comment"
+                  placeholder="Any additional details..."
                   value={feedback}
                   onChange={(e) => setFeedback(e.target.value)}
                   maxLength={FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH}
-                  className="min-h-[88px] max-h-[88px] resize-none"
+                  className="min-h-[96px] resize-none"
                 />
-                {errors.feedback && <p className="text-xs text-destructive">{errors.feedback}</p>}
+                <div className="flex justify-between">
+                  {errors.feedback ? (
+                    <p className="text-xs text-destructive">{errors.feedback}</p>
+                  ) : (
+                    <span />
+                  )}
+                  <p
+                    className={`text-xs ${
+                      feedback.length > FEEDBACK_FIELD_LIMITS.FEEDBACK_WARNING_THRESHOLD
+                        ? "text-destructive"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH - feedback.length} characters remaining
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <Button type="submit" disabled={submitting} className="gap-2">
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                Submit Feedback
-              </Button>
-              <p className={`text-xs ${feedback.length > FEEDBACK_FIELD_LIMITS.FEEDBACK_WARNING_THRESHOLD ? 'text-destructive' : 'text-muted-foreground'}`}>
-                {FEEDBACK_FIELD_LIMITS.FEEDBACK_MAX_LENGTH - feedback.length} characters remaining
-              </p>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
 
-      {/* Feedback List */}
+              <Button type="submit" disabled={submitting} className="w-full gap-2">
+                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                Submit feedback
+              </Button>
+            </form>
+          </div>
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <div className="w-full max-w-4xl mx-auto space-y-6 py-8">
+      {/* Recent Feedback */}
       <Card className="border-border shadow-card">
         <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
           <CardTitle className="text-xl font-semibold">Recent Feedback</CardTitle>
@@ -195,12 +260,17 @@ export const FeedbackSection = () => {
               {feedbackList.map((entry, idx) => (
                 <div
                   key={entry.id}
-                  className="grid grid-cols-[182px_1fr] gap-x-4 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start"
+                  className="grid grid-cols-[182px_130px_1fr] gap-x-4 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start"
                   style={{ animationDelay: `${idx * 60}ms` }}
                 >
                   <div className="shrink-0">
                     <span className="font-medium text-sm">{entry.name}</span>
                     <div className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</div>
+                  </div>
+                  <div>
+                    <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-financial-primary/10 text-financial-primary border border-financial-primary/30">
+                      {entry.category}
+                    </span>
                   </div>
                   <p className="text-sm text-foreground/80">{entry.feedback}</p>
                 </div>
@@ -234,6 +304,17 @@ export const FeedbackSection = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Floating feedback button */}
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="Send feedback"
+        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-financial-primary text-primary-foreground shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+      >
+        <MessageSquarePlus className="h-6 w-6" />
+      </button>
+
+      {modal}
     </div>
   );
 };

@@ -21,9 +21,10 @@ interface UserMenuProps {
   onSavedCurrent?: () => void;
   openLoadOnLoginRef?: React.MutableRefObject<boolean>;
   variant?: "default" | "drawer";
+  onCloseDrawer?: () => void;
 }
 
-export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, openLoadOnLoginRef, variant = "default" }: UserMenuProps) => {
+export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, openLoadOnLoginRef, variant = "default", onCloseDrawer }: UserMenuProps) => {
   const { user, loading, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSaveNewModal, setShowSaveNewModal] = useState(false);
@@ -105,6 +106,7 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
           <Button
             onClick={() => {
               if (openLoadOnLoginRef) openLoadOnLoginRef.current = true;
+              onCloseDrawer?.();
               setShowAuthModal(true);
             }}
             variant="ghost"
@@ -154,12 +156,12 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
-          <DropdownMenuItem onClick={() => setShowProfileModal(true)} className="gap-2 cursor-pointer">
+          <DropdownMenuItem onClick={() => { onCloseDrawer?.(); setShowProfileModal(true); }} className="gap-2 cursor-pointer">
             <UserCog className="w-4 h-4" />
             Profile
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={handleSaveCurrent}
+            onClick={() => { onCloseDrawer?.(); handleSaveCurrent(); }}
             disabled={!currentLoanId || savingCurrent || !isDirty}
             className="gap-2 cursor-pointer"
           >
@@ -167,19 +169,19 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
             Save
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => setShowSaveNewModal(true)}
+            onClick={() => { onCloseDrawer?.(); setShowSaveNewModal(true); }}
             disabled={!!currentLoanId && !isDirty}
             className="gap-2 cursor-pointer"
           >
             <FilePlus2 className="w-4 h-4" />
             Save New
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setShowLoadModal(true)} className="gap-2 cursor-pointer">
+          <DropdownMenuItem onClick={() => { onCloseDrawer?.(); setShowLoadModal(true); }} className="gap-2 cursor-pointer">
             <FolderOpen className="w-4 h-4" />
             My Saved Loans
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut} className="gap-2 cursor-pointer text-destructive">
+          <DropdownMenuItem onClick={() => { onCloseDrawer?.(); handleSignOut(); }} className="gap-2 cursor-pointer text-destructive">
             <LogOut className="w-4 h-4" />
             Sign Out
           </DropdownMenuItem>
