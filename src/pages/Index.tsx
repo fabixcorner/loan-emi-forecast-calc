@@ -273,6 +273,20 @@ const Index = () => {
     setCurrentLoanName(name);
   }, []);
 
+  // Start a fresh loan session with default values
+  const handleNewLoan = useCallback(() => {
+    setLoanAmount(LOAN_DEFAULTS.LOAN_AMOUNT);
+    setInterestRate(LOAN_DEFAULTS.INTEREST_RATE);
+    setLoanTenure(LOAN_DEFAULTS.TENURE_YEARS);
+    setStartMonth(getDefaultStartMonth());
+    setStartYear(getDefaultStartYear());
+    setPartPayments([]);
+    setCurrentLoanId(null);
+    setCurrentLoanName(null);
+    setLoadedSnapshot(null);
+    setActiveTab("loan-details");
+  }, []);
+
   // Build snapshot of currently observable persisted values
   const currentSnapshot = JSON.stringify({
     loanAmount,
