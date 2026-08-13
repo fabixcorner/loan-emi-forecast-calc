@@ -266,7 +266,7 @@ export const FeedbackSection = () => {
                   <div className="shrink-0">
                     <span className="font-medium text-sm">{entry.name}</span>
                   </div>
-                  <div className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</div>
+                  <div className="text-sm text-muted-foreground">{formatDate(entry.created_at)}</div>
                   <div>
                     <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-financial-primary/10 text-financial-primary border border-financial-primary/30">
                       {entry.category}
