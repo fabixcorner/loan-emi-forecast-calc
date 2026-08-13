@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Save, FolderOpen, UserCog, FilePlus2, Loader2 } from "lucide-react";
+import { User, LogOut, Save, FolderOpen, UserCog, FilePlus2, Loader2, Plus } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthModal } from "./AuthModal";
 import { SaveLoadModal } from "./SaveLoadModal";
@@ -19,12 +19,13 @@ interface UserMenuProps {
   onSavedAs: (id: string, name: string) => void;
   isDirty?: boolean;
   onSavedCurrent?: () => void;
+  onNewLoan?: () => void;
   openLoadOnLoginRef?: React.MutableRefObject<boolean>;
   variant?: "default" | "drawer";
   onCloseDrawer?: () => void;
 }
 
-export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, openLoadOnLoginRef, variant = "default", onCloseDrawer }: UserMenuProps) => {
+export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, currentLoanName, onSavedAs, isDirty = false, onSavedCurrent, onNewLoan, openLoadOnLoginRef, variant = "default", onCloseDrawer }: UserMenuProps) => {
   const { user, loading, signOut } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showSaveNewModal, setShowSaveNewModal] = useState(false);
