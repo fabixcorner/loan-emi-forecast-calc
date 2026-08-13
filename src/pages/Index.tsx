@@ -504,6 +504,7 @@ const Index = () => {
                 onSavedAs={handleSavedAs}
                 isDirty={isDirty}
                 onSavedCurrent={handleSavedCurrent}
+                onNewLoan={handleNewLoan}
                 openLoadOnLoginRef={openLoadOnLoginRef}
               />
             </div>
@@ -544,11 +545,12 @@ const Index = () => {
               currentLoanId={currentLoanId}
               currentLoanName={currentLoanName}
               onSavedAs={handleSavedAs}
-              isDirty={isDirty}
-              onSavedCurrent={handleSavedCurrent}
-              openLoadOnLoginRef={openLoadOnLoginRef}
-              onCloseDrawer={() => setMobileMenuOpen(false)}
-            />
+                isDirty={isDirty}
+                onSavedCurrent={handleSavedCurrent}
+                onNewLoan={handleNewLoan}
+                openLoadOnLoginRef={openLoadOnLoginRef}
+                onCloseDrawer={() => setMobileMenuOpen(false)}
+              />
             <div
               role="button"
               tabIndex={0}
