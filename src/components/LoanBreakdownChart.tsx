@@ -91,7 +91,7 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
                 layout="vertical"
                 align="center"
                 verticalAlign="bottom"
-                wrapperStyle={{ paddingTop: 16 }}
+                wrapperStyle={{ paddingTop: 8 }}
                 formatter={(value, entry) => (
                   <span style={{ color: entry.color }}>
                     {value}: {formatCurrency(entry.payload.value)}
