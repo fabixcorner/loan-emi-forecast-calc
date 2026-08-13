@@ -161,6 +161,10 @@ export const UserMenu = ({ onLoadCalculation, getCurrentData, currentLoanId, cur
             <UserCog className="w-4 h-4" />
             Profile
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => { onCloseDrawer?.(); onNewLoan?.(); }} className="gap-2 cursor-pointer">
+            <Plus className="w-4 h-4" />
+            New Loan
+          </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => { onCloseDrawer?.(); handleSaveCurrent(); }}
             disabled={!currentLoanId || savingCurrent || !isDirty}
