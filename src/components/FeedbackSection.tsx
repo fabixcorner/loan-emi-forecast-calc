@@ -260,13 +260,13 @@ export const FeedbackSection = () => {
               {feedbackList.map((entry, idx) => (
                 <div
                   key={entry.id}
-                  className="grid grid-cols-[182px_130px_1fr] gap-x-4 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start"
+                  className="grid grid-cols-[140px_110px_110px_1fr] gap-x-4 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start"
                   style={{ animationDelay: `${idx * 60}ms` }}
                 >
                   <div className="shrink-0">
                     <span className="font-medium text-sm">{entry.name}</span>
-                    <div className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</div>
                   </div>
+                  <div className="text-xs text-muted-foreground">{formatDate(entry.created_at)}</div>
                   <div>
                     <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-financial-primary/10 text-financial-primary border border-financial-primary/30">
                       {entry.category}
