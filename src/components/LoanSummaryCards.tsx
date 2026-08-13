@@ -68,7 +68,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
             <p className="text-sm text-muted-foreground mb-1 font-bold">
               {hasVariableEMI ? 'Avg. Monthly EMI' : 'Monthly EMI'}
             </p>
-            <p className="text-2xl font-bold text-financial-primary">
+            <p className="text-lg font-bold text-financial-primary">
               {formatCurrency(hasVariableEMI ? averageEMI : calculation.emi)}
             </p>
           </div>
