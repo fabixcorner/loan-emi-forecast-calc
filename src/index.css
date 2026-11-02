@@ -298,3 +298,17 @@ All colors MUST be HSL.
     animation: buttonPress 0.3s ease-in-out;
   }
 }
+
+/* Shared responsive page width: 80% of the page on desktop.
+   Declared after Tailwind's layers so it wins over width utilities like w-full. */
+.page-width {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 1024px) {
+  .page-width {
+    width: 80%;
+  }
+}
