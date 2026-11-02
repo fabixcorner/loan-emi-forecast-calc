@@ -240,7 +240,7 @@ export const FeedbackSection = () => {
     : null;
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 py-8">
+    <div className="page-width space-y-6 py-8">
       {/* Recent Feedback */}
       <Card className="border-border shadow-card">
         <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
