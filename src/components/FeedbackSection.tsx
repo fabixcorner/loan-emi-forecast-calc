@@ -260,7 +260,7 @@ export const FeedbackSection = () => {
               {feedbackList.map((entry, idx) => (
                 <div
                   key={entry.id}
-                  className="grid grid-cols-[140px_110px_110px_1fr] gap-x-4 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start"
+                  className="grid grid-cols-1 gap-y-1.5 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start sm:grid-cols-[140px_110px_110px_1fr] sm:gap-y-0 sm:gap-x-4"
                   style={{ animationDelay: `${idx * 60}ms` }}
                 >
                   <div className="shrink-0">
