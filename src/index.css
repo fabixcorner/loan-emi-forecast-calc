@@ -212,18 +212,6 @@ All colors MUST be HSL.
     background-size: 32px 32px, auto, auto, auto, auto, auto;
   }
 
-  /* Shared responsive page width: 80% of the viewport on desktop */
-  .page-width {
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  @media (min-width: 1024px) {
-    .page-width {
-      width: 80%;
-    }
-  }
 
   /* Glassmorphism card styles */
   .glass-card {
