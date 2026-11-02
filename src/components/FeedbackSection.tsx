@@ -240,7 +240,7 @@ export const FeedbackSection = () => {
     : null;
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 py-8">
+    <div className="page-width space-y-6 py-8">
       {/* Recent Feedback */}
       <Card className="border-border shadow-card">
         <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
@@ -260,7 +260,7 @@ export const FeedbackSection = () => {
               {feedbackList.map((entry, idx) => (
                 <div
                   key={entry.id}
-                  className="grid grid-cols-[140px_110px_110px_1fr] gap-x-4 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start"
+                  className="grid grid-cols-1 gap-y-1.5 p-3 rounded-lg bg-muted/40 border border-border/30 animate-fade-in items-start sm:grid-cols-[140px_110px_110px_1fr] sm:gap-y-0 sm:gap-x-4"
                   style={{ animationDelay: `${idx * 60}ms` }}
                 >
                   <div className="shrink-0">
