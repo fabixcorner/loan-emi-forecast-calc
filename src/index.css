@@ -184,26 +184,34 @@ All colors MUST be HSL.
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
-  /* Soft gradient background - darker blue tones */
+  /* Themed financial glassmorphism backdrop: soft blue radial glows over a
+     neutral base, with a faint coin-dot texture. Content sections float on top. */
   .glass-background {
-    background: linear-gradient(
-      135deg, 
-      hsl(0 0% 98%) 0%,
-      hsl(0 0% 96%) 50%,
-      hsl(0 0% 98%) 100%
-    );
+    background-color: hsl(0 0% 98%);
+    background-image:
+      radial-gradient(hsl(218 60% 40% / 0.05) 1px, transparent 1.4px),
+      radial-gradient(ellipse 55% 45% at 12% 8%, hsl(210 90% 70% / 0.28), transparent 70%),
+      radial-gradient(ellipse 50% 45% at 88% 18%, hsl(218 85% 65% / 0.22), transparent 70%),
+      radial-gradient(ellipse 65% 50% at 78% 92%, hsl(200 90% 68% / 0.20), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 25% 85%, hsl(215 80% 72% / 0.16), transparent 70%),
+      linear-gradient(165deg, hsl(210 40% 97%) 0%, hsl(214 35% 93%) 45%, hsl(210 30% 96%) 100%);
+    background-size: 32px 32px, auto, auto, auto, auto, auto;
     min-height: 100vh;
     transition: background 0.3s ease;
   }
 
   .dark .glass-background {
-    background: linear-gradient(
-      135deg, 
-      hsl(220 10% 8%) 0%,
-      hsl(220 8% 10%) 50%,
-      hsl(220 10% 8%) 100%
-    );
+    background-color: hsl(220 12% 8%);
+    background-image:
+      radial-gradient(hsl(210 80% 70% / 0.06) 1px, transparent 1.4px),
+      radial-gradient(ellipse 55% 45% at 12% 8%, hsl(215 90% 55% / 0.22), transparent 70%),
+      radial-gradient(ellipse 50% 45% at 88% 18%, hsl(222 85% 50% / 0.18), transparent 70%),
+      radial-gradient(ellipse 65% 50% at 78% 92%, hsl(205 90% 50% / 0.16), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 25% 85%, hsl(218 80% 55% / 0.12), transparent 70%),
+      linear-gradient(165deg, hsl(220 12% 8%) 0%, hsl(222 14% 11%) 45%, hsl(220 12% 8%) 100%);
+    background-size: 32px 32px, auto, auto, auto, auto, auto;
   }
+
 
   /* Glassmorphism card styles */
   .glass-card {
@@ -288,5 +296,19 @@ All colors MUST be HSL.
 
   .button-press {
     animation: buttonPress 0.3s ease-in-out;
+  }
+}
+
+/* Shared responsive page width: 80% of the page on desktop.
+   Declared after Tailwind's layers so it wins over width utilities like w-full. */
+.page-width {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 1024px) {
+  .page-width {
+    width: 80%;
   }
 }
