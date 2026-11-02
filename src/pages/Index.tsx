@@ -436,7 +436,7 @@ const Index = () => {
       {/* Header */}
       <header className="bg-card/80 backdrop-blur-sm shadow-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
+          <div className="page-width flex items-center justify-between gap-2">
             <div className="flex items-center justify-start gap-2 sm:gap-3 min-w-0">
               <button
                 type="button"
@@ -615,7 +615,7 @@ const Index = () => {
           /* Full calculator view with tabs */
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             {/* Desktop Tab Navigation - Hidden on mobile */}
-            <TabsList className="hidden md:grid w-full max-w-4xl mx-auto grid-cols-4 mb-8">
+            <TabsList className="hidden md:grid w-full page-width grid-cols-4 mb-8">
               <TabsTrigger value="loan-details" className="flex flex-row items-center gap-2 py-3">
                 <Calculator className="w-5 h-5" />
                 <span className="text-sm">Loan Details</span>
@@ -657,7 +657,7 @@ const Index = () => {
             </div>
 
             {/* Tab 1: Loan Details */}
-            <TabsContent value="loan-details" className="w-full max-w-4xl mx-auto space-y-8">
+            <TabsContent value="loan-details" className="w-full page-width space-y-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left Section - Loan Inputs */}
                 <LoanInputSection
@@ -745,7 +745,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 2: EMI Schedule */}
-            <TabsContent value="emi-schedule" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
+            <TabsContent value="emi-schedule" className="w-full page-width space-y-8 animate-fade-in">
               <DebtFreeNote 
                 calculation={calculation}
                 calculationWithoutPartPayments={calculationWithoutPartPayments}
@@ -770,7 +770,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 3: Compare Loan Scenarios */}
-            <TabsContent value="compare-scenarios" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
+            <TabsContent value="compare-scenarios" className="w-full page-width space-y-8 animate-fade-in">
               <LoanComparisonSection
                 baseAmount={loanAmount}
                 baseRate={interestRate}
@@ -782,7 +782,7 @@ const Index = () => {
             </TabsContent>
 
             {/* Tab 4: Loan Affordability */}
-            <TabsContent value="loan-affordability" className="w-full max-w-4xl mx-auto space-y-8 animate-fade-in">
+            <TabsContent value="loan-affordability" className="w-full page-width space-y-8 animate-fade-in">
               <LoanAffordabilityCalculator />
             </TabsContent>
           </Tabs>
