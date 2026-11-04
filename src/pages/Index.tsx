@@ -787,10 +787,10 @@ const Index = () => {
             </TabsContent>
           </Tabs>
         )}
-      </div>
 
-      {/* Feedback Section */}
-      <FeedbackSection />
+        {/* Feedback Section */}
+        <FeedbackSection />
+      </div>
 
       {/* Footer */}
       <Footer />
