@@ -434,9 +434,9 @@ const Index = () => {
   return (
     <div className="min-h-screen glass-background flex flex-col overflow-x-hidden">
       {/* Header */}
-      <header className="bg-card/80 backdrop-blur-sm shadow-card border-b border-border">
+      <header className="bg-transparent">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 py-4">
-          <div className="page-width flex items-center justify-between gap-2">
+          <div className="page-width min-h-16 rounded-2xl border border-white/80 bg-card/70 px-4 sm:px-5 shadow-sm backdrop-blur-xl flex items-center justify-between gap-2">
             <div className="flex items-center justify-start gap-2 sm:gap-3 min-w-0">
               <button
                 type="button"

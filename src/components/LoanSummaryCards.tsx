@@ -68,7 +68,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
             <p className="text-sm text-muted-foreground mb-1 font-bold">
               {hasVariableEMI ? 'Avg. Monthly EMI' : 'Monthly EMI'}
             </p>
-            <p className="text-xl font-bold text-financial-primary">
+            <p className="text-xl font-bold text-financial-primary tabular-nums">
               {formatCurrency(hasVariableEMI ? averageEMI : calculation.emi)}
             </p>
           </div>
@@ -79,7 +79,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
         <CardContent className="p-3">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1 font-bold">Total Interest</p>
-            <p className="text-xl font-bold text-destructive">
+            <p className="text-xl font-bold text-destructive tabular-nums">
               {formatCurrency(calculation.totalInterest)}
             </p>
           </div>
@@ -90,7 +90,7 @@ export const LoanSummaryCards = ({ calculation, interestSavings = 0, timeSavings
         <CardContent className="p-3">
           <div className="text-center">
             <p className="text-sm text-muted-foreground mb-1 font-bold">Total Amount</p>
-            <p className="text-xl font-bold text-primary">
+            <p className="text-xl font-bold text-primary tabular-nums">
               {formatCurrency(calculation.totalAmount)}
             </p>
           </div>
