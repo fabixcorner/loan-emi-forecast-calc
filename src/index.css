@@ -324,6 +324,7 @@ All colors MUST be HSL.
 
 .glass-card-3d > [class*="bg-gradient-to-r"] {
   background: hsl(var(--glass-overlay)) !important;
+  background-image: none !important;
   color: hsl(var(--foreground)) !important;
   border-bottom: 1px solid hsl(var(--border) / 0.72);
   border-radius: var(--radius) var(--radius) 0 0;
