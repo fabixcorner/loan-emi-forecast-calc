@@ -8,71 +8,70 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Soft pastel blue glassmorphism (light theme reference) */
-    --background: 210 60% 94%;
-    --foreground: 218 45% 18%;
+    /* Airy, neutral light mode with restrained indigo accents */
+    --background: 220 30% 98%;
+    --foreground: 222 22% 16%;
 
-    --card: 205 75% 90%;
-    --card-foreground: 218 45% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 22% 16%;
 
-    --popover: 205 75% 96%;
-    --popover-foreground: 218 45% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 22% 16%;
 
-    --primary: 218 60% 30%;
+    --primary: 232 52% 54%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 205 60% 88%;
-    --secondary-foreground: 218 45% 20%;
+    --secondary: 220 20% 92%;
+    --secondary-foreground: 222 22% 20%;
 
-    --muted: 210 50% 92%;
-    --muted-foreground: 218 25% 40%;
+    --muted: 220 24% 95%;
+    --muted-foreground: 222 12% 43%;
 
-    --accent: 218 60% 30%;
+    --accent: 232 52% 54%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 6 80% 62%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 50% 80%;
-    --input: 205 60% 92%;
-    --ring: 218 60% 30%;
+    --border: 220 22% 87%;
+    --input: 220 24% 95%;
+    --ring: 232 52% 54%;
 
-    --financial-primary: 218 60% 30%;
-    --financial-success: 210 55% 38%;
+    --financial-primary: 232 52% 54%;
+    --financial-success: 174 55% 35%;
     --financial-warning: 43 96% 56%;
-    --financial-background: 210 60% 94%;
-    --financial-card: 205 75% 90%;
-    --financial-border: 210 50% 80%;
+    --financial-background: 220 30% 98%;
+    --financial-card: 0 0% 100%;
+    --financial-border: 220 22% 87%;
     
     --gradient-financial: linear-gradient(135deg, hsl(var(--financial-primary)), hsl(var(--financial-success)));
     --shadow-financial: 0 4px 20px -4px hsl(var(--financial-primary) / 0.25);
     /* 3D glass bevel: outer drop shadow + inner top highlight + inner bottom dark line */
     --shadow-card:
-      0 10px 30px -10px hsl(218 50% 30% / 0.25),
-      0 2px 6px -2px hsl(218 50% 30% / 0.15),
-      inset 0 1px 0 0 hsl(0 0% 100% / 0.7),
-      inset 0 -1px 0 0 hsl(218 50% 30% / 0.15);
+      0 14px 34px -18px hsl(222 25% 32% / 0.19),
+      0 3px 10px -6px hsl(222 25% 32% / 0.12),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.82);
 
-    --radius: 0.75rem;
+    --radius: 1.375rem;
 
-    /* Glassmorphism Background - soft blue gradient */
-    --glass-background-start: 210 65% 94%;
-    --glass-background-end: 205 70% 90%;
-    --glass-overlay: 205 80% 96% / 0.55;
-    --glass-border: 205 60% 82%;
-    --glass-blur: blur(16px);
+    /* Soft frosted surfaces */
+    --glass-background-start: 220 30% 98%;
+    --glass-background-end: 220 24% 96%;
+    --glass-overlay: 0 0% 100% / 0.76;
+    --glass-border: 0 0% 100% / 0.82;
+    --glass-blur: blur(18px);
 
-    /* Card gradient (light glass) */
-    --card-gradient-start: 205 90% 94%;
-    --card-gradient-end: 210 70% 84%;
-    --card-warm-start: 205 90% 96%;
-    --card-warm-end: 210 75% 88%;
+    /* Nearly-white glass with a whisper of cool tint */
+    --card-gradient-start: 0 0% 100%;
+    --card-gradient-end: 220 35% 98%;
+    --card-warm-start: 220 40% 99%;
+    --card-warm-end: 214 38% 96%;
     --card-danger-start: 5 90% 90%;
     --card-danger-end: 10 70% 80%;
 
     /* Tab gradient for active state */
-    --tab-gradient-start: 218 70% 38%;
-    --tab-gradient-end: 210 65% 50%;
+    --tab-gradient-start: 232 52% 54%;
+    --tab-gradient-end: 222 48% 59%;
 
     --sidebar-background: 220 20% 96%;
     --sidebar-foreground: 220 40% 18%;
@@ -184,18 +183,14 @@ All colors MUST be HSL.
     transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
 
-  /* Themed financial glassmorphism backdrop: soft blue radial glows over a
-     neutral base, with a faint coin-dot texture. Content sections float on top. */
+  /* Quiet, airy backdrop with cool periwinkle, lavender, and mint light. */
   .glass-background {
-    background-color: hsl(0 0% 98%);
+    background-color: hsl(var(--background));
     background-image:
-      radial-gradient(hsl(218 60% 40% / 0.05) 1px, transparent 1.4px),
-      radial-gradient(ellipse 55% 45% at 12% 8%, hsl(210 90% 70% / 0.28), transparent 70%),
-      radial-gradient(ellipse 50% 45% at 88% 18%, hsl(218 85% 65% / 0.22), transparent 70%),
-      radial-gradient(ellipse 65% 50% at 78% 92%, hsl(200 90% 68% / 0.20), transparent 70%),
-      radial-gradient(ellipse 60% 40% at 25% 85%, hsl(215 80% 72% / 0.16), transparent 70%),
-      linear-gradient(165deg, hsl(210 40% 97%) 0%, hsl(214 35% 93%) 45%, hsl(210 30% 96%) 100%);
-    background-size: 32px 32px, auto, auto, auto, auto, auto;
+      radial-gradient(ellipse 54% 42% at 5% 4%, hsl(229 72% 86% / 0.38), transparent 72%),
+      radial-gradient(ellipse 46% 42% at 96% 7%, hsl(270 54% 89% / 0.34), transparent 72%),
+      radial-gradient(ellipse 58% 48% at 8% 86%, hsl(165 48% 83% / 0.29), transparent 72%),
+      linear-gradient(165deg, hsl(220 30% 98%) 0%, hsl(220 26% 97%) 52%, hsl(220 28% 98%) 100%);
     min-height: 100vh;
     transition: background 0.3s ease;
   }
@@ -311,4 +306,26 @@ All colors MUST be HSL.
   .page-width {
     width: 80%;
   }
+}
+
+/* Keep all calculator surfaces softly frosted and visually consistent. */
+.glass-card-3d {
+  background: linear-gradient(
+    145deg,
+    hsl(var(--card-gradient-start) / 0.84) 0%,
+    hsl(var(--card-gradient-end) / 0.76) 100%
+  );
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid hsl(var(--glass-border));
+  box-shadow: var(--shadow-card);
+  border-radius: var(--radius);
+}
+
+.glass-card-3d > [class*="bg-gradient-to-r"] {
+  background: hsl(var(--glass-overlay)) !important;
+  background-image: none !important;
+  color: hsl(var(--foreground)) !important;
+  border-bottom: 1px solid hsl(var(--border) / 0.72);
+  border-radius: var(--radius) var(--radius) 0 0;
 }

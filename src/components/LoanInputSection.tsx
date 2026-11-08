@@ -52,8 +52,8 @@ export const LoanInputSection = ({
   };
 
   return (
-    <Card className="h-fit bg-card shadow-card border border-border">
-      <CardHeader className="bg-gradient-to-r from-financial-primary to-financial-success text-primary-foreground rounded-t-lg py-3">
+    <Card className="h-fit">
+      <CardHeader className="py-3">
         <CardTitle className="text-xl font-semibold">Loan Details</CardTitle>
       </CardHeader>
       <CardContent className="p-5 space-y-5">
@@ -121,7 +121,7 @@ export const LoanInputSection = ({
                 type="number"
                 value={loanAmount}
                 onChange={(e) => setLoanAmount(Number(e.target.value))}
-                className="h-10"
+                className="h-10 tabular-nums"
                 min={100000}
                 max={30000000}
                 step={100000}
@@ -156,7 +156,7 @@ export const LoanInputSection = ({
                 type="number"
                 value={interestRate}
                 onChange={(e) => setInterestRate(Number(e.target.value))}
-                className="h-10"
+                className="h-10 tabular-nums"
                 min={2}
                 max={15}
                 step={0.1}
@@ -191,7 +191,7 @@ export const LoanInputSection = ({
                 type="number"
                 value={loanTenure}
                 onChange={(e) => setLoanTenure(Number(e.target.value))}
-                className="h-10"
+                className="h-10 tabular-nums"
                 min={3}
                 max={30}
                 step={1}
