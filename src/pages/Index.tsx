@@ -691,7 +691,7 @@ const Index = () => {
               />
 
               {/* Action Buttons */}
-              <div className="flex justify-center gap-4">
+              <div className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
                 <Button
                   onClick={() => setShowPartPayments(!showPartPayments)}
                   variant="outline"
