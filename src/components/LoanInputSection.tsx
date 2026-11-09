@@ -53,7 +53,7 @@ export const LoanInputSection = ({
 
   return (
     <Card className="h-fit">
-      <CardHeader className="py-3 border-b border-border/70">
+      <CardHeader className="bg-gradient-to-r from-financial-success to-financial-primary text-primary-foreground rounded-t-lg py-3 border-b border-border/70">
         <CardTitle className="text-xl font-semibold">Loan Details</CardTitle>
       </CardHeader>
       <CardContent className="p-5 space-y-5">
