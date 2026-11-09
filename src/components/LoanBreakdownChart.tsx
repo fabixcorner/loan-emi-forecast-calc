@@ -45,7 +45,7 @@ export const LoanBreakdownChart = ({ calculation, showSchedule }: LoanBreakdownC
 
   return (
     <Card>
-      <CardHeader className="py-3">
+      <CardHeader className="py-3 border-b border-border/70">
         <CardTitle className="text-xl font-semibold">Loan Breakdown</CardTitle>
       </CardHeader>
       <CardContent className="pt-4">
