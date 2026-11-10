@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -59,8 +59,48 @@ export const FeedbackSection = () => {
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [buttonPosition, setButtonPosition] = useState<{ left: number; top: number } | null>(null);
+  const feedbackButtonRef = useRef<HTMLButtonElement>(null);
+  const dragStartRef = useRef<{ pointerId: number; startX: number; startY: number; left: number; top: number } | null>(null);
+  const wasDraggedRef = useRef(false);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  const handleFeedbackButtonPointerDown = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (event.button !== 0) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    dragStartRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      left: bounds.left,
+      top: bounds.top,
+    };
+    wasDraggedRef.current = false;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleFeedbackButtonPointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const start = dragStartRef.current;
+    if (!start || start.pointerId !== event.pointerId) return;
+    const deltaX = event.clientX - start.startX;
+    const deltaY = event.clientY - start.startY;
+    if (!wasDraggedRef.current && Math.hypot(deltaX, deltaY) < 5) return;
+
+    wasDraggedRef.current = true;
+    const button = feedbackButtonRef.current;
+    if (!button) return;
+    const maxLeft = Math.max(0, window.innerWidth - button.offsetWidth);
+    const maxTop = Math.max(0, window.innerHeight - button.offsetHeight);
+    setButtonPosition({
+      left: Math.min(maxLeft, Math.max(0, start.left + deltaX)),
+      top: Math.min(maxTop, Math.max(0, start.top + deltaY)),
+    });
+  };
+
+  const handleFeedbackButtonPointerEnd = (event: React.PointerEvent<HTMLButtonElement>) => {
+    if (dragStartRef.current?.pointerId === event.pointerId) dragStartRef.current = null;
+  };
 
   const fetchFeedback = async (pageNum: number) => {
     setLoading(true);
@@ -306,13 +346,26 @@ export const FeedbackSection = () => {
       </Card>
 
       {/* Floating feedback button */}
-      <button
-        onClick={() => setOpen(true)}
+      <Button
+        ref={feedbackButtonRef}
+        onPointerDown={handleFeedbackButtonPointerDown}
+        onPointerMove={handleFeedbackButtonPointerMove}
+        onPointerUp={handleFeedbackButtonPointerEnd}
+        onPointerCancel={handleFeedbackButtonPointerEnd}
+        onClick={() => {
+          if (wasDraggedRef.current) {
+            wasDraggedRef.current = false;
+            return;
+          }
+          setOpen(true);
+        }}
         aria-label="Send feedback"
-        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-financial-primary text-primary-foreground shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
+        title="Drag to move or click to send feedback"
+        className={`fixed z-50 h-14 w-14 rounded-full bg-financial-primary text-primary-foreground shadow-xl flex items-center justify-center touch-none select-none cursor-grab active:cursor-grabbing hover:scale-105 active:scale-95 transition-transform ${buttonPosition ? "" : "bottom-6 right-6"}`}
+        style={buttonPosition ? { left: buttonPosition.left, top: buttonPosition.top } : undefined}
       >
         <MessageSquarePlus className="h-6 w-6" />
-      </button>
+      </Button>
 
       {modal}
     </div>
