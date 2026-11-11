@@ -502,7 +502,7 @@ const Index = () => {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 p-2">
+                <DropdownMenuContent align="end" className="z-[100] w-56 border border-border bg-background p-2 shadow-xl backdrop-blur-xl">
                   <UserMenu
                     variant="drawer"
                     onLoadCalculation={handleLoadCalculation}
