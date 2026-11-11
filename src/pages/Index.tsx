@@ -16,6 +16,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Footer } from "@/components/Footer";
 import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
@@ -494,19 +495,35 @@ const Index = () => {
                   )}
                 </div>
               )}
-              <HowItWorks />
-              <ThemeToggle />
-              <UserMenu
-                onLoadCalculation={handleLoadCalculation}
-                getCurrentData={getCurrentData}
-                currentLoanId={currentLoanId}
-                currentLoanName={currentLoanName}
-                onSavedAs={handleSavedAs}
-                isDirty={isDirty}
-                onSavedCurrent={handleSavedCurrent}
-                onNewLoan={handleNewLoan}
-                openLoadOnLoginRef={openLoadOnLoginRef}
-              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" aria-label="Open menu">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 p-2">
+                  <UserMenu
+                    variant="drawer"
+                    onLoadCalculation={handleLoadCalculation}
+                    getCurrentData={getCurrentData}
+                    currentLoanId={currentLoanId}
+                    currentLoanName={currentLoanName}
+                    onSavedAs={handleSavedAs}
+                    isDirty={isDirty}
+                    onSavedCurrent={handleSavedCurrent}
+                    onNewLoan={handleNewLoan}
+                    openLoadOnLoginRef={openLoadOnLoginRef}
+                  />
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-muted/50">
+                    <div className="flex items-center gap-3">
+                      {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                      <span className="text-sm font-medium">Theme</span>
+                    </div>
+                    <ThemeToggle variant="slider" />
+                  </div>
+                  <HowItWorks variant="drawer" />
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
