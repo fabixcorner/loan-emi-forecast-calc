@@ -115,6 +115,7 @@ const Index = () => {
   const { theme, setTheme } = useTheme();
   const isDark = theme === "dark";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
 
   // Lock body scroll while mobile drawer is open, close on Escape
   useEffect(() => {
@@ -495,7 +496,7 @@ const Index = () => {
                   )}
                 </div>
               )}
-              <DropdownMenu>
+              <DropdownMenu open={headerMenuOpen} onOpenChange={setHeaderMenuOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full" aria-label="Open menu">
                     <Menu className="h-5 w-5" />
@@ -513,6 +514,7 @@ const Index = () => {
                     onSavedCurrent={handleSavedCurrent}
                     onNewLoan={handleNewLoan}
                     openLoadOnLoginRef={openLoadOnLoginRef}
+                    onCloseDrawer={() => setHeaderMenuOpen(false)}
                   />
                   <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-muted/50">
                     <div className="flex items-center gap-3">
@@ -521,7 +523,7 @@ const Index = () => {
                     </div>
                     <ThemeToggle variant="slider" />
                   </div>
-                  <HowItWorks variant="drawer" />
+                  <HowItWorks variant="drawer" onCloseDrawer={() => setHeaderMenuOpen(false)} />
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
