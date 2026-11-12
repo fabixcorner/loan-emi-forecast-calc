@@ -16,7 +16,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Footer } from "@/components/Footer";
 import { FeedbackSection } from "@/components/FeedbackSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/useAuth";
@@ -504,7 +504,7 @@ const Index = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="z-[100] w-56 border border-border bg-background p-2 shadow-xl backdrop-blur-xl">
                   <UserMenu
-                    variant="drawer"
+                    variant="menu"
                     onLoadCalculation={handleLoadCalculation}
                     getCurrentData={getCurrentData}
                     currentLoanId={currentLoanId}
@@ -516,14 +516,19 @@ const Index = () => {
                     openLoadOnLoginRef={openLoadOnLoginRef}
                     onCloseDrawer={() => setHeaderMenuOpen(false)}
                   />
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-muted/50">
-                    <div className="flex items-center gap-3">
-                      {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                      <span className="text-sm font-medium">Theme</span>
-                    </div>
-                    <ThemeToggle variant="slider" />
-                  </div>
-                  <HowItWorks variant="drawer" onCloseDrawer={() => setHeaderMenuOpen(false)} />
+                  {user && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-muted/50">
+                        <div className="flex items-center gap-3">
+                          {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                          <span className="text-sm font-medium">Theme</span>
+                        </div>
+                        <ThemeToggle variant="slider" />
+                      </div>
+                      <HowItWorks variant="drawer" onCloseDrawer={() => setHeaderMenuOpen(false)} />
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
