@@ -516,19 +516,15 @@ const Index = () => {
                     openLoadOnLoginRef={openLoadOnLoginRef}
                     onCloseDrawer={() => setHeaderMenuOpen(false)}
                   />
-                  {user && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-muted/50">
-                        <div className="flex items-center gap-3">
-                          {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
-                          <span className="text-sm font-medium">Theme</span>
-                        </div>
-                        <ThemeToggle variant="slider" />
-                      </div>
-                      <HowItWorks variant="drawer" onCloseDrawer={() => setHeaderMenuOpen(false)} />
-                    </>
-                  )}
+                  <DropdownMenuSeparator />
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-muted/50">
+                    <div className="flex items-center gap-3">
+                      {isDark ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
+                      <span className="text-sm font-medium">Theme</span>
+                    </div>
+                    <ThemeToggle variant="slider" />
+                  </div>
+                  <HowItWorks variant="drawer" onCloseDrawer={() => setHeaderMenuOpen(false)} />
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
